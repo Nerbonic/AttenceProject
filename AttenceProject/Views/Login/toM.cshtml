@@ -1,0 +1,84 @@
+﻿@using AttenceProject.Models
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="~/easyui/themes/default/easyui.css" />
+    <link href="~/Content/icon.css" rel="stylesheet" />
+    <link href="~/Content/wu.css" rel="stylesheet" />
+    <script src="~/easyui/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/easyui/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/easyui/indexmemu.js"></script>
+    <script src="~/scripts/easyui-lang-zh_CN.js"></script>
+
+</head>
+<body class="easyui-layout">
+    <div class="wu-header" data-options="region:'north',border:false,split:true">
+        <div class="wu-header-left">
+            <h1>AttenceProject</h1>
+        </div>
+        <div class="wu-header-right">
+            <p><strong class="easyui-tooltip" title="2条未读消息">admin</strong>，欢迎您！</p>
+            <p><a href="#">网站首页</a>|<a href="#">支持论坛</a>|<a href="#">帮助中心</a>|<a href="#">安全退出</a></p>
+        </div>
+    </div>
+    <div class="wu-sidebar" data-options="region:'west',split:true,border:true,title:'导航菜单'">
+        @{
+            List<SysMenu> list = ViewData["menus"] as List<SysMenu>;
+            List<SysMenu> listson = ViewData["sonmenus"] as List<SysMenu>;
+
+        }
+        <div class="easyui-accordion" data-options="border:false,fit:true">
+            @foreach (var m in list)
+            {
+                <div title="@m.MenuText" data-options="iconCls:'icon-application-cascade'" style="padding:5px;">
+                    <ul class="easyui-tree wu-side-tree">
+                        @foreach (var n in listson)
+                        {
+                            if (m.ID == n.MenuParentID)
+                            {
+                                <li iconCls="icon-chart-organisation"><a data-icon="icon-chart-organisation" onclick="switchs('@n.Path','@n.MenuText')" iframe="0">@n.MenuText</a></li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+    <!--中间主要区域-->
+    <div class="wu-main" data-options="region:'center'">
+        <div id="tabs" class="easyui-tabs" fit="true" style="width:100%; height:100%; overflow:hidden;">
+            <div title="我的桌面" style="overflow:hidden;">
+                <iframe id="leftframe" src="../SysUsersRoles/Index" style="width:100%;height:100%;"> </iframe>
+
+            </div>
+        </div>
+    </div>
+    <div id="mm" class="easyui-menu" style="width:150px;">
+        <div id="tabupdate">刷新</div>
+        <div class="menu-sep"></div>
+        <div id="close">关闭</div>
+        <div id="closeall">全部关闭</div>
+        <div id="closeother">除此之外全部关闭</div>
+        <div class="menu-sep"></div>
+        <div id="closeright">当前页右侧全部关闭</div>
+        <div id="closeleft">当前页左侧全部关闭</div>
+        <div class="menu-sep"></div>
+        <div id="exit">退出</div>
+    </div>
+    <!--页脚-->
+    <div class="wu-footer" data-options="region:'south',border:true,split:true">
+        &copy; AttenctProject
+    </div>
+    <script type="text/javascript">
+        function switchs(url,name) {
+            //debugger;
+            $("#leftframe").attr('src', url);
+            addTab(name, url, '', $("#leftframe"));
+        }
+    </script>
+</body>
+</html>
+
+

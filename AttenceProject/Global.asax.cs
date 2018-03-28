@@ -13,6 +13,17 @@ namespace AttenceProject
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            // WebApiConfig.Register(GlobalConfiguration.Configuration);
+            //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            ////启用压缩
+            //BundleTable.EnableOptimizations = true;
+            //BundleConfig.RegisterBundles(BundleTable.Bundles);
+            //AuthConfig.RegisterAuth();
+
+            ////注入 Ioc
+            //var container = new UnityContainer();
+            //DependencyRegisterType.Container_Sys(ref container);
+            //DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }
     }
 }

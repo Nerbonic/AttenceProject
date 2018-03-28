@@ -1,0 +1,58 @@
+﻿@model AttenceProject.Models.SysMenu
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>SysMenu</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.MenuText)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MenuText)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MenuParentID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MenuParentID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Path)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Path)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Operator)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Operator)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OpTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OpTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

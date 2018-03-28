@@ -1,0 +1,69 @@
+﻿@model AttenceProject.Models.SysUsersRole
+@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+
+
+
+<html style="width:100%; height: 100% ; overflow: hidden;">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>后台登录</title>
+</head>
+
+<link rel="stylesheet" type="text/css" href="~/easyUI/easyUI/themes/default/easyui.css" />
+<link rel="stylesheet" type="text/css" href="~/easyUI/easyUI/themes/icon.css"/>
+<link rel="stylesheet" type="text/css" href="~/easyUI/easyUI/demo/demo.css"/>
+<script type="text/javascript" src="~/easyUI/easyUI/jquery.min.js"></script>
+<script type="text/javascript" src="~/easyUI/easyUI/jquery.easyui.min.js"></script>
+<script type="text/javascript">
+function login() {
+		//$("#area").val($("#areashow").combobox("getValue"));
+	  	 document.form1.submit();
+	}
+$(function () {
+    $("body").keydown(function () {
+        if (event.keyCode == "13") {//keyCode=13是回车键
+            login();
+        }
+    });
+});
+
+</script>
+<body style="width:100%; height: 100% ; overflow: hidden;background:url();background-size:100% 100%">
+    <div style="margin:200px auto;  width:609px; height: 258px ;background:url();">
+
+        <form action="~/Login/DoLogin" name="form1" method="post">
+            <div style=" margin:3% 3.5% ; width:54%;height: 85%;float right">
+
+                 <div class="easyui-panel" title="欢迎使用本系统" style="margin:0 auto;width:100%;padding:30px 70px 20px 70px">
+                    
+                    <div style="width:85%;margin: 5px 20px 5px 60px;">
+                        <input class="easyui-textbox" style="width:70%;height:30px;padding:12px" data-options="prompt:'用户名',iconCls:'icon-man',iconWidth:38" name="username">
+                    </div>
+                    <div style="width:85%;margin: 0 20px 5px 60px;">
+                        <input class="easyui-textbox" type="password" style="width:70%;height:30px;padding:12px" data-options="prompt:'密码',iconCls:'icon-lock',iconWidth:38" name="password">
+                    </div>
+                    
+                    <div style="width:85%;margin: 0 20px 5px 60px;">
+                        <input type="checkbox" checked="checked">
+                        <span>记住用户名</span>
+                    </div>
+                    <div style="width:85%;margin: 0 20px 5px 60px;">
+                        <a href="#" class="easyui-linkbutton" onclick="login()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
+                            <span style="font-size:14px;">登录</span>
+                        </a>
+                    </div>
+                    <!-- </div>  -->
+                </div>
+        </form>
+        <s:fielderror fieldName="login" theme="simple" />
+    </div>
+</body>
+</html>
+          
+
+
+    

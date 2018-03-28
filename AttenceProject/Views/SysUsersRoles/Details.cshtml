@@ -1,0 +1,90 @@
+﻿@model AttenceProject.Models.SysUsersRole
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>SysUsersRole</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserDeptID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserDeptID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LoginName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LoginName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PassWord)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PassWord)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserState)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserState)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OverTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OverTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Operator)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Operator)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OpTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OpTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
