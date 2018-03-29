@@ -166,7 +166,8 @@
 	        });
 	}
 	function clearquery() {
-	    $('#AlternativeText_search').searchbox('setValue', null);
+	    //debugger;
+	    $('#AlternativeText_search').val('');
 	    $('#ComboBoxGroup').combobox('setValue', '0');
 	}
 
@@ -217,10 +218,10 @@
                     <tr>
                         <th field="ck" checkbox="true"></th>
                         <th data-options="field:'ID',width:80">ID</th>
-                        <th data-options="field:'AlternativeText',width:100">AlternativeText</th>
-                        <th data-options="field:'AlternativeGroupText',width:80,align:'right'">AlternativeGroupText</th>
-                        <th data-options="field:'Remarks',width:250">Remarks</th>
-                        <th data-options="field:'Operator',width:60,align:'center'">Operator</th>
+                        <th data-options="field:'AlternativeText',width:100">备选项名称</th>
+                        <th data-options="field:'AlternativeGroupText',width:80,align:'right'">备选项分组名称</th>
+                        <th data-options="field:'Remarks',width:250">备选项信息</th>
+                        <th data-options="field:'Operator',width:60,align:'center'">操作人</th>
                     </tr>
                 </thead>
             </table>        </div>
