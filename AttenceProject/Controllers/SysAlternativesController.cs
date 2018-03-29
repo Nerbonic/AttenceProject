@@ -132,11 +132,19 @@ namespace AttenceProject.Controllers
         }
 
         // GET:SysAlternatives/GetJson
-        public ContentResult GetJson()
+        public ContentResult GetJson(string AlternativeGroupID, string AlternativeText)
         {
             var res = new ContentResult();
-            var list = db.SysAlternatives.ToList();
-            string result = DataTable2Json.LI2J(db.SysAlternatives.ToList());
+            var list=db.SysAlternatives.ToList();
+            if (AlternativeGroupID != "0"&& !string.IsNullOrEmpty(AlternativeGroupID))
+            {
+                list = list.Where(m => m.AlternativeGroupID == int.Parse(AlternativeGroupID)).ToList();
+            }
+            if(!string.IsNullOrEmpty(AlternativeText))
+            {
+                list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
+            }
+            string result = DataTable2Json.LI2J(list);
             result = "{\"total\":"+ db.SysAlternatives.ToList().Count+ ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
@@ -161,11 +169,69 @@ namespace AttenceProject.Controllers
                 return HttpNotFound();
             }
             var res = new ContentResult();
-            res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
+            res.Content = DataTable2Json.EN2J(sysAlternative);
+            //res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
             res.ContentType = "application/json";
             res.ContentEncoding = Encoding.UTF8;
 
             return res;
         }
+        /// <summary>
+        /// 保存备选项数据
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <param name="AlternativeText"></param>
+        /// <param name="AlternativeGroupText"></param>
+        /// <param name="Remarks"></param>
+        /// <param name="AlternativeGroupID"></param>
+        /// <returns></returns>
+        public ActionResult SaveEdit(string ID, string AlternativeText, string AlternativeGroupText, string Remarks, string AlternativeGroupID)
+        {
+            SysAlternative sys = new SysAlternative();
+            sys.ID = int.Parse(ID);
+            sys.AlternativeText = AlternativeText;
+            sys.AlternativeGroupText = AlternativeGroupText;
+            sys.Remarks = Remarks;
+            sys.Operator = "admin";
+            sys.OpTime = DateTime.Now;
+            sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
+            db.Entry(sys).State = EntityState.Modified;
+            db.SaveChanges();
+            return Content("success");
+        }
+
+        // Get: SysAlternatives/GetGroup
+        /// <summary>
+        /// 获得备选项组别
+        /// </summary>
+        /// <returns></returns>
+        public ContentResult GetGroup()
+        {
+            string result= DataTable2Json.LI2J(db.SysAlternatives.Select(s => new { s.AlternativeGroupID, s.AlternativeGroupText }).Distinct().ToList());
+            result = "[{\"AlternativeGroupID\":0,\"AlternativeGroupText\":\"全部分组\"}," + result.TrimStart('[');
+            var res = new ContentResult();
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
+
+        /// <summary>
+        /// 获得备选项目具体数据
+        /// </summary>
+        /// <param name="id">备选项组别</param>
+        /// <returns></returns>
+        public ContentResult GetAlternativeByGroup(int id)
+        {
+            string result = DataTable2Json.LI2J(db.SysAlternatives.Where(m => m.AlternativeGroupID == id).Select(s => new { s.ID, s.AlternativeText }).ToList());
+            var res = new ContentResult();
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
+
     }
 }

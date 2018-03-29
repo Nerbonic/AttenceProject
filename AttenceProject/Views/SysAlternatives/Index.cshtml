@@ -51,11 +51,12 @@
 	*/
 	function edit(){
 		$('#wu-form').form('submit', {
-			url:'',
+		    url: '../../SysAlternatives/SaveEdit',
 			success:function(data){
-				if(data){
+				if(data=="success"){
 					$.messager.alert('信息提示','提交成功！','info');
 					$('#wu-dialog').dialog('close');
+					window.location.reload();
 				}
 				else
 				{
@@ -128,21 +129,13 @@
 	        $.ajax({
 	            url: '../../SysAlternatives/GetInfo',
 	            data: { id: id },
-	            async:false,
-	            success: function (data) {
-                    data.to
-	                var altext=data.split("_")[0];
-	                var algtext = data.split("_")[1];
-	                var remarks = data.split("_")[2];
-	                alert(remarks);
-	                $('#wu-form').form('load',{
-	                    AlternativeText:altext,
-	                    AlternativeGroupText:algtext,
-	                    Remarks:remarks
-	                });
-	                }
-	            
-	        });
+	            async: false,
+                dataType:"json",
+	            method:'get',
+	        success: function (data) {
+	            $('#wu-form').form('load', data);
+	        }	      
+	    });
 	        $('#wu-dialog').dialog({
 	            closed: false,
 	            modal: true,
@@ -163,6 +156,24 @@
 		
 	}
 	
+	function doSearch() {
+	    var atext = $('#AlternativeText_search').val();
+	    var agid = $('#ComboBoxGroup').combobox("getValue");
+	    debugger;
+	    $('#wu-datagrid').datagrid('load', {
+	        AlternativeText: atext,
+	        AlternativeGroupID: agid
+	        });
+	}
+	function clearquery() {
+	    $('#AlternativeText_search').searchbox('setValue', null);
+	    $('#ComboBoxGroup').combobox('setValue', '0');
+	}
+
+	$(document).ready(function () {
+	    doSearch();
+
+	})
     </script>
 
 
@@ -183,12 +194,19 @@
                 </div>
                 <div class="wu-toolbar-search">
                     <label>备选项分组：</label>
-                    <select class="easyui-combobox" panelHeight="auto" style="width:100px"> 
-                        <option value="0">选择用户组</option>
+                    <select class="easyui-combobox" panelHeight="auto" style="width:100px"  id="ComboBoxGroup" name="ComboBoxGroup" data-options="required:true,  
+                   url:'../../SysAlternatives/GetGroup',  
+                   method:'get',  
+                   multiple:false,  
+                   valueField:'AlternativeGroupID',   
+                   textField:'AlternativeGroupText'  
+                           " > 
                         
                     </select>
-                    <label>关键词：</label><input class="wu-text" style="width:100px">
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-search">开始检索</a>
+                    <label>备选项名称：</label><input class="wu-text" id="AlternativeText_search" style="width:100px">
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="doSearch()">开始检索</a>
+                    <a href="#" class="easyui-linkbutton"  onclick="clearquery()">清空条件</a>
+
                 </div>
             </div>
             <!-- End of toolbar -->
@@ -200,7 +218,6 @@
                         <th field="ck" checkbox="true"></th>
                         <th data-options="field:'ID',width:80">ID</th>
                         <th data-options="field:'AlternativeText',width:100">AlternativeText</th>
-                        <th data-options="field:'AlternativeGroupID',width:80,align:'right'">AlternativeGroupID</th>
                         <th data-options="field:'AlternativeGroupText',width:80,align:'right'">AlternativeGroupText</th>
                         <th data-options="field:'Remarks',width:250">Remarks</th>
                         <th data-options="field:'Operator',width:60,align:'center'">Operator</th>
@@ -210,11 +227,19 @@
     </div>
     <!-- Begin of easyui-dialog -->
     <div id="wu-dialog" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
-        <form id="wu-form" method="post">
+        <form id="wu-form" method="post" >
             <table>
+                <tr style="display:none;">
+                    <td width="60" align="right">ID:</td>
+                    <td><input type="text" name="ID" class="wu-text" /></td>
+                </tr>
+                <tr style="display:none;">
+                    <td width="60" align="right">AlternativeGroupID:</td>
+                    <td><input type="text" name="AlternativeGroupID" class="wu-text" /></td>
+                </tr>
                 <tr>
                     <td width="60" align="right">备选项名称:</td>
-                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                    <td><input type="text" name="AlternativeText" class="wu-text"  /></td>
                 </tr>
                 <tr>
                     <td align="right">备选项分组:</td>

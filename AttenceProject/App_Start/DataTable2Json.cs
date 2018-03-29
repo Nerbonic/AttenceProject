@@ -18,6 +18,12 @@ namespace AttenceProject.App_Start
             return result;
 
         }
+        public static string EN2J(object obj)
+        {
+            string result = "";
+            result = JsonConvert.SerializeObject(obj);
+            return result;
+        }
 
     }
     
