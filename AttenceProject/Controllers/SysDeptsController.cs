@@ -134,7 +134,7 @@ namespace AttenceProject.Controllers
             StringBuilder sbnew = new StringBuilder();
 
             sbnew = sb.Replace("{\"ID\":", "{\"id\":").Replace(",\"DeptName\":", ",\"name\":").Replace(",\"ParentNode\":", ",\"pId\":");
-            return Content(sb.ToString());
+            return Content(sbnew.ToString());
         }
     }
 }

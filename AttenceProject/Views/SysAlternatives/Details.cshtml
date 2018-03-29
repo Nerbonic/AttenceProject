@@ -1,0 +1,74 @@
+﻿@model AttenceProject.Models.SysAlternative
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+</head>
+<body>
+    <div>
+        <h4>SysAlternative</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.AlternativeText)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.AlternativeText)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.AlternativeGroupID)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.AlternativeGroupID)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.AlternativeGroupText)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.AlternativeGroupText)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.Remarks)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.Remarks)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.Operator)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.Operator)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.OpTime)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.OpTime)
+            </dd>
+    
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+</body>
+</html>

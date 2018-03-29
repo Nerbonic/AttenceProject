@@ -34,10 +34,12 @@
 		    url: "../SysDepts/GetDeptJson", success: function (result) {
 		        alert(result);
 		        zNodes = JSON.parse(result);
+		        //alert(zNodes);
 		    }
 		});
 
-		$(document).ready(function(){
+		$(document).ready(function () {
+            
 			$.fn.zTree.init($("#treeDemo"), setting, zNodes);
 		});
 		//-->

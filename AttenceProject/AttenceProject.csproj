@@ -5165,6 +5165,8 @@
     <Content Include="easyui demo\temp\menu.php" />
     <Content Include="easyui demo\temp\tree.json" />
     <Content Include="easyui demo\temp\tree.php" />
+    <Content Include="TextFile1.json" />
+    <None Include="Views\SysAlternatives\TextFile1.json" />
     <Content Include="zTree_v3\api\apiCss\api.js" />
     <Content Include="zTree_v3\api\apiCss\common.css" />
     <Content Include="zTree_v3\api\apiCss\common_ie6.css" />
@@ -5545,6 +5547,7 @@
     <Content Include="zTree_v3\css\zTreeStyle\img\zTreeStandard.gif" />
     <Content Include="zTree_v3\css\zTreeStyle\img\zTreeStandard.png" />
     <Content Include="zTree_v3\css\zTreeStyle\img\zTreeStyle.css" />
+    <Content Include="zTree_v3\css\zTreeStyle\zTreeStyle.css" />
     <Content Include="zTree_v3\demo\cn\bigdata\common.html" />
     <Content Include="zTree_v3\demo\cn\bigdata\diy_async.html" />
     <Content Include="zTree_v3\demo\cn\bigdata\page.html" />
@@ -5640,10 +5643,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\SysAlternativesController.cs" />
     <Compile Include="Controllers\SysDeptsController.cs" />
     <Compile Include="Controllers\SysMenusController.cs" />
     <Compile Include="Controllers\SysUsersRolesController.cs" />
+    <Compile Include="Models\SysAlternative.cs" />
     <Compile Include="Models\SysDept.cs" />
+    <Compile Include="Models\SysAlternativeContext.cs" />
     <Compile Include="Models\SysDeptContext.cs" />
     <Compile Include="Models\SysMenuContext.cs" />
     <Compile Include="Models\SysUsersRoleDbContext.cs" />
@@ -5680,6 +5686,11 @@
     <Content Include="Views\SysDepts\Details.cshtml" />
     <Content Include="Views\SysDepts\Edit.cshtml" />
     <Content Include="Views\SysDepts\Index.cshtml" />
+    <Content Include="Views\SysAlternatives\Create.cshtml" />
+    <Content Include="Views\SysAlternatives\Delete.cshtml" />
+    <Content Include="Views\SysAlternatives\Details.cshtml" />
+    <Content Include="Views\SysAlternatives\Edit.cshtml" />
+    <Content Include="Views\SysAlternatives\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -5690,6 +5701,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
+    <Folder Include="zTree_v3\demo\en\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
