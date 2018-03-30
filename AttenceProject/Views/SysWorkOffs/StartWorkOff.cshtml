@@ -1,0 +1,74 @@
+﻿@model IEnumerable<AttenceProject.Models.SysAlternative>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/icon.css" rel="stylesheet" />
+    <link href="~/Content/wu.css" rel="stylesheet" />
+    <script src="~/easyui/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/easyui/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/scripts/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/easyui/themes/default/easyui.css" />
+    
+</head>
+<body>
+
+    
+    <!-- Begin of easyui-dialog -->
+    <div data-options="closed:false,iconCls:'icon-save'" style="width:400px; padding:10px;">
+        <form id="wu-form" method="post">
+            <table style="">
+                <tr style="display:none">
+                    <td width="70" align="right">ID:</td>
+                    <td><input type="text" name="ID" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">调休人姓名:</td>
+                    <td><input type="text" name="Name" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">工号:</td>
+                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">调休理由:</td>
+                    <td><input type="text" name="VacationReason" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">调休方法:</td>
+                    <td><input type="radio" name="WorkOffType" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">可调休时间:</td>
+                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">调休开始时间:</td>
+                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">调休结束时间:</td>
+                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                <tr>
+                    <td width="70" align="right">应急联系人:</td>
+                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                <tr>
+                    <td width="70" align="right">抄送人:</td>
+                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                </tr>
+
+            </table>
+        </form>
+    </div>
+    <!-- End of easyui-dialog -->
+
+</body>
+</html>
+

@@ -9,117 +9,43 @@ using System.Web.Mvc;
 using AttenceProject.Models;
 using AttenceProject.App_Start;
 using System.Text;
+using AttenceProject.Services.Face;
+using AttenceProject.Services.Impl;
 
 namespace AttenceProject.Controllers
 {
     public class SysAlternativesController : Controller
     {
         private SysAlternativeContext db = new SysAlternativeContext();
-
+        public ISysAlternative service { get; set; }
         // GET: SysAlternatives
         public ActionResult Index()
         {
             return View(db.SysAlternatives.ToList());
         }
 
-        // GET: SysAlternatives/Details/5
-        public ActionResult Details(int? id)
+
+        // GET: SysAlternatives/Delete
+        public ActionResult Delete(string ids)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(ids))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SysAlternative sysAlternative = db.SysAlternatives.Find(id);
-            if (sysAlternative == null)
+            string id = ids.TrimStart('[').TrimEnd(']');
+            SysAlternative sysAlternative = null;
+            for (int i = 0; i < id.Split(',').Count(); i++)
             {
-                return HttpNotFound();
-            }
-            return View(sysAlternative);
-        }
-
-        // GET: SysAlternatives/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: SysAlternatives/Create
-        // 为了防止“过多发布”攻击，请启用要绑定到的特定属性，有关 
-        // 详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=317598。
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,AlternativeText,AlternativeGroupID,AlternativeGroupText,Remarks,Operator,OpTime")] SysAlternative sysAlternative)
-        {
-            if (ModelState.IsValid)
-            {
-                db.SysAlternatives.Add(sysAlternative);
+                sysAlternative = db.SysAlternatives.Find(int.Parse(id));
+                if (sysAlternative == null)
+                {
+                    continue;
+                }
+                db.SysAlternatives.Remove(sysAlternative);
                 db.SaveChanges();
-                return RedirectToAction("Index");
             }
 
-            return View(sysAlternative);
-        }
-
-        // GET: SysAlternatives/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            SysAlternative sysAlternative = db.SysAlternatives.Find(id);
-            if (sysAlternative == null)
-            {
-                return HttpNotFound();
-            }
-            var res = new ContentResult();
-            res.Content = sysAlternative.AlternativeText+"_"+sysAlternative.Remarks+"_"+sysAlternative.AlternativeGroupText;
-            res.ContentType = "application/json";
-            res.ContentEncoding = Encoding.UTF8;
-
-            return res;
-        }
-
-        // POST: SysAlternatives/Edit/5
-        // 为了防止“过多发布”攻击，请启用要绑定到的特定属性，有关 
-        // 详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=317598。
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,AlternativeText,AlternativeGroupID,AlternativeGroupText,Remarks,Operator,OpTime")] SysAlternative sysAlternative)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(sysAlternative).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(sysAlternative);
-        }
-
-        // GET: SysAlternatives/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            SysAlternative sysAlternative = db.SysAlternatives.Find(id);
-            if (sysAlternative == null)
-            {
-                return HttpNotFound();
-            }
-            return View(sysAlternative);
-        }
-
-        // POST: SysAlternatives/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            SysAlternative sysAlternative = db.SysAlternatives.Find(id);
-            db.SysAlternatives.Remove(sysAlternative);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            return Content("success");
         }
 
         protected override void Dispose(bool disposing)
@@ -135,17 +61,19 @@ namespace AttenceProject.Controllers
         public ContentResult GetJson(string AlternativeGroupID, string AlternativeText)
         {
             var res = new ContentResult();
-            var list=db.SysAlternatives.ToList();
-            if (AlternativeGroupID != "0"&& !string.IsNullOrEmpty(AlternativeGroupID))
+
+            //var list = service.GetSysAlternativesCondition(AlternativeGroupID, AlternativeText);
+            var list = db.SysAlternatives.ToList();
+            if (AlternativeGroupID != "0" && !string.IsNullOrEmpty(AlternativeGroupID))
             {
                 list = list.Where(m => m.AlternativeGroupID == int.Parse(AlternativeGroupID)).ToList();
             }
-            if(!string.IsNullOrEmpty(AlternativeText))
+            if (!string.IsNullOrEmpty(AlternativeText))
             {
                 list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
             }
             string result = DataTable2Json.LI2J(list);
-            result = "{\"total\":"+ db.SysAlternatives.ToList().Count+ ",\"rows\":" + result + "}";
+            result = "{\"total\":" + db.SysAlternatives.ToList().Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
             res.Content = result;
@@ -185,18 +113,23 @@ namespace AttenceProject.Controllers
         /// <param name="Remarks"></param>
         /// <param name="AlternativeGroupID"></param>
         /// <returns></returns>
-        public ActionResult SaveEdit(string ID, string AlternativeText, string AlternativeGroupText, string Remarks, string AlternativeGroupID)
+        public ActionResult SaveEdit(string ID, string AlternativeText, string Remarks, string AlternativeGroupID)
         {
-            SysAlternative sys = new SysAlternative();
-            sys.ID = int.Parse(ID);
-            sys.AlternativeText = AlternativeText;
-            sys.AlternativeGroupText = AlternativeGroupText;
-            sys.Remarks = Remarks;
-            sys.Operator = "admin";
-            sys.OpTime = DateTime.Now;
-            sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
-            db.Entry(sys).State = EntityState.Modified;
-            db.SaveChanges();
+            IList<SysAlternative> list = db.SysAlternatives.Where(m => m.AlternativeGroupID.ToString() == AlternativeGroupID).ToList();
+            if (list.Count >0)
+            {
+                string AlternativeGroupText = list[0].AlternativeGroupText;
+                SysAlternative sys = new SysAlternative();
+                sys.ID = int.Parse(ID);
+                sys.AlternativeText = AlternativeText;
+                sys.AlternativeGroupText = AlternativeGroupText;
+                sys.Remarks = Remarks;
+                sys.Operator = "admin";
+                sys.OpTime = DateTime.Now;
+                sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
+                db.Entry(sys).State = EntityState.Modified;
+                db.SaveChanges();
+            }
             return Content("success");
         }
 
@@ -205,10 +138,13 @@ namespace AttenceProject.Controllers
         /// 获得备选项组别
         /// </summary>
         /// <returns></returns>
-        public ContentResult GetGroup()
+        public ContentResult GetGroup(int id)
         {
-            string result= DataTable2Json.LI2J(db.SysAlternatives.Select(s => new { s.AlternativeGroupID, s.AlternativeGroupText }).Distinct().ToList());
-            result = "[{\"AlternativeGroupID\":0,\"AlternativeGroupText\":\"全部分组\"}," + result.TrimStart('[');
+            string result = DataTable2Json.LI2J(db.SysAlternatives.Select(s => new { s.AlternativeGroupID, s.AlternativeGroupText }).Distinct().ToList());
+            if (id == 0)
+            {
+                result = "[{\"AlternativeGroupID\":0,\"AlternativeGroupText\":\"全部分组\"}," + result.TrimStart('[');
+            }
             var res = new ContentResult();
             res.Content = result;
             res.ContentType = "application/json";
@@ -233,5 +169,26 @@ namespace AttenceProject.Controllers
             return res;
         }
 
+
+        public ActionResult SaveAdd(string AlternativeText, string Remarks, string AlternativeGroupID)
+        {
+            IList<SysAlternative> list = db.SysAlternatives.Where(m => m.AlternativeGroupID.ToString() == AlternativeGroupID).ToList();
+            if (list.Count >0)
+            {
+                string AlternativeGroupText = list[0].AlternativeGroupText;
+
+                SysAlternative sys = new SysAlternative();
+                sys.AlternativeText = AlternativeText;
+                sys.AlternativeGroupText = AlternativeGroupText;
+                sys.Remarks = Remarks;
+                sys.Operator = "admin";
+                sys.OpTime = DateTime.Now;
+                sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
+                db.SysAlternatives.Add(sys);
+                db.SaveChanges();
+            }
+            return Content("success");
+
+        }
     }
 }

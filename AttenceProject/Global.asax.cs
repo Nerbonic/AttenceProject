@@ -1,9 +1,13 @@
-﻿using System;
+﻿using AttenceProject.App_Core;
+using AttenceProject.Services.Face;
+using AttenceProject.Services.Impl;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Unity;
 
 namespace AttenceProject
 {
@@ -12,18 +16,22 @@ namespace AttenceProject
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            // WebApiConfig.Register(GlobalConfiguration.Configuration);
             //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            ////启用压缩
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            //启用压缩
             //BundleTable.EnableOptimizations = true;
             //BundleConfig.RegisterBundles(BundleTable.Bundles);
             //AuthConfig.RegisterAuth();
 
-            ////注入 Ioc
-            //var container = new UnityContainer();
-            //DependencyRegisterType.Container_Sys(ref container);
-            //DependencyResolver.SetResolver(new UnityDependencyResolver(container));
+            //注入 Ioc
+
         }
+        IUnityContainer BuildUnityContainer()
+        {
+            var container = new UnityContainer();
+            container.RegisterType<ISysAlternative, SysAlternativeImpl>();
+            return container;
+        }
+
     }
 }

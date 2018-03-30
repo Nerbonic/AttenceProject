@@ -18,25 +18,17 @@
     <link rel="stylesheet" type="text/css" href="~/easyui/themes/default/easyui.css" />
     <script type="text/javascript">
 	/**
-	* Name 载入菜单树
-	*/
-	$('#wu-category-tree').tree({
-		url:'temp/menu.php',
-		onClick:function(node){
-			alert(node.text);
-		}
-	});
-
-	/**
 	* Name 添加记录
 	*/
 	function add(){
 		$('#wu-form').form('submit', {
-			url:'',
-			success:function(data){
+		    url: '../../SysAlternatives/SaveAdd',
+		    success: function (data) {
 				if(data){
 					$.messager.alert('信息提示','提交成功！','info');
 					$('#wu-dialog').dialog('close');
+					window.location.reload();
+
 				}
 				else
 				{
@@ -70,24 +62,28 @@
 	* Name 删除记录
 	*/
 	function remove(){
-		$.messager.confirm('信息提示','确定要删除该记录？', function(result){
+		$.messager.confirm('信息提示','确定要删除该备选项？', function(result){
 			if(result){
-				var items = $('#wu-datagrid').datagrid('getSelections');
+				var items = $('#wu-datagrid').datagrid('getSelected');
 				var ids = [];
 				$(items).each(function(){
-					ids.push(this.productid);
+					ids.push(this.ID);
 				});
 				//alert(ids);return;
 				$.ajax({
-					url:'',
-					data:'',
+				    url: '../../SysAlternatives/Delete',
+				    data: { ids: ids.toString() },
 					success:function(data){
 						if(data){
-							$.messager.alert('信息提示','删除成功！','info');
+						    $.messager.alert('信息提示', '删除成功！', 'info');
+						    setTimeout(function () { window.location.reload() }, 800);
+
 						}
 						else
 						{
-							$.messager.alert('信息提示','删除失败！','info');
+						    $.messager.alert('信息提示', '删除失败！', 'info');
+						    setTimeout(function () { window.location.reload() }, 800);
+
 						}
 					}
 				});
@@ -155,7 +151,41 @@
 	    }
 		
 	}
-	
+
+	/**
+* Name 打开详情窗口
+*/
+	function openDetail() {
+	    $('#wu-form').form('clear');
+	    var row = $('#wu-datagrid').datagrid('getSelected');
+	    if (row) {
+	        var id = row.ID;
+	        $.ajax({
+	            url: '../../SysAlternatives/GetInfo',
+	            data: { id: id },
+	            async: false,
+	            dataType: "json",
+	            method: 'get',
+	            success: function (data) {
+	                $('#wu-form').form('load', data);
+	            }
+	        });
+	        $('#wu-dialog').dialog({
+	            closed: false,
+	            modal: true,
+	            title: "修改信息",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function () {
+	                    $('#wu-dialog').dialog('close');
+	                }
+	            }]
+	        });
+	    }
+	}
+
+    //查询按钮
 	function doSearch() {
 	    var atext = $('#AlternativeText_search').val();
 	    var agid = $('#ComboBoxGroup').combobox("getValue");
@@ -163,23 +193,20 @@
 	    $('#wu-datagrid').datagrid('load', {
 	        AlternativeText: atext,
 	        AlternativeGroupID: agid
-	        });
+	    });
 	}
+
+    //清除搜索条件
 	function clearquery() {
-	    //debugger;
 	    $('#AlternativeText_search').val('');
 	    $('#ComboBoxGroup').combobox('setValue', '0');
 	}
 
 	$(document).ready(function () {
 	    doSearch();
-
 	})
     </script>
-
-
 </head>
-
 <body>
    
     <div class="easyui-layout" data-options="fit:true">
@@ -187,16 +214,16 @@
             <!-- Begin of toolbar -->
             <div id="wu-toolbar" class="datagrid-toolbar">
                 <div class="wu-toolbar-button">
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openAdd()" plain="true">@Html.ActionLink("添加", "Create")
-</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openAdd()" plain="true">添加</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openEdit()" plain="true">修改</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetail()" plain="true">查看详情</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="remove()" plain="true">删除</a>
                     
                 </div>
                 <div class="wu-toolbar-search">
                     <label>备选项分组：</label>
                     <select class="easyui-combobox" panelHeight="auto" style="width:100px"  id="ComboBoxGroup" name="ComboBoxGroup" data-options="required:true,  
-                   url:'../../SysAlternatives/GetGroup',  
+                   url:'../../SysAlternatives/GetGroup/0',  
                    method:'get',  
                    multiple:false,  
                    valueField:'AlternativeGroupID',   
@@ -222,6 +249,8 @@
                         <th data-options="field:'AlternativeGroupText',width:80,align:'right'">备选项分组名称</th>
                         <th data-options="field:'Remarks',width:250">备选项信息</th>
                         <th data-options="field:'Operator',width:60,align:'center'">操作人</th>
+                        <th data-options="field:'opt',align:'center',halign:'center'" style="width:150;">查看详情</th>
+
                     </tr>
                 </thead>
             </table>        </div>
@@ -231,23 +260,27 @@
         <form id="wu-form" method="post" >
             <table>
                 <tr style="display:none;">
-                    <td width="60" align="right">ID:</td>
+                    <td width="70" align="right">ID:</td>
                     <td><input type="text" name="ID" class="wu-text" /></td>
                 </tr>
-                <tr style="display:none;">
-                    <td width="60" align="right">AlternativeGroupID:</td>
-                    <td><input type="text" name="AlternativeGroupID" class="wu-text" /></td>
-                </tr>
                 <tr>
-                    <td width="60" align="right">备选项名称:</td>
+                    <td width="70" align="right">备选项名称:</td>
                     <td><input type="text" name="AlternativeText" class="wu-text"  /></td>
                 </tr>
                 <tr>
-                    <td align="right">备选项分组:</td>
-                    <td><input type="text" name="AlternativeGroupText" class="wu-text" /></td>
+                    <td align="right"  width="70">备选项名称:</td>
+                    <td>
+                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="AlternativeGroupID" name="AlternativeGroupID" data-options="required:true,
+                   url:'../../SysAlternatives/GetGroup/1',
+                   method:'get',
+                   multiple:false,
+                   valueField:'AlternativeGroupID',
+                   textField:'AlternativeGroupText'
+                           "></select>
+                    </td>
                 </tr>
                 <tr>
-                    <td align="right">备选项信息:</td>
+                    <td align="right"  width="70">备选项信息:</td>
                     <td><input type="text" name="Remarks" class="wu-text" /></td>
                 </tr>
             </table>

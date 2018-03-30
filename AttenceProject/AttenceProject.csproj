@@ -5166,7 +5166,6 @@
     <Content Include="easyui demo\temp\tree.json" />
     <Content Include="easyui demo\temp\tree.php" />
     <Content Include="TextFile1.json" />
-    <None Include="Views\SysAlternatives\TextFile1.json" />
     <Content Include="zTree_v3\api\apiCss\api.js" />
     <Content Include="zTree_v3\api\apiCss\common.css" />
     <Content Include="zTree_v3\api\apiCss\common_ie6.css" />
@@ -5639,26 +5638,36 @@
     <Content Include="zTree_v3\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Core\UnityContainerHelp.cs" />
     <Compile Include="App_Start\DataTable2Json.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\SysAccountsController.cs" />
     <Compile Include="Controllers\SysAlternativesController.cs" />
     <Compile Include="Controllers\SysDeptsController.cs" />
     <Compile Include="Controllers\SysMenusController.cs" />
     <Compile Include="Controllers\SysUsersRolesController.cs" />
+    <Compile Include="Controllers\SysWorkOffsController.cs" />
+    <Compile Include="Models\SysAccount.cs" />
     <Compile Include="Models\SysAlternative.cs" />
+    <Compile Include="Models\ModelContexts\SysAccountContext.cs" />
+    <Compile Include="Models\ModelContexts\SysWorkOffContext.cs" />
     <Compile Include="Models\SysDept.cs" />
-    <Compile Include="Models\SysAlternativeContext.cs" />
-    <Compile Include="Models\SysDeptContext.cs" />
-    <Compile Include="Models\SysMenuContext.cs" />
-    <Compile Include="Models\SysUsersRoleDbContext.cs" />
+    <Compile Include="Models\ModelContexts\SysAlternativeContext.cs" />
+    <Compile Include="Models\ModelContexts\SysDeptContext.cs" />
+    <Compile Include="Models\ModelContexts\SysMenuContext.cs" />
+    <Compile Include="Models\ModelContexts\SysUsersRoleDbContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\SysMenu.cs" />
     <Compile Include="Models\SysUsersRole.cs" />
+    <Compile Include="Models\SysWorkOff.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Face\ISysAlternative.cs" />
+    <Compile Include="Services\Impl\SysAlternativeImpl.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -5686,11 +5695,13 @@
     <Content Include="Views\SysDepts\Details.cshtml" />
     <Content Include="Views\SysDepts\Edit.cshtml" />
     <Content Include="Views\SysDepts\Index.cshtml" />
-    <Content Include="Views\SysAlternatives\Create.cshtml" />
-    <Content Include="Views\SysAlternatives\Delete.cshtml" />
-    <Content Include="Views\SysAlternatives\Details.cshtml" />
-    <Content Include="Views\SysAlternatives\Edit.cshtml" />
     <Content Include="Views\SysAlternatives\Index.cshtml" />
+    <Content Include="Views\SysWorkOffs\Create.cshtml" />
+    <Content Include="Views\SysWorkOffs\Delete.cshtml" />
+    <Content Include="Views\SysWorkOffs\Details.cshtml" />
+    <Content Include="Views\SysWorkOffs\Edit.cshtml" />
+    <Content Include="Views\SysWorkOffs\Index.cshtml" />
+    <Content Include="Views\SysWorkOffs\StartWorkOff.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -5701,6 +5712,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
+    <Folder Include="Views\SysAccounts\" />
     <Folder Include="zTree_v3\demo\en\" />
   </ItemGroup>
   <ItemGroup>
