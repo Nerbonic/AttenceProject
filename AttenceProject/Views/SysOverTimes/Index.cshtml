@@ -22,8 +22,31 @@
         HttpCookie cook = Request.Cookies["userinfo"];
 
     }
+    <script>
+        $(function () {
 
+            //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期  
+            $("#StartTime").datebox('calendar').calendar({
+                validator: function (beginDate) {
+                    var date = new Date();
+                    return beginDate >= date;
+                }
+            });
+            $("#EndTime").datebox({
+                onSelect: function (beginDate) {
+                    $('#EndTime').datebox().datebox('calendar').calendar({
+                        validator: function (endDate) {
+                            var date = new Date();
+                            return beginDate <= endDate && endDate > date;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
 
+    </script>  
     <!-- Begin of easyui-dialog -->
     <div data-options="closed:false,iconCls:'icon-save'" style="width:400px; padding:10px;">
         <form id="wu-form" method="post">
@@ -47,28 +70,39 @@
                 <tr>
                     <td width="70" align="right">加班类型:</td>
                     <td>
-                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="SysOverTimeType" name="SysOverTimeType" data-options="required:true,
+                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="OverTimeType" name="OverTimeType" data-options="required:true,
                    url:'../../SysOverTimes/GetOverTimeType',
                    method:'get',
                    multiple:false,
                    valueField:'ID',
                    textField:'AlternativeText'
                            "></select>
-
-
                     </td>
                 </tr>
                 <tr>
                     <td width="70" align="right">加班结算类型:</td>
-                    <td><input type="radio" name="Account_Method" class="wu-text" /></td>
-                </tr>
+                    <td>
+                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="Account_Method" name="Account_Method" data-options="required:true,
+                   url:'../../SysOverTimes/GetAccountMethod',
+                   method:'get',
+                   multiple:false,
+                   valueField:'ID',
+                   textField:'AlternativeText'
+                           "></select>
+                    </td></tr>
                 <tr>
                     <td width="70" align="right">加班开始时间:</td>
-                    <td><input type="text" name="StartTime" class="wu-text" /></td>
+                    <td><input class="easyui-datetimebox" value="" name="StartTime" id="StartTime" style="width:200px">
+                    </td>
                 </tr>
                 <tr>
                     <td width="70" align="right">加班结束时间:</td>
-                    <td><input type="text" name="EndTime" class="wu-text" /></td>
+                    <td><input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">加班时长:</td>
+                    <td><input type="text" value="" name="Time"  class="wu-text" style="width:200px"></td>
                 </tr>
                 <tr>
                     <td width="70" align="right">抄送人:</td>

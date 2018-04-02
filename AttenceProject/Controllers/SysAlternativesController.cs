@@ -169,7 +169,13 @@ namespace AttenceProject.Controllers
             return res;
         }
 
-
+        /// <summary>
+        /// 保存信息
+        /// </summary>
+        /// <param name="AlternativeText">备选项名称</param>
+        /// <param name="Remarks">备选项</param>
+        /// <param name="AlternativeGroupID"></param>
+        /// <returns></returns>
         public ActionResult SaveAdd(string AlternativeText, string Remarks, string AlternativeGroupID)
         {
             IList<SysAlternative> list = db.SysAlternatives.Where(m => m.AlternativeGroupID.ToString() == AlternativeGroupID).ToList();
