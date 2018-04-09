@@ -72,7 +72,7 @@ namespace AttenceProject.Controllers
             {
                 list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
             }
-            string result = DataTable2Json.LI2J(list);
+            string result = JsonTool.LI2J(list);
             result = "{\"total\":" + db.SysAlternatives.ToList().Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
@@ -97,7 +97,7 @@ namespace AttenceProject.Controllers
                 return HttpNotFound();
             }
             var res = new ContentResult();
-            res.Content = DataTable2Json.EN2J(sysAlternative);
+            res.Content = JsonTool.EN2J(sysAlternative);
             //res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
             res.ContentType = "application/json";
             res.ContentEncoding = Encoding.UTF8;
@@ -140,7 +140,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ContentResult GetGroup(int id)
         {
-            string result = DataTable2Json.LI2J(db.SysAlternatives.Select(s => new { s.AlternativeGroupID, s.AlternativeGroupText }).Distinct().ToList());
+            string result = JsonTool.LI2J(db.SysAlternatives.Select(s => new { s.AlternativeGroupID, s.AlternativeGroupText }).Distinct().ToList());
             if (id == 0)
             {
                 result = "[{\"AlternativeGroupID\":0,\"AlternativeGroupText\":\"全部分组\"}," + result.TrimStart('[');
@@ -160,7 +160,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ContentResult GetAlternativeByGroup(int id)
         {
-            string result = DataTable2Json.LI2J(db.SysAlternatives.Where(m => m.AlternativeGroupID == id).Select(s => new { s.ID, s.AlternativeText }).ToList());
+            string result = JsonTool.LI2J(db.SysAlternatives.Where(m => m.AlternativeGroupID == id).Select(s => new { s.ID, s.AlternativeText }).ToList());
             var res = new ContentResult();
             res.Content = result;
             res.ContentType = "application/json";

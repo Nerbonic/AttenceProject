@@ -12,111 +12,16 @@ using System.Text;
 
 namespace AttenceProject.Controllers
 {
-    public class SysOverTimesController : Controller
+    public class SysOverTimesController : BaseController
     {
         private SysOverTimeContext db = new SysOverTimeContext();
         private SysAlternativeContext db_alter = new SysAlternativeContext();
         private SysApplySetContext db_apply = new SysApplySetContext();
-
+        private SysUsersRole db_user = new SysUsersRole();
         // GET: SysOverTimes
         public ActionResult Index()
         {
             return View(db.SysOverTimes.ToList());
-        }
-
-        // GET: SysOverTimes/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            SysOverTime sysOverTime = db.SysOverTimes.Find(id);
-            if (sysOverTime == null)
-            {
-                return HttpNotFound();
-            }
-            return View(sysOverTime);
-        }
-
-        // GET: SysOverTimes/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: SysOverTimes/Create
-        // 为了防止“过多发布”攻击，请启用要绑定到的特定属性，有关 
-        // 详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=317598。
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,ProposerID,StartTime,EndTime,Time,OverTimeType,Account_Method,OverTimeReason,CopyFor,ApplyStatus,Applyrate,OpTime")] SysOverTime sysOverTime)
-        {
-            if (ModelState.IsValid)
-            {
-                db.SysOverTimes.Add(sysOverTime);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(sysOverTime);
-        }
-
-        // GET: SysOverTimes/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            SysOverTime sysOverTime = db.SysOverTimes.Find(id);
-            if (sysOverTime == null)
-            {
-                return HttpNotFound();
-            }
-            return View(sysOverTime);
-        }
-
-        // POST: SysOverTimes/Edit/5
-        // 为了防止“过多发布”攻击，请启用要绑定到的特定属性，有关 
-        // 详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=317598。
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,ProposerID,StartTime,EndTime,Time,OverTimeType,Account_Method,OverTimeReason,CopyFor,ApplyStatus,Applyrate,OpTime")] SysOverTime sysOverTime)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(sysOverTime).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(sysOverTime);
-        }
-
-        // GET: SysOverTimes/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            SysOverTime sysOverTime = db.SysOverTimes.Find(id);
-            if (sysOverTime == null)
-            {
-                return HttpNotFound();
-            }
-            return View(sysOverTime);
-        }
-
-        // POST: SysOverTimes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            SysOverTime sysOverTime = db.SysOverTimes.Find(id);
-            db.SysOverTimes.Remove(sysOverTime);
-            db.SaveChanges();
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
@@ -133,7 +38,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult GetOverTimeType()
         {
-            string result = DataTable2Json.LI2J(db_alter.SysAlternatives.Where(m => m.AlternativeGroupText == "加班类型").ToList());
+            string result = JsonTool.LI2J(db_alter.SysAlternatives.Where(m => m.AlternativeGroupText == "加班类型").ToList());
             var res = new ContentResult();
             res.Content = result;
             res.ContentType = "application/json";
@@ -147,7 +52,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult GetAccountMethod()
         {
-            string result = DataTable2Json.LI2J(db_alter.SysAlternatives.Where(m => m.AlternativeGroupText == "加班结算类型").ToList());
+            string result = JsonTool.LI2J(db_alter.SysAlternatives.Where(m => m.AlternativeGroupText == "加班结算类型").ToList());
             var res = new ContentResult();
             res.Content = result;
             res.ContentType = "application/json";
@@ -161,12 +66,92 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult GetTimePoint()
         {
-            string result = DataTable2Json.LI2J(db_apply.SysApplySets.Where(m => m.ApplyGroupText == "申请时间点设置").ToList());
+            string result = JsonTool.LI2J(db_apply.SysApplySets.Where(m => m.ApplyGroupText == "申请时间点设置").ToList());
             var res = new ContentResult();
             res.Content = result;
             res.ContentType = "application/json";
             //res.Data = sb.ToString();
             res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
+
+        /// <summary>
+        /// 保存加班信息
+        /// </summary>
+        /// <param name="OverTimeReason">加班理由</param>
+        /// <param name="OverTimeType">加班类型</param>
+        /// <param name="Account_Method">加班结算类型</param>
+        /// <param name="StartTime">加班开始时间</param>
+        /// <param name="EndTime">加班结束时间</param>
+        /// <returns></returns>
+        public ActionResult SaveAdd(string OverTimeReason, string OverTimeType, string Account_Method, string StartTime, string EndTime)
+        {
+            HttpCookie cook = Request.Cookies["userinfo"];//从cook中取用户信息
+            string userid = cook.Values["UserID"];
+            string username = cook.Values["UserName"];
+            string usercode = cook.Values["UserCode"];
+
+            SysOverTime sys = new SysOverTime();
+            sys.OverTimeReason = OverTimeReason;
+            sys.ProposerID = int.Parse(userid);
+            sys.OverTimeType = int.Parse(OverTimeType);
+            sys.Account_Method = int.Parse(Account_Method);
+            sys.ApplyStatus = 0;
+            sys.StartTime = DateTime.Parse(StartTime);
+            sys.EndTime = DateTime.Parse(EndTime);
+            sys.CopyFor = "11_";
+            TimeSpan ts1 = sys.EndTime - sys.StartTime;//计算加班总经历时间的时间戳
+            int hours = ts1.Hours - 9;//计算加班结束当天的多出来的加班时间
+            int days = ts1.Days;//若加班大于1天，计算加班天数
+            if (days == 0)
+            {
+                hours = ts1.Hours;
+            }
+            sys.Time = days + hours / 24;//计算出总时长，形式：4.2代表4天+0.2天，即4天+4.8小时
+            sys.OpTime = DateTime.Now;
+            db.SysOverTimes.Add(sys);
+            db.SaveChanges();
+            return RedirectToAction("List");
+
+        }
+
+        public ActionResult List()
+        {
+
+            return View();
+
+        }
+
+        public ActionResult GetJson()
+        {
+
+            var res = new ContentResult();
+
+            var list = db.SysOverTimes.ToList();
+            //if (AlternativeGroupID != "0" && !string.IsNullOrEmpty(AlternativeGroupID))
+            //{
+            //    list = list.Where(m => m.AlternativeGroupID == int.Parse(AlternativeGroupID)).ToList();
+            //}
+            //if (!string.IsNullOrEmpty(AlternativeText))
+            //{
+            //    list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
+            //}
+            string result = JsonTool.LI2J(list);
+            result = "{\"total\":" + db.SysOverTimes.ToList().Count + ",\"rows\":" + result + "}";
+            StringBuilder sb = new StringBuilder();
+            sb.Append(result);
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+
+        }
+
+        public ActionResult Approve()
+        {
+            var res = new ContentResult();
+            res = (ContentResult)GetJson();
             return res;
         }
     }

@@ -1,4 +1,5 @@
-﻿
+﻿@model IEnumerable<AttenceProject.Models.SysOverTime>
+
 @{
     Layout = null;
 }
@@ -25,7 +26,7 @@
     <script>
         $(function () {
 
-            //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期  
+            //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期
             $("#StartTime").datebox('calendar').calendar({
                 validator: function (beginDate) {
                     var date = new Date();
@@ -43,13 +44,18 @@
                 }
             });
         });
+        function saveOverTime() {
+            document.form1.submit();
+        }
     </script>
     <script type="text/javascript">
 
-    </script>  
+    </script>
     <!-- Begin of easyui-dialog -->
     <div data-options="closed:false,iconCls:'icon-save'" style="width:400px; padding:10px;">
-        <form id="wu-form" method="post">
+        <span>注：此申请将自动抄送给系统指定的抄送人</span>
+
+        <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
             <table style="">
                 <tr style="display:none">
                     <td width="70" align="right">ID:</td>
@@ -89,27 +95,27 @@
                    valueField:'ID',
                    textField:'AlternativeText'
                            "></select>
-                    </td></tr>
+                    </td>
+                </tr>
                 <tr>
                     <td width="70" align="right">加班开始时间:</td>
-                    <td><input class="easyui-datetimebox" value="" name="StartTime" id="StartTime" style="width:200px">
+                    <td>
+                        <input class="easyui-datetimebox" value="" name="StartTime" id="StartTime" style="width:200px">
                     </td>
                 </tr>
                 <tr>
                     <td width="70" align="right">加班结束时间:</td>
-                    <td><input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
+                    <td>
+                        <input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
                     </td>
                 </tr>
-                <tr>
-                    <td width="70" align="right">加班时长:</td>
-                    <td><input type="text" value="" name="Time"  class="wu-text" style="width:200px"></td>
-                </tr>
-                <tr>
-                    <td width="70" align="right">抄送人:</td>
-                    <td><input type="text" name="CopyFor" class="wu-text" /></td>
-                </tr>
-
             </table>
+            <div style="width:85%;">
+                <a href="#" class="easyui-linkbutton" onclick="saveOverTime()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
+                    提交申请
+                </a>
+            </div>
+
         </form>
     </div>
     <!-- End of easyui-dialog -->

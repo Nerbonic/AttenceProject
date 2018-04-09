@@ -14,7 +14,6 @@ namespace AttenceProject.Controllers
         {
             ViewData["menus"] = db.SysMenus.Where(m => m.MenuParentID == 0).ToList();
             ViewData["sonmenus"] = db.SysMenus.Where(m => m.MenuParentID != 0).ToList();
-
         }
 
     }

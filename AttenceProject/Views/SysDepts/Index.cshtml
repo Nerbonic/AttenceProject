@@ -21,7 +21,10 @@
     <script src="~/zTree_v3/js/jquery.ztree.core.js"></script>
     <SCRIPT type="text/javascript">
 		<!--
-		var setting = {
+        var setting = {
+            callback: {
+                onClick: showInfo
+            },
 			data: {
 				simpleData: {
 					enable: true
@@ -29,18 +32,34 @@
 			}
 		};
 
-
+		function showInfo(event, treeId, treeNode) {
+		    $.ajax({
+		        url: "../SysDepts/GetDeptInfo",
+		        data:{id:treeNode.id}, 
+		        type:"get", 
+                dataType:"json", 
+                success: function (result) {
+                    var deptname = result.DeptName;
+                    var deptrole = result.DeptRole;
+                    var copyfor = result.CopyFor;
+		            $("#DeptName").val(deptname);
+		            $("#DeptRole").val(deptrole);
+		            $("#CopyFor").val(copyfor);
+		        }
+		    });
+		};
 		$(document).ready(function () {
+
 		    var zNodes;
 		    $.ajax({
 		        url: "../SysDepts/GetDeptJson", success: function (result) {
-		            alert(result);
+		            //alert(result);
 		            zNodes = JSON.parse(result);
-		            //alert(zNodes);
+		            $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+		            
 		        }
 		    });
 
-			$.fn.zTree.init($("#treeDemo"), setting, zNodes);
 		});
 		//-->
     </SCRIPT>
@@ -74,6 +93,26 @@
                     <label>关键词：</label><input class="wu-text" style="width:100px">
                     <a href="#" class="easyui-linkbutton" iconCls="icon-search">开始检索</a>
                 </div>
+                <form id="wu-form" method="post">
+                    <table>
+                        <tr style="display:none;">
+                            <td width="70" align="right">ID:</td>
+                            <td><input type="text" name="ID" class="wu-text" /></td>
+                        </tr>
+                        <tr>
+                            <td width="70" align="right">部门名称:</td>
+                            <td><input type="text" id="DeptName" name="DeptName" class="wu-text" /></td>
+                        </tr>
+                        <tr>
+                            <td align="right" width="70">部门权限:</td>
+                            <td><input type="text" id="DeptRole" name="DeptRole" class="wu-text" /></td>
+                        </tr>
+                        <tr>
+                            <td width="70" align="right">部门申请抄送人:</td>
+                            <td><input type="text" id="CopyFor" name="CopyFor" class="wu-text" /></td>
+                        </tr>
+                    </table>
+                </form>
             </div>
             <!-- End of toolbar -->
             <table id="wu-datagrid" toolbar="#wu-toolbar"></table>
@@ -82,6 +121,37 @@
             @Html.ActionLink("Create New", "Create")
         </p>
     </div>
-  
+    <!-- Begin of easyui-dialog -->
+    <div id="wu-dialog" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
+        <form id="wu-form" method="post">
+            <table>
+                <tr style="display:none;">
+                    <td width="70" align="right">ID:</td>
+                    <td><input type="text" name="ID" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">备选项名称:</td>
+                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td align="right" width="70">备选项名称:</td>
+                    <td>
+                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="AlternativeGroupID" name="AlternativeGroupID" data-options="required:true,
+                   url:'../../SysAlternatives/GetGroup/1',
+                   method:'get',
+                   multiple:false,
+                   valueField:'AlternativeGroupID',
+                   textField:'AlternativeGroupText'
+                           "></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right" width="70">备选项信息:</td>
+                    <td><input type="text" name="Remarks" class="wu-text" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <!-- End of easyui-dialog -->
 </body>
 </html>

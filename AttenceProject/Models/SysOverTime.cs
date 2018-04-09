@@ -37,9 +37,6 @@ namespace AttenceProject.Models
         [Required]
         public int ApplyStatus { get; set; }
 
-        [Required]
-        public string Applyrate { get; set; }
-
         public DateTime OpTime { get; set; }
     }
 }

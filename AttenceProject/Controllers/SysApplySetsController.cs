@@ -68,7 +68,7 @@ namespace AttenceProject.Controllers
             {
                 list = list.Where(m => m.ApplyText.Contains(ApplyText)).ToList();
             }
-            string result = DataTable2Json.LI2J(list);
+            string result = JsonTool.LI2J(list);
             result = "{\"total\":" + db.SysApplySets.ToList().Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
@@ -93,7 +93,7 @@ namespace AttenceProject.Controllers
                 return HttpNotFound();
             }
             var res = new ContentResult();
-            res.Content = DataTable2Json.EN2J(SysApplySets);
+            res.Content = JsonTool.EN2J(SysApplySets);
             res.ContentType = "application/json";
             res.ContentEncoding = Encoding.UTF8;
 
@@ -142,7 +142,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ContentResult GetGroup(int id)
         {
-            string result = DataTable2Json.LI2J(db.SysApplySets.Select(s => new { s.ApplyGroupID, s.ApplyGroupText }).Distinct().ToList());
+            string result = JsonTool.LI2J(db.SysApplySets.Select(s => new { s.ApplyGroupID, s.ApplyGroupText }).Distinct().ToList());
             if (id == 0)
             {
                 result = "[{\"ApplyGroupID\":0,\"ApplyGroupText\":\"全部分组\"}," + result.TrimStart('[');
@@ -162,7 +162,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ContentResult GetApplySetByGroup(int id)
         {
-            string result = DataTable2Json.LI2J(db.SysApplySets.Where(m => m.ApplyGroupID == id).Select(s => new { s.ID, s.ApplyText }).ToList());
+            string result = JsonTool.LI2J(db.SysApplySets.Where(m => m.ApplyGroupID == id).Select(s => new { s.ID, s.ApplyText }).ToList());
             var res = new ContentResult();
             res.Content = result;
             res.ContentType = "application/json";

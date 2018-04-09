@@ -9,7 +9,7 @@ using System.Web;
 
 namespace AttenceProject.App_Start
 {
-    public static class DataTable2Json
+    public static class JsonTool
     {
         public static string LI2J(IList list)
         {

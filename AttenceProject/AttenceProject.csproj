@@ -5531,6 +5531,21 @@
     <Content Include="zTree_v3\css\metroStyle\img\metro.gif" />
     <Content Include="zTree_v3\css\metroStyle\img\metro.png" />
     <Content Include="zTree_v3\css\metroStyle\metroStyle.css" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\1_close.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\1_open.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\2.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\3.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\4.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\5.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\6.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\7.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\8.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\diy\9.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\line_conn.gif" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\loading.gif" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\zTreeStandard.gif" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\zTreeStandard.png" />
+    <Content Include="zTree_v3\css\zTreeStyle\img\img\zTreeStyle.css" />
     <Content Include="zTree_v3\css\zTreeStyle\img\diy\1_close.png" />
     <Content Include="zTree_v3\css\zTreeStyle\img\diy\1_open.png" />
     <Content Include="zTree_v3\css\zTreeStyle\img\diy\2.png" />
@@ -5639,7 +5654,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Core\UnityContainerHelp.cs" />
-    <Compile Include="App_Start\DataTable2Json.cs" />
+    <Compile Include="App_Start\JsonTool.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -5647,13 +5662,16 @@
     <Compile Include="Controllers\SysAccountsController.cs" />
     <Compile Include="Controllers\SysAlternativesController.cs" />
     <Compile Include="Controllers\SysApplySetsController.cs" />
+    <Compile Include="Controllers\SysApprovesController.cs" />
     <Compile Include="Controllers\SysDeptsController.cs" />
     <Compile Include="Controllers\SysMenusController.cs" />
     <Compile Include="Controllers\SysOverTimesController.cs" />
     <Compile Include="Controllers\SysUsersRolesController.cs" />
     <Compile Include="Controllers\SysWorkOffsController.cs" />
+    <Compile Include="Models\ModelContexts\SysApproveContext.cs" />
     <Compile Include="Models\ModelContexts\SysApplySetContext.cs" />
     <Compile Include="Models\ModelContexts\SysOverTimeContext.cs" />
+    <Compile Include="Models\SysApprove.cs" />
     <Compile Include="Models\SysAccount.cs" />
     <Compile Include="Models\SysApplySet.cs" />
     <Compile Include="Models\SysOverTime.cs" />
@@ -5696,10 +5714,6 @@
     <Content Include="Views\SysMenus\Edit.cshtml" />
     <Content Include="Views\SysMenus\Index.cshtml" />
     <Content Include="Views\Login\toM.cshtml" />
-    <Content Include="Views\SysDepts\Create.cshtml" />
-    <Content Include="Views\SysDepts\Delete.cshtml" />
-    <Content Include="Views\SysDepts\Details.cshtml" />
-    <Content Include="Views\SysDepts\Edit.cshtml" />
     <Content Include="Views\SysDepts\Index.cshtml" />
     <Content Include="Views\SysAlternatives\Index.cshtml" />
     <Content Include="Views\SysWorkOffs\Create.cshtml" />
@@ -5708,12 +5722,11 @@
     <Content Include="Views\SysWorkOffs\Edit.cshtml" />
     <Content Include="Views\SysWorkOffs\Index.cshtml" />
     <Content Include="Views\SysWorkOffs\StartWorkOff.cshtml" />
-    <Content Include="Views\SysOverTimes\Create.cshtml" />
-    <Content Include="Views\SysOverTimes\Delete.cshtml" />
-    <Content Include="Views\SysOverTimes\Details.cshtml" />
-    <Content Include="Views\SysOverTimes\Edit.cshtml" />
-    <Content Include="Views\SysOverTimes\Index.cshtml" />
     <Content Include="Views\SysApplySets\Index.cshtml" />
+    <Content Include="Views\SysOverTimes\Index.cshtml" />
+    <Content Include="Views\SysOverTimes\List.cshtml" />
+    <Content Include="Views\SysOverTimes\Approve.cshtml" />
+    <Content Include="Views\SysApproves\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
