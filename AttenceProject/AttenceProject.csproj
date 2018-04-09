@@ -5671,14 +5671,14 @@
     <Compile Include="Models\ModelContexts\SysApproveContext.cs" />
     <Compile Include="Models\ModelContexts\SysApplySetContext.cs" />
     <Compile Include="Models\ModelContexts\SysOverTimeContext.cs" />
-    <Compile Include="Models\SysApprove.cs" />
-    <Compile Include="Models\SysAccount.cs" />
-    <Compile Include="Models\SysApplySet.cs" />
-    <Compile Include="Models\SysOverTime.cs" />
-    <Compile Include="Models\SysAlternative.cs" />
+    <Compile Include="Models\OriginalModel\SysApprove.cs" />
+    <Compile Include="Models\OriginalModel\SysAccount.cs" />
+    <Compile Include="Models\OriginalModel\SysApplySet.cs" />
+    <Compile Include="Models\OriginalModel\SysOverTime.cs" />
+    <Compile Include="Models\OriginalModel\SysAlternative.cs" />
     <Compile Include="Models\ModelContexts\SysAccountContext.cs" />
     <Compile Include="Models\ModelContexts\SysWorkOffContext.cs" />
-    <Compile Include="Models\SysDept.cs" />
+    <Compile Include="Models\OriginalModel\SysDept.cs" />
     <Compile Include="Models\ModelContexts\SysAlternativeContext.cs" />
     <Compile Include="Models\ModelContexts\SysDeptContext.cs" />
     <Compile Include="Models\ModelContexts\SysMenuContext.cs" />
@@ -5686,9 +5686,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\SysMenu.cs" />
-    <Compile Include="Models\SysUsersRole.cs" />
-    <Compile Include="Models\SysWorkOff.cs" />
+    <Compile Include="Models\OriginalModel\SysMenu.cs" />
+    <Compile Include="Models\OriginalModel\SysUsersRole.cs" />
+    <Compile Include="Models\OriginalModel\SysWorkOff.cs" />
+    <Compile Include="Models\ViewModel\View_SysUserInDeptModel.cs" />
+    <Compile Include="Models\ViewModel\View_SysUserInDept.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Face\ISysAlternative.cs" />
     <Compile Include="Services\Impl\SysAlternativeImpl.cs" />

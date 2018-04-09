@@ -18,6 +18,7 @@ namespace AttenceProject.Controllers
         private SysAlternativeContext db_alter = new SysAlternativeContext();
         private SysApplySetContext db_apply = new SysApplySetContext();
         private SysUsersRole db_user = new SysUsersRole();
+        private SysApproveContext db_approve = new SysApproveContext();
         // GET: SysOverTimes
         public ActionResult Index()
         {
@@ -91,6 +92,7 @@ namespace AttenceProject.Controllers
             string username = cook.Values["UserName"];
             string usercode = cook.Values["UserCode"];
 
+            #region 新建加班信息
             SysOverTime sys = new SysOverTime();
             sys.OverTimeReason = OverTimeReason;
             sys.ProposerID = int.Parse(userid);
@@ -111,6 +113,17 @@ namespace AttenceProject.Controllers
             sys.OpTime = DateTime.Now;
             db.SysOverTimes.Add(sys);
             db.SaveChanges();
+
+            #endregion
+            
+            #region 新建审批流信息
+            SysApprove sysapprove = new SysApprove();
+            sysapprove.ApplyID = sys.ID;
+            sysapprove.ApplyStatus = 0;
+            sysapprove.OpTime = DateTime.Now;
+            sysapprove.NowChecker = int.Parse(sys.CopyFor.Split('_')[0]);
+            #endregion
+
             return RedirectToAction("List");
 
         }
