@@ -5671,6 +5671,7 @@
     <Compile Include="Models\ModelContexts\SysApproveContext.cs" />
     <Compile Include="Models\ModelContexts\SysApplySetContext.cs" />
     <Compile Include="Models\ModelContexts\SysOverTimeContext.cs" />
+    <Compile Include="Models\ModelContexts\View_SysUserInDeptContext - 复制.cs" />
     <Compile Include="Models\OriginalModel\SysApprove.cs" />
     <Compile Include="Models\OriginalModel\SysAccount.cs" />
     <Compile Include="Models\OriginalModel\SysApplySet.cs" />
@@ -5689,7 +5690,8 @@
     <Compile Include="Models\OriginalModel\SysMenu.cs" />
     <Compile Include="Models\OriginalModel\SysUsersRole.cs" />
     <Compile Include="Models\OriginalModel\SysWorkOff.cs" />
-    <Compile Include="Models\ViewModel\View_SysUserInDeptModel.cs" />
+    <Compile Include="Models\ModelContexts\View_GeneralTreeContext.cs" />
+    <Compile Include="Models\ViewModel\View_GeneralTree.cs" />
     <Compile Include="Models\ViewModel\View_SysUserInDept.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Face\ISysAlternative.cs" />
@@ -5725,10 +5727,10 @@
     <Content Include="Views\SysWorkOffs\Index.cshtml" />
     <Content Include="Views\SysWorkOffs\StartWorkOff.cshtml" />
     <Content Include="Views\SysApplySets\Index.cshtml" />
+    <Content Include="Views\SysApproves\Index.cshtml" />
+    <Content Include="Views\SysOverTimes\Approve.cshtml" />
     <Content Include="Views\SysOverTimes\Index.cshtml" />
     <Content Include="Views\SysOverTimes\List.cshtml" />
-    <Content Include="Views\SysOverTimes\Approve.cshtml" />
-    <Content Include="Views\SysApproves\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

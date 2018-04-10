@@ -14,6 +14,11 @@
     <script src="~/easyui/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="~/easyui/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="~/scripts/easyui-lang-zh_CN.js"></script>
+    <link href="~/zTree_v3/css/demo.css" rel="stylesheet" />
+    <link href="~/zTree_v3/css/zTreeStyle/img/zTreeStyle.css" rel="stylesheet" />
+    <script src="~/zTree_v3/js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="~/zTree_v3/js/jquery.ztree.excheck.js"></script>
+    <script type="text/javascript" src="~/zTree_v3/js/jquery.ztree.exedit.js"></script>
     <link rel="stylesheet" type="text/css" href="~/easyui/themes/default/easyui.css" />
 
 </head>
@@ -24,10 +29,127 @@
 
     }
     <script>
+        var setting = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            edit: {
+                drag: {
+                    autoExpandTrigger: true,
+                    prev: dropPrev,
+                    inner: dropInner,
+                    next: dropNext
+                },
+                enable: true,
+                showRemoveBtn: false,
+                showRenameBtn: false
+            },
+            callback: {
+                beforeDrag: beforeDrag,
+                beforeDrop: beforeDrop,
+                beforeDragOpen: beforeDragOpen,
+                onDrag: onDrag,
+                onDrop: onDrop,
+                onExpand: onExpand
+            }
+        };
+        function dropPrev(treeId, nodes, targetNode) {
+            var pNode = targetNode.getParentNode();
+            if (pNode && pNode.dropInner === false) {
+                return false;
+            } else {
+                for (var i = 0, l = curDragNodes.length; i < l; i++) {
+                    var curPNode = curDragNodes[i].getParentNode();
+                    if (curPNode && curPNode !== targetNode.getParentNode() && curPNode.childOuter === false) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function dropInner(treeId, nodes, targetNode) {
+            if (targetNode && targetNode.dropInner === false) {
+                return false;
+            } else {
+                for (var i = 0, l = curDragNodes.length; i < l; i++) {
+                    if (!targetNode && curDragNodes[i].dropRoot === false) {
+                        return false;
+                    } else if (curDragNodes[i].parentTId && curDragNodes[i].getParentNode() !== targetNode && curDragNodes[i].getParentNode().childOuter === false) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function dropNext(treeId, nodes, targetNode) {
+            var pNode = targetNode.getParentNode();
+            if (pNode && pNode.dropInner === false) {
+                return false;
+            } else {
+                for (var i = 0, l = curDragNodes.length; i < l; i++) {
+                    var curPNode = curDragNodes[i].getParentNode();
+                    if (curPNode && curPNode !== targetNode.getParentNode() && curPNode.childOuter === false) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        var log, className = "dark", curDragNodes, autoExpandNode;
+        function beforeDrag(treeId, treeNodes) {
+            className = (className === "dark" ? "" : "dark");
+            for (var i = 0, l = treeNodes.length; i < l; i++) {
+                if (treeNodes[i].drag === false) {
+                    curDragNodes = null;
+                    return false;
+                } else if (treeNodes[i].parentTId && treeNodes[i].getParentNode().childDrag === false) {
+                    curDragNodes = null;
+                    return false;
+                }
+            }
+            curDragNodes = treeNodes;
+            return true;
+        }
+        function beforeDragOpen(treeId, treeNode) {
+            autoExpandNode = treeNode;
+            return true;
+        }
+        function beforeDrop(treeId, treeNodes, targetNode, moveType, isCopy) {
+            className = (className === "dark" ? "" : "dark");
+            return true;
+        }
+        function onDrag(event, treeId, treeNodes) {
+            className = (className === "dark" ? "" : "dark");
+        }
+        function onDrop(event, treeId, treeNodes, targetNode, moveType, isCopy) {
+            className = (className === "dark" ? "" : "dark");
+        }
+        function onExpand(event, treeId, treeNode) {
+            if (treeNode === autoExpandNode) {
+                className = (className === "dark" ? "" : "dark");
+            }
+        }
+
+        function getTime() {
+            var now = new Date(),
+			h = now.getHours(),
+			m = now.getMinutes(),
+			s = now.getSeconds(),
+			ms = now.getMilliseconds();
+            return (h + ":" + m + ":" + s + " " + ms);
+        }
+
+        function setTrigger() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.edit.drag.autoExpandTrigger = $("#callbackTrigger").attr("checked");
+        }
         $(function () {
 
             //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期
-            $("#StartTime").datebox('calendar').calendar({
+            $("#StartTime").datebox('calendar').calendar({ 
                 validator: function (beginDate) {
                     var date = new Date();
                     return beginDate >= date;
@@ -45,14 +167,40 @@
             });
         });
         function saveOverTime() {
+            debugger;
+            var treeObj = $.fn.zTree.getZTreeObj("treeDemo2");
+            var nodes = treeObj.getNodes();
+            var list = "";
+            for (var i = 0; i < nodes.length; i++) {
+                list += nodes[i].id+'_';
+            }
+            $("#SendFor").val(list);
             document.form1.submit();
         }
+        
+
+        $(document).ready(function () {
+
+            var zNodes;
+            $.ajax({
+                url: "../../SysDepts/GetGeneralDeptJson", success: function (result) {
+                    //alert(result);
+                    zNodes = JSON.parse(result);
+                    $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+                    $.fn.zTree.init($("#treeDemo2"), setting);
+                    $("#callbackTrigger").bind("change", {}, setTrigger);
+
+                }
+            });
+
+        });
+
     </script>
     <script type="text/javascript">
 
     </script>
     <!-- Begin of easyui-dialog -->
-    <div data-options="closed:false,iconCls:'icon-save'" style="width:400px; padding:10px;">
+    <div data-options="closed:false,iconCls:'icon-save'" style="width:600px; padding:10px;">
         <span>注：此申请将自动抄送给系统指定的抄送人</span>
 
         <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
@@ -109,14 +257,39 @@
                         <input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
                     </td>
                 </tr>
+                <tr>
+                    <td width="70" align="right">加班结束时间:</td>
+                    <td>
+                        <input type="text" value="" name="SendFor" id="SendFor" style="display:none" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">加班结束时间:</td>
+                    <td>
+                        <input type="text" name="CopyFor" id="CopyFor" style="display:none" />
+                    </td>
+                </tr>
+
+
             </table>
-            <div style="width:85%;">
-                <a href="#" class="easyui-linkbutton" onclick="saveOverTime()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
-                    提交申请
-                </a>
-            </div>
+           
 
         </form>
+        <div id="SendForTree">
+            请按照审批顺序将左边树的人员拖至右边树
+            <div class="zTreeDemoBackground left" style="float:left">
+
+                <ul id="treeDemo" class="ztree"></ul>
+            </div>
+            <div class="right">
+                <ul id="treeDemo2" class="ztree" style="height:80px"></ul>
+            </div>
+        </div>
+        <div style="width:85%;">
+            <a href="#" class="easyui-linkbutton" onclick="saveOverTime()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
+                提交申请
+            </a>
+        </div>
     </div>
     <!-- End of easyui-dialog -->
 

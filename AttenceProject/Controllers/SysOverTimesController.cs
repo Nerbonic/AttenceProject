@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using AttenceProject.Models;
 using AttenceProject.App_Start;
 using System.Text;
+using AttenceProject.Models.ViewModel;
+using System.Collections;
 
 namespace AttenceProject.Controllers
 {
@@ -17,8 +19,9 @@ namespace AttenceProject.Controllers
         private SysOverTimeContext db = new SysOverTimeContext();
         private SysAlternativeContext db_alter = new SysAlternativeContext();
         private SysApplySetContext db_apply = new SysApplySetContext();
-        private SysUsersRole db_user = new SysUsersRole();
+        private SysUsersRoleDbContext db_user = new SysUsersRoleDbContext();
         private SysApproveContext db_approve = new SysApproveContext();
+        private View_SysUserInDeptContext db_ViewUserInDept = new View_SysUserInDeptContext();
         // GET: SysOverTimes
         public ActionResult Index()
         {
@@ -85,7 +88,7 @@ namespace AttenceProject.Controllers
         /// <param name="StartTime">加班开始时间</param>
         /// <param name="EndTime">加班结束时间</param>
         /// <returns></returns>
-        public ActionResult SaveAdd(string OverTimeReason, string OverTimeType, string Account_Method, string StartTime, string EndTime)
+        public ActionResult SaveAdd(string OverTimeReason, string OverTimeType, string Account_Method, string StartTime, string EndTime,string SendFor,string CopyFor)
         {
             HttpCookie cook = Request.Cookies["userinfo"];//从cook中取用户信息
             string userid = cook.Values["UserID"];
@@ -101,7 +104,12 @@ namespace AttenceProject.Controllers
             sys.ApplyStatus = 0;
             sys.StartTime = DateTime.Parse(StartTime);
             sys.EndTime = DateTime.Parse(EndTime);
-            sys.CopyFor = "11_";
+            sys.CopyFor = "11";
+            string[] SendFors= SendFor.TrimEnd('_').Split('_');
+            foreach(var sendfor in SendFors)
+            {
+                sys.SendFor += (int.Parse(sendfor) - 10000).ToString() + '_';
+            }
             TimeSpan ts1 = sys.EndTime - sys.StartTime;//计算加班总经历时间的时间戳
             int hours = ts1.Hours - 9;//计算加班结束当天的多出来的加班时间
             int days = ts1.Days;//若加班大于1天，计算加班天数
@@ -115,13 +123,21 @@ namespace AttenceProject.Controllers
             db.SaveChanges();
 
             #endregion
-            
+
             #region 新建审批流信息
             SysApprove sysapprove = new SysApprove();
             sysapprove.ApplyID = sys.ID;
             sysapprove.ApplyStatus = 0;
             sysapprove.OpTime = DateTime.Now;
-            sysapprove.NowChecker = int.Parse(sys.CopyFor.Split('_')[0]);
+            sysapprove.NextChecker = 0;
+            if (sys.SendFor.TrimEnd('_').Split('_').Length > 1)
+            {
+                sysapprove.NextChecker= int.Parse(sys.SendFor.Split('_')[1]);
+            }
+            sysapprove.NowChecker = int.Parse(sys.SendFor.Split('_')[0]);
+            sysapprove.Applyrate = "申请发起";
+            db_approve.SysApproves.Add(sysapprove);
+            db_approve.SaveChanges();
             #endregion
 
             return RedirectToAction("List");
@@ -130,9 +146,7 @@ namespace AttenceProject.Controllers
 
         public ActionResult List()
         {
-
             return View();
-
         }
 
         public ActionResult GetJson()
@@ -163,9 +177,95 @@ namespace AttenceProject.Controllers
 
         public ActionResult Approve()
         {
+            return View();
+        }
+        public ActionResult GetApprove()
+        {
             var res = new ContentResult();
             res = (ContentResult)GetJson();
             return res;
         }
+        public ActionResult GetOverTimeInfo(int id)
+        {
+            var list1 = db.SysOverTimes.Where(m => m.ID == id).ToList() ;
+
+            var list2 = db_user.sur.ToList();
+
+            var query = from a in list1
+                        join b in list2
+                        on a.ProposerID equals b.ID
+                        select new {
+                            a.ID,
+                            b.UserName,
+                            a.ProposerID,
+                            a.StartTime,
+                            a.EndTime,
+                            a.Time,
+                            a.OverTimeType,
+                            a.OverTimeReason,
+                            a.Account_Method
+                        };
+            string result = JsonTool.LI2J(query.ToList());
+            if (string.IsNullOrEmpty(result))
+            {
+                return HttpNotFound();
+            }
+            var res = new ContentResult();
+            res.Content = result.TrimStart('[').TrimEnd(']');
+            //res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
+            res.ContentType = "application/json";
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
+
+        public ActionResult SaveApprove(string applyrate,string applystatus,string applyid)
+        {
+            IList<SysApprove> list = db_approve.SysApproves.Where(m => m.ApplyID.ToString() == applyid).ToList();
+            IList<SysOverTime> list_overtime = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList();
+            //获取请假信息及最近一次的审批信息
+
+            string sendfor = list_overtime[0].SendFor;
+            string[] sendfors = sendfor.TrimEnd('_').Split('_');
+            IList sendlist = sendfors.ToList();
+
+            SysApprove sys = new SysApprove();
+            SysApprove sys_first = list[0];
+            sys.ApplyID = int.Parse(applyid);
+            sys.Applyrate = applyrate;
+            sys.ApplyStatus = int.Parse(applystatus);
+            sys.OpTime = DateTime.Now;
+            
+            HttpCookie cook = Request.Cookies["userinfo"];
+            int NowCheckerIndex = sendlist.IndexOf(cook.Values["UserID"]);
+            if (NowCheckerIndex == sendfors.Length - 1)
+            {
+                //如果是最后一个人的审批的此条申请
+                //结束一个审批流程
+                return null;
+            }
+            else if (NowCheckerIndex == sendfors.Length - 2)
+            {
+                //如果是倒数第二个人审批的此条申请
+                //增加一条审批信息，修改nowchecker,并nextchecker设置为0
+                sys.NextChecker = 0;
+                sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
+                db_approve.SysApproves.Add(sys);
+                db_approve.SaveChanges();
+                return Content("success");
+            }
+            else
+            {
+                //如果是其他情况，即还有至少两个人在审批流程上
+                //增加一条审批信息，修改nowchecker和nextchecker
+                sys.NextChecker= int.Parse(sendfors[NowCheckerIndex + 2]);
+                sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
+                db_approve.SysApproves.Add(sys);
+                db_approve.SaveChanges();
+                return Content("success");
+
+            }
+
+        }
+
     }
 }

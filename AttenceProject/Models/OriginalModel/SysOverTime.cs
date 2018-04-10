@@ -35,6 +35,9 @@ namespace AttenceProject.Models
         public string CopyFor { get; set; }
 
         [Required]
+        public string SendFor { get; set; }
+
+        [Required]
         public int ApplyStatus { get; set; }
 
         public DateTime OpTime { get; set; }

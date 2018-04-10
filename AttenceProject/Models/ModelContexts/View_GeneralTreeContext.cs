@@ -5,14 +5,14 @@ namespace AttenceProject.Models.ViewModel
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class View_SysUserInDeptModel : DbContext
+    public partial class View_GeneralTreeContext : DbContext
     {
-        public View_SysUserInDeptModel()
+        public View_GeneralTreeContext()
             : base("name=connStr")
         {
         }
 
-        public virtual DbSet<View_SysUserInDeptModel> View_SysUserInDeptModels { get; set; }
+        public virtual DbSet<View_GeneralTreeContext> View_GeneralTrees { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

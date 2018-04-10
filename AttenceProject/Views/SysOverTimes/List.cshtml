@@ -203,7 +203,20 @@
 	}
 
 	$(document).ready(function () {
-	    doSearch();
+	    //doSearch();
+	    $(document).ready(function () {
+
+	        var zNodes;
+	        $.ajax({
+	            url: "../SysDepts/GetDeptJson", success: function (result) {
+	                //alert(result);
+	                zNodes = JSON.parse(result);
+	                $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+
+	            }
+	        });
+
+	    });
 	})
     </script>
 </head>
