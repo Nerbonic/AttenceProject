@@ -257,14 +257,14 @@
                         <input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
                     </td>
                 </tr>
-                <tr>
-                    <td width="70" align="right">加班结束时间:</td>
+                <tr style="display:none">
+                    <td width="70" align="right">审批人流:</td>
                     <td>
                         <input type="text" value="" name="SendFor" id="SendFor" style="display:none" />
                     </td>
                 </tr>
-                <tr>
-                    <td width="70" align="right">加班结束时间:</td>
+                <tr style="display:none">
+                    <td width="70" align="right">抄送人流:</td>
                     <td>
                         <input type="text" name="CopyFor" id="CopyFor" style="display:none" />
                     </td>
@@ -276,12 +276,11 @@
 
         </form>
         <div id="SendForTree">
-            请按照审批顺序将左边树的人员拖至右边树
-            <div class="zTreeDemoBackground left" style="float:left">
+            <div class="zTreeDemoBackground left" style="float:left" style="height:80px">
 
-                <ul id="treeDemo" class="ztree"></ul>
+                <ul id="treeDemo" class="ztree" style="height:80px"></ul>
             </div>
-            <div class="right">
+            <div class="right" style="height:80px">
                 <ul id="treeDemo2" class="ztree" style="height:80px"></ul>
             </div>
         </div>
