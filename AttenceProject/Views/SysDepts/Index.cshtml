@@ -104,7 +104,6 @@
                 <div class="wu-toolbar-button">
                     <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="DeptAdd()" plain="true">添加部门</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="PersonAdd()" plain="true">添加员工</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="removeDept()" plain="true">删除部门</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removeAll()" plain="true">删除部门及员工</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removePerson()" plain="true">删除员工</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="EditDept()" plain="true">编辑部门</a>
@@ -148,7 +147,18 @@
                         </tr>
                         <tr>
                             <td width="70" align="right">用户权限:</td>
-                            <td><input type="text" id="UserRole" name="UserRole" class="wu-text" /></td>
+                            <td>
+                            <input type="text" id="UserRole" name="UserRole" class="wu-text" />
+                                <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="AlternativeGroupID" name="AlternativeGroupID" data-options="required:true,
+                   url:'../../SysAlternatives/GetGroup/1',
+                   method:'get',
+                   multiple:false,
+                   valueField:'AlternativeGroupID',
+                   textField:'AlternativeGroupText'
+                           "></select>
+                            
+                            
+                            </td>
                         </tr>
                         <tr>
                             <td width="70" align="right">用户账户状态:</td>

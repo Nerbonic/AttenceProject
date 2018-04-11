@@ -96,5 +96,34 @@ namespace AttenceProject.Controllers
             return Content(sbnew.ToString().TrimStart('{').TrimEnd('}'));
         }
 
+
+        /// <summary>
+        /// 保存信息
+        /// </summary>
+        /// <param name="AlternativeText">备选项名称</param>
+        /// <param name="Remarks">备选项</param>
+        /// <param name="AlternativeGroupID"></param>
+        /// <returns></returns>
+        public ActionResult SaveAdd(string DeptName, string DeptOrder, string DeptRole,string CopyFor)
+        {
+            IList<SysAlternative> list = db.SysAlternatives.Where(m => m.AlternativeGroupID.ToString() == AlternativeGroupID).ToList();
+            if (list.Count > 0)
+            {
+                string AlternativeGroupText = list[0].AlternativeGroupText;
+
+                SysAlternative sys = new SysAlternative();
+                sys.AlternativeText = AlternativeText;
+                sys.AlternativeGroupText = AlternativeGroupText;
+                sys.Remarks = Remarks;
+                sys.Operator = "admin";
+                sys.OpTime = DateTime.Now;
+                sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
+                db.SysAlternatives.Add(sys);
+                db.SaveChanges();
+            }
+            return Content("success");
+
+        }
+
     }
 }
