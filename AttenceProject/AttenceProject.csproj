@@ -5083,6 +5083,7 @@
     <Content Include="easyui\themes\mobile.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="note.txt" />
     <Content Include="scripts\ai.0.22.9-build00167.js" />
     <Content Include="scripts\ai.0.22.9-build00167.min.js" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -5705,11 +5706,6 @@
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\SysUsersRoles\Create.cshtml" />
-    <Content Include="Views\SysUsersRoles\Delete.cshtml" />
-    <Content Include="Views\SysUsersRoles\Details.cshtml" />
-    <Content Include="Views\SysUsersRoles\Edit.cshtml" />
-    <Content Include="Views\SysUsersRoles\Index.cshtml" />
     <Content Include="scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\SysMenus\Create.cshtml" />
@@ -5727,10 +5723,14 @@
     <Content Include="Views\SysWorkOffs\Index.cshtml" />
     <Content Include="Views\SysWorkOffs\StartWorkOff.cshtml" />
     <Content Include="Views\SysApplySets\Index.cshtml" />
-    <Content Include="Views\SysApproves\Index.cshtml" />
     <Content Include="Views\SysOverTimes\Approve.cshtml" />
     <Content Include="Views\SysOverTimes\Index.cshtml" />
     <Content Include="Views\SysOverTimes\List.cshtml" />
+    <Content Include="Views\SysUsersRoles\Create.cshtml" />
+    <Content Include="Views\SysUsersRoles\Delete.cshtml" />
+    <Content Include="Views\SysUsersRoles\Details.cshtml" />
+    <Content Include="Views\SysUsersRoles\Edit.cshtml" />
+    <Content Include="Views\SysUsersRoles\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -5742,6 +5742,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\SysAccounts\" />
+    <Folder Include="Views\SysApproves\" />
     <Folder Include="zTree_v3\demo\en\" />
   </ItemGroup>
   <ItemGroup>

@@ -30,6 +30,8 @@ namespace AttenceProject.Models
 
         public int UserState { get; set; }
 
+        public int UserRole { get; set; }
+
         public int OverTime { get; set; }
 
         [Required]

@@ -20,6 +20,8 @@ namespace AttenceProject.Models
         [MaxLength(2000)]
         public string Applyrate { get; set; }
 
+        public int LastChecker { get; set; }
+
         [Required]
         public int NowChecker { get; set; }
 

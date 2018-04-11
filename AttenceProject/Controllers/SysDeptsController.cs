@@ -59,10 +59,21 @@ namespace AttenceProject.Controllers
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
             StringBuilder sbnew = new StringBuilder();
-
-
             return Content(sb.ToString().TrimStart('[').TrimEnd(']'));
+        }
 
+        /// <summary>
+        /// 获取指定人员的信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult GetUserInfo(int id)
+        {
+            string result = JsonTool.LI2J(db_userrole.sur.Where(m => m.ID == id).ToList());
+            StringBuilder sb = new StringBuilder();
+            sb.Append(result);
+            StringBuilder sbnew = new StringBuilder();
+            return Content(sb.ToString().TrimStart('[').TrimEnd(']'));
         }
 
         /// <summary>

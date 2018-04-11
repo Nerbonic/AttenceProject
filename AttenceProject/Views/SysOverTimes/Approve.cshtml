@@ -122,6 +122,14 @@
 	/**
 	* Name 打开修改窗口
 	*/
+
+	function getJsonObjLength(jsonObj) {
+	    var Length = 0;
+	    for (var item in jsonObj) {
+	        Length++;
+	    }
+	    return Length;
+	}
 	function openApprove(){
 	    $('#wu-form').form('clear');
 	    var row = $('#wu-datagrid').datagrid('getSelected');
@@ -153,6 +161,28 @@
 	                }
 	            }]
 	        });
+	        var afterstr = "";
+	        $(".tr_after").remove();
+	        $.ajax({
+	            url: '../../SysOverTimes/GetApproveDetail',
+	            data: { id: id },
+	            async:false,
+	            dataType: "json",
+	            method: 'get',
+	            success: function (data) {
+	                var length = getJsonObjLength(data);
+	                for (var i = 0; i < length; i++) {
+
+	                    //alert(item);
+	                    afterstr += '<tr class="tr_after"><td align="right" width="30">审批人:</td><td align="right" width="30">' + data[i].LastChecker + '</td></tr>' +
+	                              '<tr class="tr_after"><td align="right" width="70">审批意见:</td><td align="right" width="30">' + data[i].Applyrate + '</td></tr>' +
+	                             '<tr class="tr_after"><td align="right" width="70">审批结果:</td><td align="right" width="30">' + data[i].ApplyStatus + '</td></tr>' +
+                                  '<tr class="tr_after" style="height:20px"></tr>';
+                        
+	                }
+	                $("#tr_reason").after(afterstr);
+	            }
+	        })
 	    }
 
 	}
@@ -208,7 +238,7 @@
 	}
 
 	$(document).ready(function () {
-	    doSearch();
+	    //doSearch();
 	})
     </script>
 </head>
@@ -300,7 +330,7 @@
                     <td align="right" width="70">加班结算方式:</td>
                     <td><input type="text" name="Account_Method" disabled="disabled" class="wu-text" /></td>
                 </tr>
-                <tr>
+                <tr id="tr_reason">
                     <td align="right" width="70">加班原因:</td>
                     <td><input type="text" name="OverTimeReason" disabled="disabled" class="wu-text" /></td>
                 </tr>

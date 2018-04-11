@@ -32,33 +32,59 @@
 			}
 		};
 
-		function showInfo(event, treeId, treeNode) {
-		    $.ajax({
-		        url: "../SysDepts/GetDeptInfo",
-		        data:{id:treeNode.id}, 
-		        type:"get", 
-                dataType:"json", 
-                success: function (result) {
-                    var deptname = result.DeptName;
-                    var deptrole = result.DeptRole;
-                    var copyfor = result.CopyFor;
-		            $("#DeptName").val(deptname);
-		            $("#DeptRole").val(deptrole);
-		            $("#CopyFor").val(copyfor);
-		        }
-		    });
+        function showInfo(event, treeId, treeNode) {
+            if (treeNode.id <= 10000) {
+                $(".deptinfo").css('display', 'block');
+                $(".userinfo").css('display', 'none');
+                $.ajax({
+                    url: "../SysDepts/GetDeptInfo",
+                    data: { id: treeNode.id },
+                    type: "get",
+                    dataType: "json",
+                    success: function (result) {
+                        var deptname = result.DeptName;
+                        var copyfor = result.CopyFor;
+                        $("#DeptName").val(deptname);
+                        $("#CopyFor").val(copyfor);
+                        //$('#wu-form').form('load', data);
+                    }
+                });
+            }
+            if (treeNode.id > 10000) {
+                $(".deptinfo").css('display', 'none');
+                $(".userinfo").css('display', 'block');
+                $.ajax({
+                    url: "../SysDepts/GetUserInfo",
+                    data: { id: treeNode.id-10000 },
+                    type: "get",
+                    dataType: "json",
+                    success: function (result) {
+                        var username = result.UserName;
+                        var userstate = result.UserState;
+                        var userrole = result.UserRole;
+
+                        $("#UserName").val(username);
+                        $("#UserState").val(userstate);
+                        $("#UserRole").val(userrole);
+                        //$('#wu-form').form('load', data);
+                    }
+                });
+            }
+		   
 		};
 		$(document).ready(function () {
-
 		    var zNodes;
 		    $.ajax({
-		        url: "../SysDepts/GetDeptJson", success: function (result) {
+		        url: "../SysDepts/GetGeneralDeptJson", success: function (result) {
 		            //alert(result);
 		            zNodes = JSON.parse(result);
 		            $.fn.zTree.init($("#treeDemo"), setting, zNodes);
 		            
 		        }
 		    });
+		    $(".deptinfo").css('display', 'block');
+		    $(".userinfo").css('display', 'none');
+
 
 		});
 		//-->
@@ -93,7 +119,7 @@
                     <label>关键词：</label><input class="wu-text" style="width:100px">
                     <a href="#" class="easyui-linkbutton" iconCls="icon-search">开始检索</a>
                 </div>
-                <form id="wu-form" method="post">
+                <form id="wu-form" method="post" class="deptinfo">
                     <table>
                         <tr style="display:none;">
                             <td width="70" align="right">ID:</td>
@@ -104,12 +130,29 @@
                             <td><input type="text" id="DeptName" name="DeptName" class="wu-text" /></td>
                         </tr>
                         <tr>
-                            <td align="right" width="70">部门权限:</td>
-                            <td><input type="text" id="DeptRole" name="DeptRole" class="wu-text" /></td>
-                        </tr>
-                        <tr>
                             <td width="70" align="right">部门申请抄送人:</td>
                             <td><input type="text" id="CopyFor" name="CopyFor" class="wu-text" /></td>
+                        </tr>
+                    </table>
+                </form>
+
+                <form id="wu-form" method="post" class="userinfo">
+                    <table>
+                        <tr style="display:none;">
+                            <td width="70" align="right">ID:</td>
+                            <td><input type="text" name="ID" class="wu-text" /></td>
+                        </tr>
+                        <tr>
+                            <td width="70" align="right">用户名称:</td>
+                            <td><input type="text" id="UserName" name="UserName" class="wu-text" /></td>
+                        </tr>
+                        <tr>
+                            <td width="70" align="right">用户权限:</td>
+                            <td><input type="text" id="UserRole" name="UserRole" class="wu-text" /></td>
+                        </tr>
+                        <tr>
+                            <td width="70" align="right">用户账户状态:</td>
+                            <td><input type="text" id="UserState" name="UserState" class="wu-text" /></td>
                         </tr>
                     </table>
                 </form>

@@ -127,6 +127,7 @@ namespace AttenceProject.Controllers
             #region 新建审批流信息
             SysApprove sysapprove = new SysApprove();
             sysapprove.ApplyID = sys.ID;
+            sysapprove.LastChecker = 0;
             sysapprove.ApplyStatus = 0;
             sysapprove.OpTime = DateTime.Now;
             sysapprove.NextChecker = 0;
@@ -181,8 +182,59 @@ namespace AttenceProject.Controllers
         }
         public ActionResult GetApprove()
         {
+            //这段linq是用来将所有最新的审批进度取出来
+            var list = db_approve.SysApproves.ToList();//取出所有进度
+            var query = from d in list
+                        group d by d.ApplyID into g
+                        select new
+                        {
+                            OpTime = g.Max(x => x.OpTime),
+                            ApplyID = g.Key
+                        };
+            //按不同审批找出不同审批的最大时间，返回审批ID和时间
+
+            var query_final = from b in list
+                              where query.Any(ss => ss.OpTime == b.OpTime && ss.ApplyID==b.ApplyID)
+                             select b;
+            //按照找出的审批ID和时间在所有进度里进行筛选
+       
+            var list_end = query_final.ToList();//找出所有审批的最新进度
+
+            var list_overtime = db.SysOverTimes.ToList();
+
+            var query_show = from a in list_end
+                        join b in list_overtime
+                        on a.ApplyID equals b.ID
+                        select new
+                        {
+                            b.ID,
+                            b.ProposerID,
+                            b.SendFor,
+                            b.StartTime,
+                            b.EndTime,
+                            b.Time,
+                            b.OverTimeType,
+                            b.Account_Method,
+                            b.OverTimeReason,
+                            b.CopyFor,
+                            a.ApplyID,
+                            a.LastChecker,
+                            a.NextChecker,
+                            a.NowChecker,
+                            a.Applyrate,
+                            a.ApplyStatus
+
+                        };
+
             var res = new ContentResult();
-            res = (ContentResult)GetJson();
+            string result = JsonTool.LI2J(query_show.ToList());
+            result = "{\"total\":" + list_end.Count + ",\"rows\":" + result + "}";
+            StringBuilder sb = new StringBuilder();
+            sb.Append(result);
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
             return res;
         }
         public ActionResult GetOverTimeInfo(int id)
@@ -248,6 +300,7 @@ namespace AttenceProject.Controllers
                 //如果是倒数第二个人审批的此条申请
                 //增加一条审批信息，修改nowchecker,并nextchecker设置为0
                 sys.NextChecker = 0;
+                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
                 sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
                 db_approve.SysApproves.Add(sys);
                 db_approve.SaveChanges();
@@ -257,6 +310,7 @@ namespace AttenceProject.Controllers
             {
                 //如果是其他情况，即还有至少两个人在审批流程上
                 //增加一条审批信息，修改nowchecker和nextchecker
+                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
                 sys.NextChecker= int.Parse(sendfors[NowCheckerIndex + 2]);
                 sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
                 db_approve.SysApproves.Add(sys);
@@ -265,6 +319,21 @@ namespace AttenceProject.Controllers
 
             }
 
+        }
+
+        public ActionResult GetApproveDetail(int id)
+        {
+            string result = JsonTool.LI2J(db_approve.SysApproves.Where(m => m.ApplyID == id && m.LastChecker != 0).ToList());
+            if (string.IsNullOrEmpty(result))
+            {
+                return HttpNotFound();
+            }
+            var res = new ContentResult();
+            res.Content = result.TrimStart('{').TrimEnd('}');
+            //res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
+            res.ContentType = "application/json";
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
         }
 
     }

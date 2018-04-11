@@ -11,7 +11,7 @@ using AttenceProject.Models;
 
 namespace AttenceProject.Controllers
 {
-    public class SysUsersRolesController : BaseController
+    public class SysUsersRolesController : Controller
     {
         private SysUsersRoleDbContext db = new SysUsersRoleDbContext();
 
@@ -47,7 +47,7 @@ namespace AttenceProject.Controllers
         // 详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,UserName,UserCode,UserDeptID,LoginName,PassWord,UserState,OverTime,Operator,OpTime")] SysUsersRole sysUsersRole)
+        public ActionResult Create([Bind(Include = "ID,UserName,UserCode,UserDeptID,LoginName,PassWord,UserState,UserRole,OverTime,Operator,OpTime")] SysUsersRole sysUsersRole)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace AttenceProject.Controllers
         // 详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,UserName,UserCode,UserDeptID,LoginName,PassWord,UserState,OverTime,Operator,OpTime")] SysUsersRole sysUsersRole)
+        public ActionResult Edit([Bind(Include = "ID,UserName,UserCode,UserDeptID,LoginName,PassWord,UserState,UserRole,OverTime,Operator,OpTime")] SysUsersRole sysUsersRole)
         {
             if (ModelState.IsValid)
             {
@@ -98,7 +98,6 @@ namespace AttenceProject.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             SysUsersRole sysUsersRole = db.sur.Find(id);
-            
             if (sysUsersRole == null)
             {
                 return HttpNotFound();
