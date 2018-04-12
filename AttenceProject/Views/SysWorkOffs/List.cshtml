@@ -1,6 +1,4 @@
-﻿@model IEnumerable<AttenceProject.Models.SysOverTime>
-
-@{
+﻿@{
     Layout = null;
 }
 
@@ -41,25 +39,21 @@
 	/**
 	* Name 修改记录
 	*/
-	function edit() {
-	    var applystatus = $('input[name="ApplyStatus"]:checked').val();
-	    var applyrate = $("#Applyrate").val();
-	    var applyid = $("#ID").val();
-	    $.ajax({
-	        url: '../../SysOverTimes/SaveApprove',
-	        data: { applystatus: applystatus, applyrate: applyrate, applyid: applyid },
-	        async: false,
-	        method: 'get',
-	        success: function (data) {
-	            
-	                $.messager.alert('信息提示', '提交成功！', 'info');
-	                $('#wu-dialog').dialog('close');
-	                window.location.reload();
-	            
-	            
-	        }
-	    });
-		
+	function edit(){
+		$('#wu-form').form('submit', {
+		    url: '../../SysAlternatives/SaveEdit',
+			success:function(data){
+				if(data=="success"){
+					$.messager.alert('信息提示','提交成功！','info');
+					$('#wu-dialog').dialog('close');
+					window.location.reload();
+				}
+				else
+				{
+					$.messager.alert('信息提示','提交失败！','info');
+				}
+			}
+		});
 	}
 
 	/**
@@ -121,21 +115,13 @@
 	/**
 	* Name 打开修改窗口
 	*/
-
-	function getJsonObjLength(jsonObj) {
-	    var Length = 0;
-	    for (var item in jsonObj) {
-	        Length++;
-	    }
-	    return Length;
-	}
-	function openApprove(){
+	function openEdit(){
 	    $('#wu-form').form('clear');
 	    var row = $('#wu-datagrid').datagrid('getSelected');
 	    if (row) {
 	        var id = row.ID;
 	        $.ajax({
-	            url: '../../SysOverTimes/GetOverTimeInfo',
+	            url: '../../SysAlternatives/GetInfo',
 	            data: { id: id },
 	            async: false,
                 dataType:"json",
@@ -160,28 +146,6 @@
 	                }
 	            }]
 	        });
-	        var afterstr = "";
-	        $(".tr_after").remove();
-	        $.ajax({
-	            url: '../../SysOverTimes/GetApproveDetail',
-	            data: { id: id },
-	            async:false,
-	            dataType: "json",
-	            method: 'get',
-	            success: function (data) {
-	                var length = getJsonObjLength(data);
-	                for (var i = 0; i < length; i++) {
-
-	                    //alert(item);
-	                    afterstr += '<tr class="tr_after"><td align="right" width="30">审批人:</td><td align="right" width="30">' + data[i].LastChecker + '</td></tr>' +
-	                              '<tr class="tr_after"><td align="right" width="70">审批意见:</td><td align="right" width="30">' + data[i].Applyrate + '</td></tr>' +
-	                             '<tr class="tr_after"><td align="right" width="70">审批结果:</td><td align="right" width="30">' + data[i].ApplyStatus + '</td></tr>' +
-                                  '<tr class="tr_after" style="height:20px"></tr>';
-                        
-	                }
-	                $("#tr_reason").after(afterstr);
-	            }
-	        })
 	    }
 
 	}
@@ -238,6 +202,19 @@
 
 	$(document).ready(function () {
 	    //doSearch();
+	    $(document).ready(function () {
+
+	        var zNodes;
+	        $.ajax({
+	            url: "../SysDepts/GetDeptJson", success: function (result) {
+	                //alert(result);
+	                zNodes = JSON.parse(result);
+	                $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+
+	            }
+	        });
+
+	    });
 	})
     </script>
 </head>
@@ -249,9 +226,9 @@
             <div id="wu-toolbar" class="datagrid-toolbar">
                 <div class="wu-toolbar-button">
                     <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openAdd()" plain="true">添加</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openApprove()" plain="true">修改</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openEdit()" plain="true">修改</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetail()" plain="true">查看详情</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="openApprove()" plain="true">进行审批</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="remove()" plain="true">删除</a>
 
                 </div>
                 @*<div class="wu-toolbar-search">
@@ -271,85 +248,30 @@
             </div>
             <!-- End of toolbar -->
             <table id="wu-datagrid" class="easyui-datagrid" toolbar="#wu-toolbar" title="Basic DataGrid" style="width:inherit; height:inherit"
-                   data-options="singleSelect:true,collapsible:true,url:'../../SysOverTimes/GetApprove',pagesize:3,method:'get'"
+                   data-options="singleSelect:true,collapsible:true,url:'../../SysWorkOffs/GetJson',pagesize:3,method:'get'"
                    footer="#foot" pagination="true" rownumbers="true" singleselect="true" fitColumns="true">
                 <thead>
                     <tr>
                         <th field="ck" checkbox="true"></th>
                         <th data-options="field:'ID',width:80">ID</th>
                         <th data-options="field:'ProposerID',width:100">申请人ID</th>
-                        <th data-options="field:'StartTime',width:120,align:'right'">开始时间</th>
-                        <th data-options="field:'EndTime',width:120">结束时间</th>
-                        <th data-options="field:'Time',width:60,align:'center'">时长</th>
-                        <th data-options="field:'OverTimeType',width:80,align:'right'">加班类型</th>
-                        <th data-options="field:'Account_Method',width:120">加班结算方式</th>
-                        <th data-options="field:'OverTimeReason',width:200,align:'center'">加班原因</th>
+                        <th data-options="field:'OverTimeStart',width:120,align:'right'">加班开始时间</th>
+                        <th data-options="field:'OverTimeEnd',width:120">加班结束时间</th>
+                        <th data-options="field:'VacationStart',width:120">调休开始时间</th>
+                        <th data-options="field:'VacationEnd',width:120">调休结束时间</th>
+                        <th data-options="field:'Time',width:120">时长</th>
+                        <th data-options="field:'WorkOffType',width:120">调休类型</th>
+                        <th data-options="field:'VacationReason',width:120">调休原因</th>
+                        <th data-options="field:'Emergency',width:120">紧急联系方式</th>
                         <th data-options="field:'CopyFor',width:120">抄送人</th>
                         <th data-options="field:'ApplyStatus',width:60,align:'center'">申请状态</th>
                     </tr>
                 </thead>
             </table>
-            
         </div>
     </div>
 
-    <!-- Begin of easyui-dialog -->
-    <div id="wu-dialog" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
-        <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
-            <table>
-                <tr style="display:none;">
-                    <td width="70" align="right">ID:</td>
-                    <td><input type="text" name="ID" id="ID" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td width="70" align="right">申请人ID:</td>
-                    <td><input type="text" name="ProposerID" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td width="70" align="right">申请人姓名:</td>
-                    <td><input type="text" name="UserName" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">开始时间:</td>
-                    <td><input type="text" name="StartTime" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">结束时间:</td>
-                    <td><input type="text" name="EndTime" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">时长:</td>
-                    <td><input type="text" name="Time" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">加班类型:</td>
-                    <td><input type="text" name="OverTimeType" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">加班结算方式:</td>
-                    <td><input type="text" name="Account_Method" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr id="tr_reason">
-                    <td align="right" width="70">加班原因:</td>
-                    <td><input type="text" name="OverTimeReason" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">审批意见:</td>
-                    <td><textarea class="wu-textarea" id="Applyrate" name="Applyrate"></textarea></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">审批结果:</td>
-                    <td>
-                        <input type="radio" name="ApplyStatus"  value="1"/>通过
-                        <input type="radio" name="ApplyStatus"  value="0"/>驳回
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-    <!-- End of easyui-dialog -->
 </body>
 </html>
-
 
 

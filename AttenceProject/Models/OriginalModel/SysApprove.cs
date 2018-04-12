@@ -17,6 +17,9 @@ namespace AttenceProject.Models
         public int ApplyStatus { get; set; }
 
         [Required]
+        public string ApplyType { get; set; }
+
+        [Required]
         [MaxLength(2000)]
         public string Applyrate { get; set; }
 

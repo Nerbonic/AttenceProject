@@ -116,18 +116,17 @@ namespace AttenceProject.Controllers
         public ActionResult SaveEdit(string ID, string AlternativeText, string Remarks, string AlternativeGroupID)
         {
             IList<SysAlternative> list = db.SysAlternatives.Where(m => m.AlternativeGroupID.ToString() == AlternativeGroupID).ToList();
+            SysAlternative sys = db.SysAlternatives.Where(a => a.ID.ToString() == ID).ToList()[0];
             if (list.Count >0)
             {
                 string AlternativeGroupText = list[0].AlternativeGroupText;
-                SysAlternative sys = new SysAlternative();
-                sys.ID = int.Parse(ID);
                 sys.AlternativeText = AlternativeText;
                 sys.AlternativeGroupText = AlternativeGroupText;
                 sys.Remarks = Remarks;
                 sys.Operator = "admin";
                 sys.OpTime = DateTime.Now;
                 sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
-                db.Entry(sys).State = EntityState.Modified;
+                db.Entry<SysAlternative>(sys).State = EntityState.Modified;
                 db.SaveChanges();
             }
             return Content("success");

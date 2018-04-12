@@ -46,12 +46,11 @@
 	    var applyrate = $("#Applyrate").val();
 	    var applyid = $("#ID").val();
 	    $.ajax({
-	        url: '../../SysOverTimes/SaveApprove',
+	        url: '../../SysVacations/SaveApprove',
 	        data: { applystatus: applystatus, applyrate: applyrate, applyid: applyid },
 	        async: false,
 	        method: 'get',
 	        success: function (data) {
-	            
 	                $.messager.alert('信息提示', '提交成功！', 'info');
 	                $('#wu-dialog').dialog('close');
 	                window.location.reload();
@@ -135,7 +134,7 @@
 	    if (row) {
 	        var id = row.ID;
 	        $.ajax({
-	            url: '../../SysOverTimes/GetOverTimeInfo',
+	            url: '../../SysVacations/GetVacationInfo',
 	            data: { id: id },
 	            async: false,
                 dataType:"json",
@@ -163,7 +162,7 @@
 	        var afterstr = "";
 	        $(".tr_after").remove();
 	        $.ajax({
-	            url: '../../SysOverTimes/GetApproveDetail',
+	            url: '../../SysVacations/GetApproveDetail',
 	            data: { id: id },
 	            async:false,
 	            dataType: "json",
@@ -271,7 +270,7 @@
             </div>
             <!-- End of toolbar -->
             <table id="wu-datagrid" class="easyui-datagrid" toolbar="#wu-toolbar" title="Basic DataGrid" style="width:inherit; height:inherit"
-                   data-options="singleSelect:true,collapsible:true,url:'../../SysOverTimes/GetApprove',pagesize:3,method:'get'"
+                   data-options="singleSelect:true,collapsible:true,url:'../../SysVacations/GetApprove',pagesize:3,method:'get'"
                    footer="#foot" pagination="true" rownumbers="true" singleselect="true" fitColumns="true">
                 <thead>
                     <tr>
@@ -281,9 +280,9 @@
                         <th data-options="field:'StartTime',width:120,align:'right'">开始时间</th>
                         <th data-options="field:'EndTime',width:120">结束时间</th>
                         <th data-options="field:'Time',width:60,align:'center'">时长</th>
-                        <th data-options="field:'OverTimeType',width:80,align:'right'">加班类型</th>
-                        <th data-options="field:'Account_Method',width:120">加班结算方式</th>
-                        <th data-options="field:'OverTimeReason',width:200,align:'center'">加班原因</th>
+                        <th data-options="field:'Emergency',width:60,align:'center'">紧急联系电话</th>
+                        <th data-options="field:'VacationType',width:80,align:'right'">请假类型</th>
+                        <th data-options="field:'VacationReason',width:200,align:'center'">请假原因</th>
                         <th data-options="field:'CopyFor',width:120">抄送人</th>
                         <th data-options="field:'ApplyStatus',width:60,align:'center'">申请状态</th>
                     </tr>
@@ -295,7 +294,7 @@
 
     <!-- Begin of easyui-dialog -->
     <div id="wu-dialog" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
-        <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
+        <form id="wu-form" method="post" name="form1" action="~/SysVacations/SaveAdd">
             <table>
                 <tr style="display:none;">
                     <td width="70" align="right">ID:</td>
@@ -322,16 +321,16 @@
                     <td><input type="text" name="Time" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">加班类型:</td>
-                    <td><input type="text" name="OverTimeType" disabled="disabled" class="wu-text" /></td>
+                    <td align="right" width="70">紧急联系电话:</td>
+                    <td><input type="text" name="Emergency" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">加班结算方式:</td>
-                    <td><input type="text" name="Account_Method" disabled="disabled" class="wu-text" /></td>
+                    <td align="right" width="70">请假类型:</td>
+                    <td><input type="text" name="VacationType" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr id="tr_reason">
-                    <td align="right" width="70">加班原因:</td>
-                    <td><input type="text" name="OverTimeReason" disabled="disabled" class="wu-text" /></td>
+                    <td align="right" width="70">请假原因:</td>
+                    <td><input type="text" name="VacationReason" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
                     <td align="right" width="70">审批意见:</td>

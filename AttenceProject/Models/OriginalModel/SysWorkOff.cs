@@ -1,10 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Spatial;
+
 namespace AttenceProject.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
 
     public partial class SysWorkOff
     {
@@ -23,13 +24,13 @@ namespace AttenceProject.Models
         public DateTime OverTimeEnd { get; set; }
 
         [Required]
-        public DateTime StartTime { get; set; }
+        public DateTime VacationStart { get; set; }
 
         [Required]
-        public DateTime EndTime { get; set; }
+        public DateTime VacationEnd { get; set; }
 
         [Required]
-        public double Time { get; set; }
+        public float Time { get; set; }
 
         [Required]
         [MaxLength(2000)]
@@ -40,14 +41,12 @@ namespace AttenceProject.Models
         public string Emergency { get; set; }
 
         [MaxLength(100)]
-        public string copyFor { get; set; }
+        public string SendFor { get; set; }
+
+        [MaxLength(100)]
+        public string CopyFor { get; set; }
 
         public int ApplyStatus { get; set; }
-
-        public int Applyrate { get; set; }
-
-        [MaxLength(200)]
-        public string Operator { get; set; }
 
         public DateTime OpTime { get; set; }
     }

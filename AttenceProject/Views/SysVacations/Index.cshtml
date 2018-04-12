@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<AttenceProject.Models.SysOverTime>
+
+@{
     Layout = null;
 }
 <!DOCTYPE html>
@@ -144,28 +146,28 @@
             var zTree = $.fn.zTree.getZTreeObj("treeDemo");
             zTree.setting.edit.drag.autoExpandTrigger = $("#callbackTrigger").attr("checked");
         }
-        //$(function () {
+        $(function () {
 
-        //    //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期
-        //    $("#StartTime").datebox('calendar').calendar({ 
-        //        validator: function (beginDate) {
-        //            var date = new Date();
-        //            return beginDate >= date;
-        //        }
-        //    });
-        //    $("#EndTime").datebox({
-        //        onSelect: function (beginDate) {
-        //            $('#EndTime').datebox().datebox('calendar').calendar({
-        //                validator: function (endDate) {
-        //                    var date = new Date();
-        //                    return beginDate <= endDate && endDate > date;
-        //                }
-        //            });
-        //        }
-        //    });
-        //});
-        function saveWorkOff() {
-            
+            //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期
+            $("#StartTime").datebox('calendar').calendar({ 
+                validator: function (beginDate) {
+                    var date = new Date();
+                    return beginDate >= date;
+                }
+            });
+            $("#EndTime").datebox({
+                onSelect: function (beginDate) {
+                    $('#EndTime').datebox().datebox('calendar').calendar({
+                        validator: function (endDate) {
+                            var date = new Date();
+                            return beginDate <= endDate && endDate > date;
+                        }
+                    });
+                }
+            });
+        });
+        function saveVacation() {
+            debugger;
             var treeObj = $.fn.zTree.getZTreeObj("treeDemo2");
             var nodes = treeObj.getNodes();
             var list = "";
@@ -183,13 +185,14 @@
             $.ajax({
                 url: "../../SysDepts/GetGeneralDeptJson", success: function (result) {
                     //alert(result);
-                    console.log("1");
                     zNodes = JSON.parse(result);
                     $.fn.zTree.init($("#treeDemo"), setting, zNodes);
                     $.fn.zTree.init($("#treeDemo2"), setting);
                     $("#callbackTrigger").bind("change", {}, setTrigger);
+
                 }
             });
+
         });
 
     </script>
@@ -200,14 +203,14 @@
     <div data-options="closed:false,iconCls:'icon-save'" style="width:600px; padding:10px;">
         <span>注：此申请将自动抄送给系统指定的抄送人</span>
 
-        <form id="wu-form" method="post" name="form1" action="~/SysWorkOffs/SaveAdd">
+        <form id="wu-form" method="post" name="form1" action="~/SysVacations/SaveAdd">
             <table style="">
                 <tr style="display:none">
                     <td width="70" align="right">ID:</td>
                     <td><input type="text" name="ID" class="wu-text" value="@cook.Values["UserID"]" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">调休人姓名:</td>
+                    <td width="70" align="right">请假人姓名:</td>
                     <td><input type="text" name="UserName" class="wu-text" value="@cook.Values["UserName"]" /></td>
                 </tr>
                 <tr>
@@ -215,14 +218,18 @@
                     <td><input type="text" name="UserCode" class="wu-text" value="@cook.Values["UserCode"]" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">调休原因:</td>
+                    <td width="70" align="right">请假原因:</td>
                     <td><input type="text" name="VacationReason" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">调休类型:</td>
+                    <td width="70" align="right">紧急联系人:</td>
+                    <td><input type="text" name="Emergency" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">请假类型:</td>
                     <td>
-                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="WorkOffType" name="WorkOffType" data-options="required:true,
-                   url:'../../SysWorkOffs/GetWorkOffType',
+                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="VacationType" name="VacationType" data-options="required:true,
+                   url:'../../SysVacations/GetVacationType',
                    method:'get',
                    multiple:false,
                    valueField:'ID',
@@ -231,33 +238,15 @@
                     </td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">紧急联系人:</td>
+                    <td width="70" align="right">请假开始时间:</td>
                     <td>
-                        <input type="text" name="Emergency" class="wu-text" />
+                        <input class="easyui-datetimebox" value="" name="StartTime" id="StartTime" style="width:200px">
                     </td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">加班开始时间:</td>
+                    <td width="70" align="right">请假结束时间:</td>
                     <td>
-                        <input class="easyui-datetimebox" value="" name="OverTimeStart" id="OverTimeStart" style="width:200px">
-                    </td>
-                </tr>
-                <tr>
-                    <td width="70" align="right">加班结束时间:</td>
-                    <td>
-                        <input class="easyui-datetimebox" value="" name="OverTimeEnd" id="OverTimeEnd" style="width:200px">
-                    </td>
-                </tr>
-                <tr>
-                    <td width="70" align="right">调休开始时间:</td>
-                    <td>
-                        <input class="easyui-datetimebox" value="" name="VacationStart" id="VacationStart" style="width:200px">
-                    </td>
-                </tr>
-                <tr>
-                    <td width="70" align="right">调休结束时间:</td>
-                    <td>
-                        <input class="easyui-datetimebox" value="" name="VacationEnd" id="VacationEnd" style="width:200px">
+                        <input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
                     </td>
                 </tr>
                 <tr style="display:none">
@@ -284,7 +273,7 @@
             </div>
         </div>
         <div style="width:85%;">
-            <a href="#" class="easyui-linkbutton" onclick="saveWorkOff()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
+            <a href="#" class="easyui-linkbutton" onclick="saveVacation()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
                 提交申请
             </a>
         </div>

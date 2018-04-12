@@ -13,24 +13,44 @@ using System.Collections;
 
 namespace AttenceProject.Controllers
 {
-    public class SysWorkOffsController : Controller
+    public class SysVacationsController : Controller
     {
-        private SysVacationContext db_vacation = new SysVacationContext();
+        private SysVacationContext db = new SysVacationContext();
         private SysOverTimeContext db_overtime = new SysOverTimeContext();
         private SysAlternativeContext db_alter = new SysAlternativeContext();
         private SysApplySetContext db_apply = new SysApplySetContext();
         private SysUsersRoleDbContext db_user = new SysUsersRoleDbContext();
         private SysApproveContext db_approve = new SysApproveContext();
 
-        private SysWorkOffContext db = new SysWorkOffContext();
-
-        // GET: SysWorkOffs
+        // GET: SysVacations
         public ActionResult Index()
         {
-            return View(db.SysWorkOffs.ToList());
+            return View(db.SysVacationsContext.ToList());
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
+        /// <summary>
+        /// 获取请假类型
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetVacationType()
+        {
+            string result = JsonTool.LI2J(db_alter.SysAlternatives.Where(m => m.AlternativeGroupText == "请假类型").ToList());
+            var res = new ContentResult();
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
         /// <summary>
         /// 获取可申请的时间点
         /// </summary>
@@ -45,64 +65,34 @@ namespace AttenceProject.Controllers
             res.ContentEncoding = Encoding.UTF8;
             return res;
         }
-        /// <summary>
-        /// 获取调休类型
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult GetWorkOffType()
-        {
-            string result = JsonTool.LI2J(db_alter.SysAlternatives.Where(m => m.AlternativeGroupText == "调休类型").ToList());
-            var res = new ContentResult();
-            res.Content = result;
-            res.ContentType = "application/json";
-            //res.Data = sb.ToString();
-            res.ContentEncoding = Encoding.UTF8;
-            return res;
-        }
 
-        /// <summary>
-        /// 保存调休信息
-        /// </summary>
-        /// <param name="VacationReason">调休原因</param>
-        /// <param name="WorkOffType">调休类型</param>
-        /// <param name="SendFor">审批人</param>
-        /// <param name="CopyFor">抄送人</param>
-        /// <param name="OverTimeStart">加班开始时间</param>
-        /// <param name="OverTimeEnd">加班结束时间</param>
-        /// <param name="VacationStart"></param>
-        /// <param name="VacationEnd"></param>
-        /// <param name="Emergency"></param>
-        /// <returns></returns>
-        public ActionResult SaveAdd(string VacationReason, string WorkOffType, string SendFor, string CopyFor, string OverTimeStart,
-            string OverTimeEnd, string VacationStart, string VacationEnd, string Emergency)
+
+
+        public ActionResult SaveAdd(string VacationReason, string VacationType, string Emergency, string StartTime, string EndTime, string SendFor, string CopyFor)
         {
-            HttpCookie cook = Request.Cookies["userinfo"];//从cookie中取用户信息
+            HttpCookie cook = Request.Cookies["userinfo"];//从cook中取用户信息
             string userid = cook.Values["UserID"];
             string username = cook.Values["UserName"];
             string usercode = cook.Values["UserCode"];
 
             #region 新建请假信息
-            SysWorkOff sys = new SysWorkOff();
-            sys.ApplyStatus = 0;
-            sys.OverTimeEnd = DateTime.Parse(OverTimeEnd);
-            sys.OverTimeStart = DateTime.Parse(OverTimeStart);
-            sys.VacationEnd = DateTime.Parse(VacationEnd);
-            sys.VacationStart = DateTime.Parse(VacationStart);
-            sys.WorkOffType = int.Parse(WorkOffType);
+            SysVacation sys = new SysVacation();
             sys.VacationReason = VacationReason;
             sys.ProposerID = int.Parse(userid);
+            sys.VacationType = int.Parse(VacationType);
             sys.Emergency = Emergency;
 
             sys.ApplyStatus = 0;
+            sys.StartTime = DateTime.Parse(StartTime);
+            sys.EndTime = DateTime.Parse(EndTime);
             sys.CopyFor = "11";
             string[] SendFors = SendFor.TrimEnd('_').Split('_');
             foreach (var sendfor in SendFors)
             {
                 sys.SendFor += (int.Parse(sendfor) - 10000).ToString() + '_';
             }
-
-            TimeSpan ts1 = sys.VacationEnd - sys.VacationStart;//计算调休中请假总经历时间的时间戳
-            int hours = ts1.Hours - 9;//计算调休请假结束当天的多出来的请假时间
+            TimeSpan ts1 = sys.EndTime - sys.StartTime;//计算请假总经历时间的时间戳
+            int hours = ts1.Hours - 9;//计算请假结束当天的多出来的请假时间
             int days = ts1.Days;//若请假大于1天，计算请假天数
             if (days == 0)
             {
@@ -110,13 +100,14 @@ namespace AttenceProject.Controllers
             }
             sys.Time = days + hours / 24;//计算出总时长，形式：4.2代表4天+0.2天，即4天+4.8小时
             sys.OpTime = DateTime.Now;
-            db.SysWorkOffs.Add(sys);
+            db.SysVacationsContext.Add(sys);
             db.SaveChanges();
+
             #endregion
 
             #region 新建审批流信息
             SysApprove sysapprove = new SysApprove();
-            sysapprove.ApplyType = "调休";
+            sysapprove.ApplyType = "请假";
             sysapprove.ApplyID = sys.ID;
             sysapprove.LastChecker = 0;
             sysapprove.ApplyStatus = 0;
@@ -135,6 +126,7 @@ namespace AttenceProject.Controllers
             return RedirectToAction("List");
 
         }
+
         public ActionResult List()
         {
             return View();
@@ -145,7 +137,7 @@ namespace AttenceProject.Controllers
 
             var res = new ContentResult();
 
-            var list = db.SysWorkOffs.ToList();
+            var list = db.SysVacationsContext.ToList();
             //if (AlternativeGroupID != "0" && !string.IsNullOrEmpty(AlternativeGroupID))
             //{
             //    list = list.Where(m => m.AlternativeGroupID == int.Parse(AlternativeGroupID)).ToList();
@@ -155,7 +147,7 @@ namespace AttenceProject.Controllers
             //    list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
             //}
             string result = JsonTool.LI2J(list);
-            result = "{\"total\":" + list.Count + ",\"rows\":" + result + "}";
+            result = "{\"total\":" + db.SysVacationsContext.ToList().Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
             res.Content = result;
@@ -191,22 +183,20 @@ namespace AttenceProject.Controllers
 
             var list_end = query_final.ToList();//找出所有审批的最新进度
 
-            var list_workoff = db.SysWorkOffs.ToList();
+            var list_vacation = db.SysVacationsContext.ToList();
 
             var query_show = from a in list_end
-                             join b in list_workoff
+                             join b in list_vacation
                              on a.ApplyID equals b.ID
                              select new
                              {
                                  b.ID,
                                  b.ProposerID,
                                  b.SendFor,
-                                 b.OverTimeEnd,
-                                 b.OverTimeStart,
+                                 b.StartTime,
+                                 b.EndTime,
                                  b.Time,
-                                 b.WorkOffType,
-                                 b.VacationStart,
-                                 b.VacationEnd,
+                                 b.VacationType,
                                  b.VacationReason,
                                  b.Emergency,
                                  b.CopyFor,
@@ -230,9 +220,9 @@ namespace AttenceProject.Controllers
             res.ContentEncoding = Encoding.UTF8;
             return res;
         }
-        public ActionResult GetWorkOffInfo(int id)
+        public ActionResult GetVacationInfo(int id)
         {
-            var list1 = db.SysWorkOffs.Where(m => m.ID == id).ToList();
+            var list1 = db.SysVacationsContext.Where(m => m.ID == id).ToList();
 
             var list2 = db_user.sur.ToList();
 
@@ -244,12 +234,10 @@ namespace AttenceProject.Controllers
                             a.ID,
                             b.UserName,
                             a.ProposerID,
-                            a.VacationEnd,
-                            a.VacationStart,
-                            a.OverTimeEnd,
-                            a.OverTimeStart,
+                            a.StartTime,
+                            a.EndTime,
                             a.Time,
-                            a.WorkOffType,
+                            a.VacationType,
                             a.VacationReason,
                             a.Emergency
                         };
@@ -260,6 +248,7 @@ namespace AttenceProject.Controllers
             }
             var res = new ContentResult();
             res.Content = result.TrimStart('[').TrimEnd(']');
+            //res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
             res.ContentType = "application/json";
             res.ContentEncoding = Encoding.UTF8;
             return res;
@@ -268,10 +257,10 @@ namespace AttenceProject.Controllers
         public ActionResult SaveApprove(string applyrate, string applystatus, string applyid)
         {
             IList<SysApprove> list = db_approve.SysApproves.Where(m => m.ApplyID.ToString() == applyid).ToList();
-            SysWorkOff sys_workoff_base = db.SysWorkOffs.Where(s => s.ID.ToString() == applyid).ToList()[0];
+            IList<SysVacation> list_vacation = db.SysVacationsContext.Where(s => s.ID.ToString() == applyid).ToList();
             //获取请假信息及最近一次的审批信息
 
-            string sendfor = sys_workoff_base.SendFor;
+            string sendfor = list_vacation[0].SendFor;
             string[] sendfors = sendfor.TrimEnd('_').Split('_');
             IList sendlist = sendfors.ToList();
 
@@ -281,7 +270,7 @@ namespace AttenceProject.Controllers
             sys.Applyrate = applyrate;
             sys.ApplyStatus = int.Parse(applystatus);
             sys.OpTime = DateTime.Now;
-            sys.ApplyType = "调休";
+            sys.ApplyType = "请假";
             HttpCookie cook = Request.Cookies["userinfo"];
             int NowCheckerIndex = sendlist.IndexOf(cook.Values["UserID"]);
             if (NowCheckerIndex == sendfors.Length - 1)
@@ -296,8 +285,9 @@ namespace AttenceProject.Controllers
 
                 //结束一个审批流程
                 //结束审批流程要做的事情：修改申请信息为通过:
-                sys_workoff_base.ApplyStatus = 1;
-                db.Entry<SysWorkOff>(sys_workoff_base).State = EntityState.Modified;
+                SysVacation sys_vacation_base = db.SysVacationsContext.Where(s => s.ID.ToString() == applyid).ToList()[0];
+                sys_vacation_base.ApplyStatus = 1;
+                db.Entry<SysVacation>(sys_vacation_base).State= EntityState.Modified;
                 db.SaveChanges();
                 //如果是请假则需要在个人账户上减少时间，如果是加班需要在个人账户上增加可用加班时间
 
@@ -331,7 +321,7 @@ namespace AttenceProject.Controllers
 
         public ActionResult GetApproveDetail(int id)
         {
-            string result = JsonTool.LI2J(db_approve.SysApproves.Where(m => m.ApplyID == id && m.LastChecker != 0&& m.ApplyType=="调休").ToList());
+            string result = JsonTool.LI2J(db_approve.SysApproves.Where(m => m.ApplyID == id && m.LastChecker != 0 && m.ApplyType == "请假").ToList());
             if (string.IsNullOrEmpty(result))
             {
                 return HttpNotFound();
@@ -343,14 +333,5 @@ namespace AttenceProject.Controllers
             res.ContentEncoding = Encoding.UTF8;
             return res;
         }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }
-

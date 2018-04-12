@@ -5668,14 +5668,17 @@
     <Compile Include="Controllers\SysMenusController.cs" />
     <Compile Include="Controllers\SysOverTimesController.cs" />
     <Compile Include="Controllers\SysUsersRolesController.cs" />
+    <Compile Include="Controllers\SysVacationsController.cs" />
     <Compile Include="Controllers\SysWorkOffsController.cs" />
     <Compile Include="Models\ModelContexts\SysApproveContext.cs" />
     <Compile Include="Models\ModelContexts\SysApplySetContext.cs" />
+    <Compile Include="Models\ModelContexts\SysVacationContext.cs" />
     <Compile Include="Models\ModelContexts\SysOverTimeContext.cs" />
     <Compile Include="Models\ModelContexts\View_SysUserInDeptContext - 复制.cs" />
     <Compile Include="Models\OriginalModel\SysApprove.cs" />
     <Compile Include="Models\OriginalModel\SysAccount.cs" />
     <Compile Include="Models\OriginalModel\SysApplySet.cs" />
+    <Compile Include="Models\OriginalModel\SysVacation.cs" />
     <Compile Include="Models\OriginalModel\SysOverTime.cs" />
     <Compile Include="Models\OriginalModel\SysAlternative.cs" />
     <Compile Include="Models\ModelContexts\SysAccountContext.cs" />
@@ -5716,12 +5719,6 @@
     <Content Include="Views\Login\toM.cshtml" />
     <Content Include="Views\SysDepts\Index.cshtml" />
     <Content Include="Views\SysAlternatives\Index.cshtml" />
-    <Content Include="Views\SysWorkOffs\Create.cshtml" />
-    <Content Include="Views\SysWorkOffs\Delete.cshtml" />
-    <Content Include="Views\SysWorkOffs\Details.cshtml" />
-    <Content Include="Views\SysWorkOffs\Edit.cshtml" />
-    <Content Include="Views\SysWorkOffs\Index.cshtml" />
-    <Content Include="Views\SysWorkOffs\StartWorkOff.cshtml" />
     <Content Include="Views\SysApplySets\Index.cshtml" />
     <Content Include="Views\SysOverTimes\Approve.cshtml" />
     <Content Include="Views\SysOverTimes\Index.cshtml" />
@@ -5731,6 +5728,12 @@
     <Content Include="Views\SysUsersRoles\Details.cshtml" />
     <Content Include="Views\SysUsersRoles\Edit.cshtml" />
     <Content Include="Views\SysUsersRoles\Index.cshtml" />
+    <Content Include="Views\SysVacations\Approve.cshtml" />
+    <Content Include="Views\SysVacations\Index.cshtml" />
+    <Content Include="Views\SysVacations\List.cshtml" />
+    <Content Include="Views\SysWorkOffs\Approve.cshtml" />
+    <Content Include="Views\SysWorkOffs\Index.cshtml" />
+    <Content Include="Views\SysWorkOffs\List.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

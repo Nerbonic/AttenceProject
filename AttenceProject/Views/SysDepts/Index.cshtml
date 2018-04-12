@@ -44,6 +44,9 @@
                     success: function (result) {
                         var deptname = result.DeptName;
                         var copyfor = result.CopyFor;
+                        var id = result.ID;
+                        $("#DeptID").val(id);
+
                         $("#DeptName").val(deptname);
                         $("#CopyFor").val(copyfor);
                         //$('#wu-form').form('load', data);
@@ -87,7 +90,97 @@
 
 
 		});
-		//-->
+        //-->
+
+
+	/**
+	* Name 打开添加部门窗口
+	*/
+		function DeptAdd() {
+		    $('#wu-form-add').form('clear');
+		    //alert($("#DeptID").val());
+		    $("#ParentNode").val($("#DeptID").val());
+		    $('#wu-dialog-add').dialog({
+		        closed: false,
+		        modal: true,
+		        title: "添加信息",
+		        buttons: [{
+		            text: '确定',
+		            iconCls: 'icon-ok',
+		            handler: add
+		        }, {
+		            text: '取消',
+		            iconCls: 'icon-cancel',
+		            handler: function () {
+		                $('#wu-dialog-add').dialog('close');
+		            }
+		        }]
+		    });
+		}
+
+		/**
+	* Name 添加部门记录
+	*/
+		function add() {
+		    $('#wu-form-add').form('submit', {
+		        url: '../../SysDepts/SaveAdd',
+		        success: function (data) {
+		            if (data) {
+		                $.messager.alert('信息提示', '提交成功！', 'info');
+		                $('#wu-dialog-add').dialog('close');
+		                window.location.reload();
+
+		            }
+		            else {
+		                $.messager.alert('信息提示', '提交失败！', 'info');
+		            }
+		        }
+		    });
+		}
+		/**
+	* Name 打开添加员工窗口
+	*/
+		function UserAdd() {
+		    $('#wu-form-user-add').form('clear');
+		    //alert($("#DeptID").val());
+		    $("#ParentNode_User").val($("#DeptID").val());
+		    $('#wu-dialog-user-add').dialog({
+		        closed: false,
+		        modal: true,
+		        title: "添加信息",
+		        buttons: [{
+		            text: '确定',
+		            iconCls: 'icon-ok',
+		            handler: useradd
+		        }, {
+		            text: '取消',
+		            iconCls: 'icon-cancel',
+		            handler: function () {
+		                $('#wu-dialog-user-add').dialog('close');
+		            }
+		        }]
+		    });
+		}
+
+		/**
+	* Name 添加员工记录
+	*/
+		function useradd() {
+		    $('#wu-form-user-add').form('submit', {
+		        url: '../../SysDepts/SaveUserAdd',
+		        success: function (data) {
+		            if (data) {
+		                $.messager.alert('信息提示', '提交成功！', 'info');
+		                $('#wu-dialog-user-add').dialog('close');
+		                window.location.reload();
+
+		            }
+		            else {
+		                $.messager.alert('信息提示', '提交失败！', 'info');
+		            }
+		        }
+		    });
+		}
     </SCRIPT>
 </head>
 </head>
@@ -103,7 +196,7 @@
             <div id="wu-toolbar">
                 <div class="wu-toolbar-button">
                     <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="DeptAdd()" plain="true">添加部门</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="PersonAdd()" plain="true">添加员工</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="UserAdd()" plain="true">添加员工</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removeAll()" plain="true">删除部门及员工</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removePerson()" plain="true">删除员工</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="EditDept()" plain="true">编辑部门</a>
@@ -122,15 +215,11 @@
                     <table>
                         <tr style="display:none;">
                             <td width="70" align="right">ID:</td>
-                            <td><input type="text" name="ID" class="wu-text" /></td>
+                            <td><input type="text" name="DeptID" id="DeptID" class="wu-text" /></td>
                         </tr>
                         <tr>
                             <td width="70" align="right">部门名称:</td>
                             <td><input type="text" id="DeptName" name="DeptName" class="wu-text" /></td>
-                        </tr>
-                        <tr>
-                            <td width="70" align="right">部门申请抄送人:</td>
-                            <td><input type="text" id="CopyFor" name="CopyFor" class="wu-text" /></td>
                         </tr>
                     </table>
                 </form>
@@ -139,7 +228,7 @@
                     <table>
                         <tr style="display:none;">
                             <td width="70" align="right">ID:</td>
-                            <td><input type="text" name="ID" class="wu-text" /></td>
+                            <td><input type="text" name="UserID" class="wu-text" /></td>
                         </tr>
                         <tr>
                             <td width="70" align="right">用户名称:</td>
@@ -174,34 +263,52 @@
             @Html.ActionLink("Create New", "Create")
         </p>
     </div>
-    <!-- Begin of easyui-dialog -->
-    <div id="wu-dialog" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
-        <form id="wu-form" method="post">
+    <!-- Begin of easyui-dialog （部门添加窗口）-->
+    <div id="wu-dialog-add" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
+        <form id="wu-form-add" method="post">
             <table>
                 <tr style="display:none;">
-                    <td width="70" align="right">ID:</td>
-                    <td><input type="text" name="ID" class="wu-text" /></td>
+                    <td width="70" align="right">ParentNode:</td>
+                    <td><input type="text" name="ParentNode" id="ParentNode" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">备选项名称:</td>
-                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                    <td width="70" align="right">部门名称:</td>
+                    <td><input type="text" name="DeptName" class="wu-text" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <!-- End of easyui-dialog -->
+
+    <!-- Begin of easyui-dialog （员工添加窗口）-->
+    <div id="wu-dialog-user-add" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
+        <form id="wu-form-user-add" method="post">
+            <table>
+                <tr style="display:none;">
+                    <td width="70" align="right">ParentNode:</td>
+                    <td><input type="text" name="ParentNode" id="ParentNode_User" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">备选项名称:</td>
-                    <td>
-                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="AlternativeGroupID" name="AlternativeGroupID" data-options="required:true,
-                   url:'../../SysAlternatives/GetGroup/1',
-                   method:'get',
-                   multiple:false,
-                   valueField:'AlternativeGroupID',
-                   textField:'AlternativeGroupText'
-                           "></select>
-                    </td>
+                    <td width="70" align="right">员工姓名:</td>
+                    <td><input type="text" name="UserName" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">备选项信息:</td>
-                    <td><input type="text" name="Remarks" class="wu-text" /></td>
+                    <td width="70" align="right">员工登录名:</td>
+                    <td><input type="text" name="LoginName" class="wu-text" /></td>
                 </tr>
+                <tr>
+                    <td width="70" align="right">登录密码:</td>
+                    <td><input type="text" name="PassWord" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">员工工号:</td>
+                    <td><input type="text" name="UserCode" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td width="70" align="right">员工角色权限:</td>
+                    <td><input type="text" name="UserRole" class="wu-text" /></td>
+                </tr>
+
             </table>
         </form>
     </div>

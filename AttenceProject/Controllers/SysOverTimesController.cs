@@ -126,6 +126,7 @@ namespace AttenceProject.Controllers
 
             #region 新建审批流信息
             SysApprove sysapprove = new SysApprove();
+            sysapprove.ApplyType = "加班";
             sysapprove.ApplyID = sys.ID;
             sysapprove.LastChecker = 0;
             sysapprove.ApplyStatus = 0;
@@ -182,9 +183,12 @@ namespace AttenceProject.Controllers
         }
         public ActionResult GetApprove()
         {
+
+            #region 取出最近的加班的审批进度
             //这段linq是用来将所有最新的审批进度取出来
             var list = db_approve.SysApproves.ToList();//取出所有进度
             var query = from d in list
+                        where list.Any(aa => aa.ApplyType == "加班")
                         group d by d.ApplyID into g
                         select new
                         {
@@ -225,6 +229,7 @@ namespace AttenceProject.Controllers
                             a.ApplyStatus
 
                         };
+            #endregion
 
             var res = new ContentResult();
             string result = JsonTool.LI2J(query_show.ToList());
@@ -273,10 +278,10 @@ namespace AttenceProject.Controllers
         public ActionResult SaveApprove(string applyrate,string applystatus,string applyid)
         {
             IList<SysApprove> list = db_approve.SysApproves.Where(m => m.ApplyID.ToString() == applyid).ToList();
-            IList<SysOverTime> list_overtime = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList();
+            SysOverTime sys_overtime = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
             //获取请假信息及最近一次的审批信息
 
-            string sendfor = list_overtime[0].SendFor;
+            string sendfor = sys_overtime.SendFor;
             string[] sendfors = sendfor.TrimEnd('_').Split('_');
             IList sendlist = sendfors.ToList();
 
@@ -286,14 +291,32 @@ namespace AttenceProject.Controllers
             sys.Applyrate = applyrate;
             sys.ApplyStatus = int.Parse(applystatus);
             sys.OpTime = DateTime.Now;
+            sys.ApplyType = "加班";
             
             HttpCookie cook = Request.Cookies["userinfo"];
             int NowCheckerIndex = sendlist.IndexOf(cook.Values["UserID"]);
             if (NowCheckerIndex == sendfors.Length - 1)
             {
                 //如果是最后一个人的审批的此条申请
-                //结束一个审批流程
-                return null;
+                //保存最后一个人的审批信息
+                sys.NextChecker = 0;
+                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                sys.NowChecker = 0;
+                db_approve.SysApproves.Add(sys);
+                db_approve.SaveChanges();
+
+                //结束一个审批流程：
+                //结束审批流程要做的事情：修改申请信息为通过：
+                SysOverTime sys_overtime_base = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
+                sys_overtime_base.ApplyStatus = 1;
+                db.Entry<SysOverTime>(sys_overtime_base).State = EntityState.Modified;
+                db.SaveChanges();
+
+                //如果是请假则不需要增加可用加班时间，如果是加班需要在个人账户上增加可用加班时间：
+                SysUsersRole sys_user = db_user.sur.Find(cook.Values["UserID"]);
+                //sys_user.OverTime=list_overtime[0].Time
+
+                return Content("success");
             }
             else if (NowCheckerIndex == sendfors.Length - 2)
             {
@@ -323,7 +346,7 @@ namespace AttenceProject.Controllers
 
         public ActionResult GetApproveDetail(int id)
         {
-            string result = JsonTool.LI2J(db_approve.SysApproves.Where(m => m.ApplyID == id && m.LastChecker != 0).ToList());
+            string result = JsonTool.LI2J(db_approve.SysApproves.Where(m => m.ApplyID == id && m.LastChecker != 0 && m.ApplyType == "加班").ToList());
             if (string.IsNullOrEmpty(result))
             {
                 return HttpNotFound();

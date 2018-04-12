@@ -98,29 +98,45 @@ namespace AttenceProject.Controllers
 
 
         /// <summary>
-        /// 保存信息
+        /// 新增部门
         /// </summary>
-        /// <param name="AlternativeText">备选项名称</param>
-        /// <param name="Remarks">备选项</param>
-        /// <param name="AlternativeGroupID"></param>
+        /// <param name="DeptName">部门名称</param>
+        /// <param name="CopyFor">部门抄送人</param>
+        /// <param name="ParentNode">父级节点</param>
         /// <returns></returns>
-        public ActionResult SaveAdd(string DeptName, string DeptOrder, string DeptRole,string CopyFor)
+        public ActionResult SaveAdd(string DeptName,string ParentNode)
         {
-            IList<SysAlternative> list = db.SysAlternatives.Where(m => m.AlternativeGroupID.ToString() == AlternativeGroupID).ToList();
-            if (list.Count > 0)
-            {
-                string AlternativeGroupText = list[0].AlternativeGroupText;
+            string CopyFor = "9999";
+            string DeptRole = "9999";
+            string DeptOrder = "9999";
+            SysDept sys = new SysDept();
+            sys.DeptName = DeptName;
+            sys.DeptOrder = int.Parse(DeptOrder);
+            sys.DeptRole = int.Parse(DeptRole);
+            sys.CopyFor = CopyFor;
+            sys.ParentNode = int.Parse(ParentNode);
+            sys.Operator = "admin";
+            sys.OpTime = DateTime.Now;
+            db.SysDepts.Add(sys);
+            db.SaveChanges();
+            return Content("success");
+        }
 
-                SysAlternative sys = new SysAlternative();
-                sys.AlternativeText = AlternativeText;
-                sys.AlternativeGroupText = AlternativeGroupText;
-                sys.Remarks = Remarks;
-                sys.Operator = "admin";
-                sys.OpTime = DateTime.Now;
-                sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
-                db.SysAlternatives.Add(sys);
-                db.SaveChanges();
-            }
+        public ActionResult SaveUserAdd(string ParentNode,string UserName,string LoginName,string UserCode,string PassWord,string UserRole)
+        {
+            SysUsersRole sys = new SysUsersRole();
+            sys.LoginName = LoginName;
+            sys.Operator = "admin";
+            sys.OpTime = DateTime.Now;
+            sys.OverTime = 0;
+            sys.PassWord = PassWord;
+            sys.UserCode = UserCode;
+            sys.UserDeptID = int.Parse(ParentNode);
+            sys.UserName = UserName;
+            sys.UserRole = int.Parse(UserRole);
+            sys.UserState = 1;
+            db_userrole.sur.Add(sys);
+            db_userrole.SaveChanges();
             return Content("success");
 
         }
