@@ -18,6 +18,7 @@ namespace AttenceProject.Controllers
         private SysDeptContext db = new SysDeptContext();
         private View_GeneralTreeContext db_GeneralTree = new View_GeneralTreeContext();
         private SysUsersRoleDbContext db_userrole = new SysUsersRoleDbContext();
+        private SysOverTimeContext db_overtime = new SysOverTimeContext();
 
         // GET: SysDepts
         public ActionResult Index()
@@ -122,6 +123,16 @@ namespace AttenceProject.Controllers
             return Content("success");
         }
 
+        /// <summary>
+        /// 保存新增用户
+        /// </summary>
+        /// <param name="ParentNode"></param>
+        /// <param name="UserName"></param>
+        /// <param name="LoginName"></param>
+        /// <param name="UserCode"></param>
+        /// <param name="PassWord"></param>
+        /// <param name="UserRole"></param>
+        /// <returns></returns>
         public ActionResult SaveUserAdd(string ParentNode,string UserName,string LoginName,string UserCode,string PassWord,string UserRole)
         {
             SysUsersRole sys = new SysUsersRole();
@@ -139,6 +150,73 @@ namespace AttenceProject.Controllers
             db_userrole.SaveChanges();
             return Content("success");
 
+        }
+
+        /// <summary>
+        /// 保存部门的修改
+        /// </summary>
+        /// <param name="deptid"></param>
+        /// <param name="deptname"></param>
+        /// <returns></returns>
+        public ActionResult SaveDeptEdit(string deptid,string deptname)
+        {
+            SysDept sys = db.SysDepts.Where(a => a.ID.ToString().Equals(deptid)).ToList()[0];
+            sys.DeptName = deptname;
+            db.Entry<SysDept>(sys).State = EntityState.Modified;
+            db.SaveChanges();
+            return Content("success");
+        }
+
+
+        /// <summary>
+        /// 获取部门统计信息
+        /// </summary>
+        /// <param name="deptid"></param>
+        /// <param name="starttime"></param>
+        /// <param name="endtime"></param>
+        /// <returns>时间段内申请的总的加班时长_申请次数</returns>
+        public ActionResult DeptStatic(string deptid,string starttime,string endtime)
+        {
+            IList<int> staffs = new List<int>();
+            staffs = GetStaff(deptid, staffs);
+            var list_overtime = db_overtime.SysOverTimes.ToList();
+            var query = from a in list_overtime
+                        where (staffs.Contains(a.ProposerID))
+                        && a.OpTime > Convert.ToDateTime(starttime) && a.OpTime < Convert.ToDateTime(endtime)
+                        select a;
+
+            var list = query.ToList();
+            float sum= list.Sum(p => p.Time);
+            int count = list.Count();
+            return Content(sum.ToString() + "_" + count.ToString());
+        }
+
+        /// <summary>
+        /// 获取某个节点下的所有人员ID
+        /// </summary>
+        /// <param name="deptid"></param>
+        /// <param name="staffs"></param>
+        /// <returns></returns>
+        public IList<int> GetStaff(string deptid,IList<int> staffs)
+        {
+            var list = db.SysDepts.Where(a => a.ParentNode.ToString().Equals(deptid)).ToList();
+            var list_staffs = db_userrole.sur.Where(a => a.UserDeptID.ToString().Equals(deptid)).ToList();
+            if (list_staffs.Count > 0)
+            {
+                for (int i = 0; i < list_staffs.Count; i++)
+                {
+                    staffs.Add(list_staffs[i].ID);
+                }
+            }
+            if (list.Count > 0)
+            {
+                for(int i = 0; i < list.Count; i++)
+                {
+                    string son_deptid = list[i].ID.ToString();
+                    staffs = GetStaff(son_deptid, staffs);
+                }
+            }
+            return staffs;
         }
 
     }

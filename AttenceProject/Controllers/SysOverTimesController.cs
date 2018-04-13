@@ -104,12 +104,18 @@ namespace AttenceProject.Controllers
             sys.ApplyStatus = 0;
             sys.StartTime = DateTime.Parse(StartTime);
             sys.EndTime = DateTime.Parse(EndTime);
-            sys.CopyFor = "11";
+            sys.CopyFor = CopyFor;
             string[] SendFors= SendFor.TrimEnd('_').Split('_');
-            foreach(var sendfor in SendFors)
+            string[] CopyFors = SendFor.TrimEnd('_').Split('_');
+            foreach (var sendfor in SendFors)
             {
                 sys.SendFor += (int.Parse(sendfor) - 10000).ToString() + '_';
             }
+            foreach (var copyfor in CopyFors)
+            {
+                sys.CopyFor += (int.Parse(copyfor) - 10000).ToString() + '_';
+            }
+            sys.CopyFor = '_' + sys.CopyFor;
             TimeSpan ts1 = sys.EndTime - sys.StartTime;//计算加班总经历时间的时间戳
             int hours = ts1.Hours - 9;//计算加班结束当天的多出来的加班时间
             int days = ts1.Days;//若加班大于1天，计算加班天数
@@ -181,14 +187,19 @@ namespace AttenceProject.Controllers
         {
             return View();
         }
+
+        public ActionResult ApproveCopy()
+        {
+            return View();
+        }
         public ActionResult GetApprove()
         {
+            HttpCookie cook = Request.Cookies["userinfo"];
 
             #region 取出最近的加班的审批进度
             //这段linq是用来将所有最新的审批进度取出来
-            var list = db_approve.SysApproves.ToList();//取出所有进度
+            var list = db_approve.SysApproves.Where(a => a.ApplyType == "加班");//取出所有进度
             var query = from d in list
-                        where list.Any(aa => aa.ApplyType == "加班")
                         group d by d.ApplyID into g
                         select new
                         {
@@ -198,8 +209,10 @@ namespace AttenceProject.Controllers
             //按不同审批找出不同审批的最大时间，返回审批ID和时间
 
             var query_final = from b in list
-                              where query.Any(ss => ss.OpTime == b.OpTime && ss.ApplyID==b.ApplyID)
-                             select b;
+                              join aa in query
+                              on new { b.OpTime, b.ApplyID }
+                              equals new { aa.OpTime, aa.ApplyID }
+                              select b;
             //按照找出的审批ID和时间在所有进度里进行筛选
        
             var list_end = query_final.ToList();//找出所有审批的最新进度
@@ -209,7 +222,8 @@ namespace AttenceProject.Controllers
             var query_show = from a in list_end
                         join b in list_overtime
                         on a.ApplyID equals b.ID
-                        select new
+                        where b.ApplyStatus != 1 && a.NowChecker == int.Parse(cook.Values["UserID"])
+                             select new
                         {
                             b.ID,
                             b.ProposerID,
@@ -355,6 +369,77 @@ namespace AttenceProject.Controllers
             res.Content = result.TrimStart('{').TrimEnd('}');
             //res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
             res.ContentType = "application/json";
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
+
+        /// <summary>
+        /// 获取抄送到的申请数据
+        /// </summary>
+        /// <param name="row">一页的行数</param>
+        /// <param name="page">第几页</param>
+        /// <returns></returns>
+        public ActionResult GetApproveCopy(int row,int page)
+        {
+            HttpCookie cook = Request.Cookies["userinfo"];
+
+            #region 取出最近的加班的审批进度
+            //这段linq是用来将所有最新的审批进度取出来
+            var list = db_approve.SysApproves.Where(a => a.ApplyType == "加班");//取出所有进度
+            var query = from d in list
+                        group d by d.ApplyID into g
+                        select new
+                        {
+                            OpTime = g.Max(x => x.OpTime),
+                            ApplyID = g.Key
+                        };
+            //按不同审批找出不同审批的最大时间，返回审批ID和时间
+
+            var query_final = from b in list
+                              join aa in query
+                              on new { b.OpTime, b.ApplyID }
+                              equals new { aa.OpTime, aa.ApplyID }
+                              select b;
+            //按照找出的审批ID和时间在所有进度里进行筛选
+
+            var list_end = query_final.ToList();//找出所有审批的最新进度
+
+            var list_overtime = db.SysOverTimes.ToList();
+
+            var query_show = from a in list_end
+                             join b in list_overtime
+                             on a.ApplyID equals b.ID
+                             where (b.CopyFor.Contains("_"+cook.Values["UserID"]+"_"))
+                             select new
+                             {
+                                 b.ID,
+                                 b.ProposerID,
+                                 b.SendFor,
+                                 b.StartTime,
+                                 b.EndTime,
+                                 b.Time,
+                                 b.OverTimeType,
+                                 b.Account_Method,
+                                 b.OverTimeReason,
+                                 b.CopyFor,
+                                 a.ApplyID,
+                                 a.LastChecker,
+                                 a.NextChecker,
+                                 a.NowChecker,
+                                 a.Applyrate,
+                                 a.ApplyStatus
+                             };
+            #endregion
+            var list_show = query_show.ToList();
+            //list_show.OrderBy(m=>m.ID)
+            var res = new ContentResult();
+            string result = JsonTool.LI2J(list_show);
+            result = "{\"total\":" + list_show.Count + ",\"rows\":" + result + "}";
+            StringBuilder sb = new StringBuilder();
+            sb.Append(result);
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
             res.ContentEncoding = Encoding.UTF8;
             return res;
         }

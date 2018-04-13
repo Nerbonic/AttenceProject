@@ -164,10 +164,15 @@ namespace AttenceProject.Controllers
         }
         public ActionResult GetApprove()
         {
+            HttpCookie cook = Request.Cookies["userinfo"];
+
+            //取审批时，从所有最新审批中找到符合以下两个条件的审批进度：
+            //1、审批尚未完成
+            //2、最新进度的NowChecker为登录人的
+
             //这段linq是用来将所有最新的【请假】审批进度取出来
-            var list = db_approve.SysApproves.ToList();//取出所有进度
+            var list = db_approve.SysApproves.Where(a => a.ApplyType == "请假");//取出所有进度
             var query = from d in list
-                        where list.Any(aa => aa.ApplyType == "请假")
                         group d by d.ApplyID into g
                         select new
                         {
@@ -177,7 +182,9 @@ namespace AttenceProject.Controllers
             //按不同审批找出不同审批的最大时间，返回审批ID和时间
 
             var query_final = from b in list
-                              where query.Any(ss => ss.OpTime == b.OpTime && ss.ApplyID == b.ApplyID)
+                              join aa in query
+                              on new { b.OpTime, b.ApplyID }
+                              equals new { aa.OpTime, aa.ApplyID }
                               select b;
             //按照找出的审批ID和时间在所有进度里进行筛选
 
@@ -188,6 +195,7 @@ namespace AttenceProject.Controllers
             var query_show = from a in list_end
                              join b in list_vacation
                              on a.ApplyID equals b.ID
+                             where b.ApplyStatus != 1 && a.NowChecker == int.Parse(cook.Values["UserID"])
                              select new
                              {
                                  b.ID,

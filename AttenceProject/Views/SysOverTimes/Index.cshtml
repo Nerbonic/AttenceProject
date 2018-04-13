@@ -55,6 +55,7 @@
                 onExpand: onExpand
             }
         };
+     
         function dropPrev(treeId, nodes, targetNode) {
             var pNode = targetNode.getParentNode();
             if (pNode && pNode.dropInner === false) {
@@ -167,14 +168,21 @@
             });
         });
         function saveOverTime() {
-            debugger;
+            //debugger;
             var treeObj = $.fn.zTree.getZTreeObj("treeDemo2");
+            var treeObj_CopyFor = $.fn.zTree.getZTreeObj("treeDemo4");
             var nodes = treeObj.getNodes();
+            var nodes_CopyFor = treeObj_CopyFor.getNodes();
             var list = "";
+            var list_CopyFor = "";
             for (var i = 0; i < nodes.length; i++) {
-                list += nodes[i].id+'_';
+                list += nodes[i].id + '_';
             }
             $("#SendFor").val(list);
+            for (var i = 0; i < nodes_CopyFor.length; i++) {
+                list_CopyFor += nodes_CopyFor[i].id + '_';
+            }
+            $("#CopyFor").val(list_CopyFor);
             document.form1.submit();
         }
         
@@ -188,6 +196,9 @@
                     zNodes = JSON.parse(result);
                     $.fn.zTree.init($("#treeDemo"), setting, zNodes);
                     $.fn.zTree.init($("#treeDemo2"), setting);
+                    $.fn.zTree.init($("#treeDemo3"), setting, zNodes);
+                    $.fn.zTree.init($("#treeDemo4"), setting);
+
                     $("#callbackTrigger").bind("change", {}, setTrigger);
 
                 }
@@ -206,23 +217,23 @@
         <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
             <table style="">
                 <tr style="display:none">
-                    <td width="70" align="right">ID:</td>
+                    <td width="100" align="right">ID:</td>
                     <td><input type="text" name="ID" class="wu-text" value="@cook.Values["UserID"]" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">加班人姓名:</td>
+                    <td width="100" align="right">加班人姓名:</td>
                     <td><input type="text" name="UserName" class="wu-text" value="@cook.Values["UserName"]" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">工号:</td>
+                    <td width="100" align="right">工号:</td>
                     <td><input type="text" name="UserCode" class="wu-text" value="@cook.Values["UserCode"]" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">加班原因:</td>
+                    <td width="100" align="right">加班原因:</td>
                     <td><input type="text" name="OverTimeReason" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">加班类型:</td>
+                    <td width="100" align="right">加班类型:</td>
                     <td>
                         <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="OverTimeType" name="OverTimeType" data-options="required:true,
                    url:'../../SysOverTimes/GetOverTimeType',
@@ -234,7 +245,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">加班结算类型:</td>
+                    <td width="100" align="right">加班结算类型:</td>
                     <td>
                         <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="Account_Method" name="Account_Method" data-options="required:true,
                    url:'../../SysOverTimes/GetAccountMethod',
@@ -246,25 +257,25 @@
                     </td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">加班开始时间:</td>
+                    <td width="100" align="right">加班开始时间:</td>
                     <td>
                         <input class="easyui-datetimebox" value="" name="StartTime" id="StartTime" style="width:200px">
                     </td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">加班结束时间:</td>
+                    <td width="100" align="right">加班结束时间:</td>
                     <td>
                         <input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
                     </td>
                 </tr>
                 <tr style="display:none">
-                    <td width="70" align="right">审批人流:</td>
+                    <td width="100" align="right">审批人流:</td>
                     <td>
                         <input type="text" value="" name="SendFor" id="SendFor" style="display:none" />
                     </td>
                 </tr>
                 <tr style="display:none">
-                    <td width="70" align="right">抄送人流:</td>
+                    <td width="100" align="right">抄送人流:</td>
                     <td>
                         <input type="text" name="CopyFor" id="CopyFor" style="display:none" />
                     </td>
@@ -275,8 +286,8 @@
            
 
         </form>
-        <div id="SendForTree">
-            <div class="zTreeDemoBackground left" style="float:left" style="height:80px">
+        <div id="SendForTree" style="height:120px">
+            <div class="zTreeDemoBackground left" style="float:left;height:120px" >
 
                 <ul id="treeDemo" class="ztree" style="height:80px"></ul>
             </div>
@@ -284,6 +295,16 @@
                 <ul id="treeDemo2" class="ztree" style="height:80px"></ul>
             </div>
         </div>
+        <div id="SendForTree" style="height:120px">
+            <div class="zTreeDemoBackground left" style="float:left;height:120px">
+
+                <ul id="treeDemo3" class="ztree" style="height:80px"></ul>
+            </div>
+            <div class="right" style="height:80px">
+                <ul id="treeDemo4" class="ztree" style="height:80px"></ul>
+            </div>
+        </div>
+
         <div style="width:85%;">
             <a href="#" class="easyui-linkbutton" onclick="saveOverTime()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
                 提交申请

@@ -5734,6 +5734,7 @@
     <Content Include="Views\SysWorkOffs\Approve.cshtml" />
     <Content Include="Views\SysWorkOffs\Index.cshtml" />
     <Content Include="Views\SysWorkOffs\List.cshtml" />
+    <Content Include="Views\SysOverTimes\ApproveCopy.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

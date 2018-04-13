@@ -1,5 +1,4 @@
-﻿@model IEnumerable<AttenceProject.Models.SysOverTime>
-
+﻿
 @{
     Layout = null;
 }
@@ -17,7 +16,9 @@
     <script src="~/scripts/easyui-lang-zh_CN.js"></script>
     <link rel="stylesheet" type="text/css" href="~/easyui/themes/default/easyui.css" />
     <script type="text/javascript">
-	/**
+        
+
+        /**
 	* Name 添加记录
 	*/
 	function add(){
@@ -238,6 +239,27 @@
 	$(document).ready(function () {
 	    //doSearch();
 	})
+
+	$(function (jsonArray) {
+	    $('#wu-datagrid').datagrid({
+	        title: '抄送列表',
+	        iconCls: 'icon-ok',
+	        pageSize: 1,//默认选择的分页是每页5行数据
+	        pageList: [1, 2, 3, 4],//可以选择的分页集合
+	        nowrap: true,//设置为true，当数据长度超出列宽时将会自动截取
+	        striped: true,//设置为true将交替显示行背景。
+	        collapsible: true,//显示可折叠按钮
+	        toolbar: "#tb",//在添加 增添、删除、修改操作的按钮要用到这个
+	        url: '../../SysOverTimes/GetApproveCopy',//url调用Action方法
+	        method: 'get',
+	        loadMsg: '数据装载中......',
+	        singleSelect: true,//为true时只能选择单行
+	        fitColumns: true,//允许表格自动缩放，以适应父容器
+	        remoteSort: false,
+	        pagination: true,//分页
+	        rownumbers: true //行数
+	    })
+	});
     </script>
 </head>
 <body>
@@ -247,10 +269,7 @@
             <!-- Begin of toolbar -->
             <div id="wu-toolbar" class="datagrid-toolbar">
                 <div class="wu-toolbar-button">
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openAdd()" plain="true">添加</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openApprove()" plain="true">修改</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetail()" plain="true">查看详情</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="openApprove()" plain="true">进行审批</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="openApprove()" plain="true">查看审批进度</a>
 
                 </div>
                 @*<div class="wu-toolbar-search">
@@ -269,27 +288,26 @@
                     </div>*@
             </div>
             <!-- End of toolbar -->
-            <table id="wu-datagrid" class="easyui-datagrid" toolbar="#wu-toolbar" title="Basic DataGrid" style="width:inherit; height:inherit"
-                   data-options="singleSelect:true,collapsible:true,url:'../../SysOverTimes/GetApprove',pagesize:3,method:'get'"
-                   footer="#foot" pagination="true" rownumbers="true" singleselect="true" fitColumns="true">
-                <thead>
-                    <tr>
-                        <th field="ck" checkbox="true"></th>
-                        <th data-options="field:'ID',width:80">ID</th>
-                        <th data-options="field:'ProposerID',width:100">申请人ID</th>
-                        <th data-options="field:'StartTime',width:120,align:'right'">开始时间</th>
-                        <th data-options="field:'EndTime',width:120">结束时间</th>
-                        <th data-options="field:'Time',width:60,align:'center'">时长</th>
-                        <th data-options="field:'OverTimeType',width:80,align:'right'">加班类型</th>
-                        <th data-options="field:'Account_Method',width:120">加班结算方式</th>
-                        <th data-options="field:'OverTimeReason',width:200,align:'center'">加班原因</th>
-                        <th data-options="field:'CopyFor',width:120">抄送人</th>
-                        <th data-options="field:'ApplyStatus',width:60,align:'center'">申请状态</th>
-                    </tr>
-                </thead>
-            </table>
-            
-        </div>
+            <table id="wu-datagrid" class="easyui-datagrid"
+                   data-options="toolbar:'#wu-toolbar',border:false,singleSelect:true"  style="width:inherit; height:inherit">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'ID',width:80">ID</th>
+                            <th data-options="field:'ProposerID',width:100">申请人ID</th>
+                            <th data-options="field:'StartTime',width:120,align:'right'">开始时间</th>
+                            <th data-options="field:'EndTime',width:120">结束时间</th>
+                            <th data-options="field:'Time',width:60,align:'center'">时长</th>
+                            <th data-options="field:'OverTimeType',width:80,align:'right'">加班类型</th>
+                            <th data-options="field:'Account_Method',width:120">加班结算方式</th>
+                            <th data-options="field:'OverTimeReason',width:200,align:'center'">加班原因</th>
+                            <th data-options="field:'CopyFor',width:120">抄送人</th>
+                            <th data-options="field:'ApplyStatus',width:60,align:'center'">申请状态</th>
+                        </tr>
+                    </thead>
+                </table>
+
+</div>
     </div>
 
     <!-- Begin of easyui-dialog -->
@@ -331,17 +349,6 @@
                 <tr id="tr_reason">
                     <td align="right" width="70">加班原因:</td>
                     <td><input type="text" name="OverTimeReason" disabled="disabled" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">审批意见:</td>
-                    <td><textarea class="wu-textarea" id="Applyrate" name="Applyrate"></textarea></td>
-                </tr>
-                <tr>
-                    <td align="right" width="70">审批结果:</td>
-                    <td>
-                        <input type="radio" name="ApplyStatus"  value="1"/>通过
-                        <input type="radio" name="ApplyStatus"  value="0"/>驳回
-                    </td>
                 </tr>
             </table>
         </form>

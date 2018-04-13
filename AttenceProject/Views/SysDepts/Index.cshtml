@@ -99,23 +99,27 @@
 		function DeptAdd() {
 		    $('#wu-form-add').form('clear');
 		    //alert($("#DeptID").val());
-		    $("#ParentNode").val($("#DeptID").val());
-		    $('#wu-dialog-add').dialog({
-		        closed: false,
-		        modal: true,
-		        title: "添加信息",
-		        buttons: [{
-		            text: '确定',
-		            iconCls: 'icon-ok',
-		            handler: add
-		        }, {
-		            text: '取消',
-		            iconCls: 'icon-cancel',
-		            handler: function () {
-		                $('#wu-dialog-add').dialog('close');
-		            }
-		        }]
-		    });
+		    if ($(".deptinfo").css('display') == 'none') {
+		        $.messager.alert('信息提示', '请点击选择一个部门再添加！', 'info');
+		    } else {
+		        $("#ParentNode").val($("#DeptID").val());
+		        $('#wu-dialog-add').dialog({
+		            closed: false,
+		            modal: true,
+		            title: "添加信息",
+		            buttons: [{
+		                text: '确定',
+		                iconCls: 'icon-ok',
+		                handler: add
+		            }, {
+		                text: '取消',
+		                iconCls: 'icon-cancel',
+		                handler: function () {
+		                    $('#wu-dialog-add').dialog('close');
+		                }
+		            }]
+		        });
+		    }
 		}
 
 		/**
@@ -137,21 +141,49 @@
 		        }
 		    });
 		}
-		/**
+	/**
 	* Name 打开添加员工窗口
 	*/
 		function UserAdd() {
 		    $('#wu-form-user-add').form('clear');
 		    //alert($("#DeptID").val());
-		    $("#ParentNode_User").val($("#DeptID").val());
-		    $('#wu-dialog-user-add').dialog({
+		    if ($(".deptinfo").css('display') == 'none') {
+		        $.messager.alert('信息提示', '请点击选择一个部门再添加！', 'info');
+		    } else {
+		        $("#ParentNode_User").val($("#DeptID").val());
+		        $('#wu-dialog-user-add').dialog({
+		            closed: false,
+		            modal: true,
+		            title: "添加信息",
+		            buttons: [{
+		                text: '确定',
+		                iconCls: 'icon-ok',
+		                handler: useradd
+		            }, {
+		                text: '取消',
+		                iconCls: 'icon-cancel',
+		                handler: function () {
+		                    $('#wu-dialog-user-add').dialog('close');
+		                }
+		            }]
+		        });
+		    }
+		    
+		}
+
+		/**
+	* Name 打开修改部门窗口
+	*/
+		function EditDept() {
+		    $('#wu-form-user-add').form('clear');
+		    $('#wu-dialog-dept-add').dialog({
 		        closed: false,
 		        modal: true,
 		        title: "添加信息",
 		        buttons: [{
 		            text: '确定',
 		            iconCls: 'icon-ok',
-		            handler: useradd
+		            handler: deptedit
 		        }, {
 		            text: '取消',
 		            iconCls: 'icon-cancel',
@@ -161,8 +193,25 @@
 		        }]
 		    });
 		}
-
 		/**
+            * Name 修改部门信息
+            */
+		function deptedit() {
+		    $('#wu-form-user-add').form('submit', {
+		        url: '../../SysDepts/SaveDeptEdit',
+		        success: function (data) {
+		            if (data) {
+		                $.messager.alert('信息提示', '提交成功！', 'info');
+		                $('#wu-dialog-user-add').dialog('close');
+		                window.location.reload();
+		            }
+		            else {
+		                $.messager.alert('信息提示', '提交失败！', 'info');
+		            }
+		        }
+		    });
+		}
+	/**
 	* Name 添加员工记录
 	*/
 		function useradd() {
