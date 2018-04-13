@@ -214,7 +214,6 @@ namespace AttenceProject.Controllers
                                  a.NowChecker,
                                  a.Applyrate,
                                  a.ApplyStatus
-
                              };
 
             var res = new ContentResult();

@@ -219,5 +219,11 @@ namespace AttenceProject.Controllers
             return staffs;
         }
 
+        public ActionResult DeptCount()
+        {
+            return View();
+        }
+
+
     }
 }
