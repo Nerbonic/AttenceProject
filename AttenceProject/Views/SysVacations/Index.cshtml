@@ -167,16 +167,42 @@
         function saveVacation() {
             debugger;
             var treeObj = $.fn.zTree.getZTreeObj("treeDemo2");
+            var treeObj_CopyFor = $.fn.zTree.getZTreeObj("treeDemo3");
             var nodes = treeObj.getNodes();
+            var nodes_CopyFor = treeObj_CopyFor.getCheckedNodes(true)
+
             var list = "";
+            var list_CopyFor = "";
             for (var i = 0; i < nodes.length; i++) {
-                list += nodes[i].id+'_';
+                list += nodes[i].id + '_';
             }
             $("#SendFor").val(list);
+            for (var i = 0; i < nodes_CopyFor.length; i++) {
+                list_CopyFor += nodes_CopyFor[i].id + '_';
+            }
+            $("#CopyFor").val(list_CopyFor);
             document.form1.submit();
         }
-        
-
+        function setCheck() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo3"),
+			py = $("#py").attr("checked") ? "p" : "",
+			sy = $("#sy").attr("checked") ? "s" : "",
+			pn = $("#pn").attr("checked") ? "p" : "",
+			sn = $("#sn").attr("checked") ? "s" : "",
+			type = { "Y": py + sy, "N": pn + sn };
+            zTree.setting.check.chkboxType = type;
+            showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
+        }
+        var setting2 = {
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
         $(document).ready(function () {
 
             var zNodes;
@@ -186,6 +212,8 @@
                     zNodes = JSON.parse(result);
                     $.fn.zTree.init($("#treeDemo"), setting, zNodes);
                     $.fn.zTree.init($("#treeDemo2"), setting);
+                    $.fn.zTree.init($("#treeDemo3"), setting2, zNodes);
+                    setCheck();
                     $("#callbackTrigger").bind("change", {}, setTrigger);
 
                 }
@@ -270,6 +298,13 @@
                 <ul id="treeDemo2" class="ztree" style="height:80px"></ul>
             </div>
         </div>
+        <div id="SendForTree" style="height:120px">
+            <div class="zTreeDemoBackground left" style="float:left;height:120px">
+
+                <ul id="treeDemo3" class="ztree" style="height:80px"></ul>
+            </div>
+        </div>
+
         <div style="width:85%;">
             <a href="#" class="easyui-linkbutton" onclick="saveVacation()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
                 提交申请

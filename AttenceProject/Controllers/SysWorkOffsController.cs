@@ -92,15 +92,19 @@ namespace AttenceProject.Controllers
             sys.VacationReason = VacationReason;
             sys.ProposerID = int.Parse(userid);
             sys.Emergency = Emergency;
-
             sys.ApplyStatus = 0;
-            sys.CopyFor = "11";
             string[] SendFors = SendFor.TrimEnd('_').Split('_');
+            string[] CopyFors = CopyFor.TrimEnd('_').Split('_');
+
             foreach (var sendfor in SendFors)
             {
                 sys.SendFor += (int.Parse(sendfor) - 10000).ToString() + '_';
             }
-
+            foreach (var copyfor in CopyFors)
+            {
+                sys.CopyFor += (int.Parse(copyfor) - 10000).ToString() + '_';
+            }
+            sys.CopyFor = '_' + sys.CopyFor;
             TimeSpan ts1 = sys.VacationEnd - sys.VacationStart;//计算调休中请假总经历时间的时间戳
             int hours = ts1.Hours - 9;//计算调休请假结束当天的多出来的请假时间
             int days = ts1.Days;//若请假大于1天，计算请假天数

@@ -104,9 +104,8 @@ namespace AttenceProject.Controllers
             sys.ApplyStatus = 0;
             sys.StartTime = DateTime.Parse(StartTime);
             sys.EndTime = DateTime.Parse(EndTime);
-            sys.CopyFor = CopyFor;
             string[] SendFors= SendFor.TrimEnd('_').Split('_');
-            string[] CopyFors = SendFor.TrimEnd('_').Split('_');
+            string[] CopyFors = CopyFor.TrimEnd('_').Split('_');
             foreach (var sendfor in SendFors)
             {
                 sys.SendFor += (int.Parse(sendfor) - 10000).ToString() + '_';

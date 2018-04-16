@@ -19,6 +19,9 @@ namespace AttenceProject.Controllers
         private View_GeneralTreeContext db_GeneralTree = new View_GeneralTreeContext();
         private SysUsersRoleDbContext db_userrole = new SysUsersRoleDbContext();
         private SysOverTimeContext db_overtime = new SysOverTimeContext();
+        private SysVacationContext db_vacation = new SysVacationContext();
+        private SysWorkOffContext db_workoff = new SysWorkOffContext();
+
 
         // GET: SysDepts
         public ActionResult Index()
@@ -76,15 +79,14 @@ namespace AttenceProject.Controllers
             StringBuilder sbnew = new StringBuilder();
             return Content(sb.ToString().TrimStart('[').TrimEnd(']'));
         }
-
         /// <summary>
         /// 获取人员+部门树的json数据
         /// </summary>
         /// <returns></returns>
         public ActionResult GetGeneralDeptJson()
         {
-            var union1 = db.SysDepts.Select(s => new { ID = s.ID, ParentNode = s.ParentNode, Name = s.DeptName,drag=false }).ToList();
-            var union2= db_userrole.sur.Select(m => new { ID = m.ID + 10000, ParentNode = m.UserDeptID, Name = m.UserName,drag=true}).ToList();
+            var union1 = db.SysDepts.Select(s => new { ID = s.ID, ParentNode = s.ParentNode, Name = s.DeptName,drag=false, nocheck=true }).ToList();
+            var union2= db_userrole.sur.Select(m => new { ID = m.ID + 10000, ParentNode = m.UserDeptID, Name = m.UserName,drag=true,nocheck=false}).ToList();
             
             //将dept表与人员表联合查询组成人员部门树，字段名不同的统一名称
             string result = JsonTool.LI2J(union1.Union(union2).ToList());
@@ -96,8 +98,6 @@ namespace AttenceProject.Controllers
 
             return Content(sbnew.ToString().TrimStart('{').TrimEnd('}'));
         }
-
-
         /// <summary>
         /// 新增部门
         /// </summary>
@@ -122,7 +122,6 @@ namespace AttenceProject.Controllers
             db.SaveChanges();
             return Content("success");
         }
-
         /// <summary>
         /// 保存新增用户
         /// </summary>
@@ -166,7 +165,30 @@ namespace AttenceProject.Controllers
             db.SaveChanges();
             return Content("success");
         }
+        public ActionResult DeptStatistical()
+        {
+            return View();
+        }
 
+        /// <summary>
+        /// 获取一级部门分组列表
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult GetDeptsGroup(int id)
+        {
+            string result = JsonTool.LI2J(db.SysDepts.Where(a => a.ParentNode == 16).ToList());
+            if (id == 0)
+            {
+                result = "[{\"ID\":16,\"DeptName\":\"全体部门\"}," + result.TrimStart('[');
+            }
+            var res = new ContentResult();
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
 
         /// <summary>
         /// 获取部门统计信息
@@ -177,18 +199,64 @@ namespace AttenceProject.Controllers
         /// <returns>时间段内申请的总的加班时长_申请次数</returns>
         public ActionResult DeptStatic(string deptid,string starttime,string endtime)
         {
+            if (string.IsNullOrEmpty(starttime))
+            {
+                starttime = "0001-01-01";
+            }
+            if (string.IsNullOrEmpty(endtime))
+            {
+                endtime = "9999-01-01";
+            }
+            SysDeptStatistical sds = new SysDeptStatistical();
             IList<int> staffs = new List<int>();
-            staffs = GetStaff(deptid, staffs);
+            staffs = GetStaff(deptid, staffs);//员工id的list
+            string DeptName = db.SysDepts.Where(a => a.ID.ToString() == deptid).ToList()[0].DeptName;
+            sds.DeptName = DeptName;
+            sds.CountTime = starttime + "~" + endtime;
+            sds.DeptPersonCount = staffs.Count;
+
+            //加班
             var list_overtime = db_overtime.SysOverTimes.ToList();
             var query = from a in list_overtime
                         where (staffs.Contains(a.ProposerID))
                         && a.OpTime > Convert.ToDateTime(starttime) && a.OpTime < Convert.ToDateTime(endtime)
                         select a;
-
             var list = query.ToList();
             float sum= list.Sum(p => p.Time);
             int count = list.Count();
-            return Content(sum.ToString() + "_" + count.ToString());
+            sds.OverTimeNum = sum;
+            sds.OverTimeCount = count;
+
+            //请假
+            var list_vacation = db_vacation.SysVacationsContext.ToList();
+            var query_vacation = from a in list_vacation
+                        where (staffs.Contains(a.ProposerID))
+                        && a.OpTime > Convert.ToDateTime(starttime) && a.OpTime < Convert.ToDateTime(endtime)
+                        select a;
+            var list2 = query_vacation.ToList();
+            float sum_vacation = list2.Sum(p => p.Time);
+            int count_vacation = list2.Count();
+            sds.VacationNum = sum_vacation;
+            sds.VacationCount = count_vacation;
+
+            //调休
+            var list_workoff = db_workoff.SysWorkOffs.ToList();
+            var query_workoff = from a in list_workoff
+                                where (staffs.Contains(a.ProposerID))
+                                 && a.OpTime > Convert.ToDateTime(starttime) && a.OpTime < Convert.ToDateTime(endtime)
+                                 select a;
+            var list3 = query_workoff.ToList();
+            float sum_workoff = list3.Sum(p => p.Time);
+            int count_workoff = list3.Count();
+            sds.WorkOffCount = count_workoff;
+            sds.WorkOffNum = sum_workoff;
+
+            var res = new ContentResult();
+            res.Content = JsonTool.EN2J(sds);
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
         }
 
         /// <summary>
@@ -219,11 +287,10 @@ namespace AttenceProject.Controllers
             return staffs;
         }
 
-        public ActionResult DeptCount()
+        public ActionResult PersonalStatistical()
         {
-            return View();
-        }
 
+        }
 
     }
 }

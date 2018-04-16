@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <HTML>
 <HEAD>
 	<TITLE> ZTREE DEMO - getChangeCheckedNodes / getCheckedNodes</TITLE>
@@ -57,6 +57,7 @@
 		function clearCheckedOldNodes() {
 			var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
 			nodes = zTree.getChangeCheckedNodes();
+			zTree.getCheckedNodes(true)
 			for (var i=0, l=nodes.length; i<l; i++) {
 				nodes[i].checkedOld = nodes[i].checked;
 			}
@@ -65,6 +66,7 @@
 			var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
 			checkCount = zTree.getCheckedNodes(true).length,
 			nocheckCount = zTree.getCheckedNodes(false).length,
+            
 			changeCount = zTree.getChangeCheckedNodes().length;
 			$("#checkCount").text(checkCount);
 			$("#nocheckCount").text(nocheckCount);

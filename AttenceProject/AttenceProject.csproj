@@ -5675,6 +5675,7 @@
     <Compile Include="Models\ModelContexts\SysVacationContext.cs" />
     <Compile Include="Models\ModelContexts\SysOverTimeContext.cs" />
     <Compile Include="Models\ModelContexts\View_SysUserInDeptContext - 复制.cs" />
+    <Compile Include="Models\OriginalModel\SysDeptStatistical.cs" />
     <Compile Include="Models\OriginalModel\SysApprove.cs" />
     <Compile Include="Models\OriginalModel\SysAccount.cs" />
     <Compile Include="Models\OriginalModel\SysApplySet.cs" />
@@ -5735,7 +5736,8 @@
     <Content Include="Views\SysWorkOffs\Index.cshtml" />
     <Content Include="Views\SysWorkOffs\List.cshtml" />
     <Content Include="Views\SysOverTimes\ApproveCopy.cshtml" />
-    <Content Include="Views\SysDepts\DeptCount.cshtml" />
+    <Content Include="Views\SysDepts\DeptStatistical.cshtml" />
+    <Content Include="Views\SysDepts\PersonalStatistical.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

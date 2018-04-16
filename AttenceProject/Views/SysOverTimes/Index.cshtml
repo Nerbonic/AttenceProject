@@ -170,9 +170,10 @@
         function saveOverTime() {
             //debugger;
             var treeObj = $.fn.zTree.getZTreeObj("treeDemo2");
-            var treeObj_CopyFor = $.fn.zTree.getZTreeObj("treeDemo4");
+            var treeObj_CopyFor = $.fn.zTree.getZTreeObj("treeDemo3");
             var nodes = treeObj.getNodes();
-            var nodes_CopyFor = treeObj_CopyFor.getNodes();
+            var nodes_CopyFor = treeObj_CopyFor.getCheckedNodes(true)
+
             var list = "";
             var list_CopyFor = "";
             for (var i = 0; i < nodes.length; i++) {
@@ -185,8 +186,26 @@
             $("#CopyFor").val(list_CopyFor);
             document.form1.submit();
         }
-        
-
+        function setCheck() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo3"),
+			py = $("#py").attr("checked") ? "p" : "",
+			sy = $("#sy").attr("checked") ? "s" : "",
+			pn = $("#pn").attr("checked") ? "p" : "",
+			sn = $("#sn").attr("checked") ? "s" : "",
+			type = { "Y": py + sy, "N": pn + sn };
+            zTree.setting.check.chkboxType = type;
+            showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
+        }
+        var setting2 = {
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
         $(document).ready(function () {
 
             var zNodes;
@@ -196,9 +215,8 @@
                     zNodes = JSON.parse(result);
                     $.fn.zTree.init($("#treeDemo"), setting, zNodes);
                     $.fn.zTree.init($("#treeDemo2"), setting);
-                    $.fn.zTree.init($("#treeDemo3"), setting, zNodes);
-                    $.fn.zTree.init($("#treeDemo4"), setting);
-
+                    $.fn.zTree.init($("#treeDemo3"), setting2, zNodes);
+                    setCheck();
                     $("#callbackTrigger").bind("change", {}, setTrigger);
 
                 }
@@ -299,9 +317,6 @@
             <div class="zTreeDemoBackground left" style="float:left;height:120px">
 
                 <ul id="treeDemo3" class="ztree" style="height:80px"></ul>
-            </div>
-            <div class="right" style="height:80px">
-                <ul id="treeDemo4" class="ztree" style="height:80px"></ul>
             </div>
         </div>
 
