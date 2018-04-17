@@ -46,7 +46,6 @@
                         var copyfor = result.CopyFor;
                         var id = result.ID;
                         $("#DeptID").val(id);
-
                         $("#DeptName").val(deptname);
                         $("#CopyFor").val(copyfor);
                         //$('#wu-form').form('load', data);
@@ -64,8 +63,9 @@
                     success: function (result) {
                         var username = result.UserName;
                         var userstate = result.UserState;
-                        var userrole = result.UserRole;
-
+                        var userrole = result.UserRole
+                        var userid = result.ID;
+                        $("#UserID").val(userid);
                         $("#UserName").val(username);
                         $("#UserState").val(userstate);
                         $("#UserRole").val(userrole);
@@ -230,6 +230,38 @@
 		        }
 		    });
 		}
+
+		function removeAll() {
+		    $.messager.confirm('提示信息', '确认删除此部门及其员工吗?', function (r) {
+		        if (r) {
+		            $.ajax({
+		                url: "../SysDepts/DeleteAll",
+		                data: { deptid: $("#DeptID").val()},
+		                type: "get",
+		                dataType: "json",
+		                success: function (result) {
+		                    window.location.reload();
+		                }
+		            });
+		        }
+		    });
+		}
+		function removePerson() {
+		    $.messager.confirm('提示信息', '确认删除此员工吗?', function (r) {
+		        if (r) {
+		            $.ajax({
+		                url: "../SysDepts/DeletePerson",
+		                data: { userid:$("#UserID").val() },
+		                type: "get",
+		                dataType: "json",
+		                success: function (result) {
+		                    //$.messager.alert('信息提示', '删除成功！', 'info');
+		                    window.location.reload();
+		                }
+		            });
+		        }
+		    });
+		}
     </SCRIPT>
 </head>
 </head>
@@ -262,7 +294,7 @@
                 </div>
                 <form id="wu-form" method="post" class="deptinfo">
                     <table>
-                        <tr style="display:none;">
+                        <tr style="">
                             <td width="70" align="right">ID:</td>
                             <td><input type="text" name="DeptID" id="DeptID" class="wu-text" /></td>
                         </tr>
@@ -272,12 +304,12 @@
                         </tr>
                     </table>
                 </form>
-
+    
                 <form id="wu-form" method="post" class="userinfo">
                     <table>
-                        <tr style="display:none;">
+                        <tr style="">
                             <td width="70" align="right">ID:</td>
-                            <td><input type="text" name="UserID" class="wu-text" /></td>
+                            <td><input type="text" name="UserID" id="UserID" class="wu-text" /></td>
                         </tr>
                         <tr>
                             <td width="70" align="right">用户名称:</td>
@@ -287,15 +319,6 @@
                             <td width="70" align="right">用户权限:</td>
                             <td>
                             <input type="text" id="UserRole" name="UserRole" class="wu-text" />
-                                <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="AlternativeGroupID" name="AlternativeGroupID" data-options="required:true,
-                   url:'../../SysAlternatives/GetGroup/1',
-                   method:'get',
-                   multiple:false,
-                   valueField:'AlternativeGroupID',
-                   textField:'AlternativeGroupText'
-                           "></select>
-                            
-                            
                             </td>
                         </tr>
                         <tr>

@@ -328,7 +328,19 @@ namespace AttenceProject.Controllers
 
         public ActionResult GetApproveDetail(int id)
         {
-            string result = JsonTool.LI2J(db_approve.SysApproves.Where(m => m.ApplyID == id && m.LastChecker != 0 && m.ApplyType == "请假").ToList());
+            var list = db_approve.SysApproves.ToList();
+            var list_user = db_user.sur.ToList();
+            var query = from a in list
+                        join b in list_user
+                        on a.LastChecker equals b.ID
+                        where a.ApplyID == id && a.LastChecker != 0 && a.ApplyType == "请假"
+                        select new
+                        {
+                            b.UserName,
+                            a.Applyrate,
+                            ApplyStatus = a.ApplyStatus == 1 ? "通过" : "驳回"
+                        };
+            string result = JsonTool.LI2J(query.ToList());
             if (string.IsNullOrEmpty(result))
             {
                 return HttpNotFound();

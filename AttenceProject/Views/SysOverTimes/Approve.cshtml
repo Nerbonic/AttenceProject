@@ -172,10 +172,9 @@
 	                for (var i = 0; i < length; i++) {
 
 	                    //alert(item);
-	                    afterstr += '<tr class="tr_after"><td align="right" width="30">审批人:</td><td align="right" width="30">' + data[i].LastChecker + '</td></tr>' +
-	                              '<tr class="tr_after"><td align="right" width="70">审批意见:</td><td align="right" width="30">' + data[i].Applyrate + '</td></tr>' +
-	                             '<tr class="tr_after"><td align="right" width="70">审批结果:</td><td align="right" width="30">' + data[i].ApplyStatus + '</td></tr>' +
-                                  '<tr class="tr_after" style="height:20px"></tr>';
+	                    afterstr += '<tr class="tr_after"><td align="right" width="30">审批人:</td><td align="left" width="30">' + data[i].UserName + '</td></tr>' +
+	                              '<tr class="tr_after"><td align="right" width="65">审批意见:</td><td align="left" width="30">' + data[i].Applyrate + '</td></tr>' +
+	                             '<tr class="tr_after"><td align="right" width="65">审批结果:</td><td align="left" width="30">' + data[i].ApplyStatus + '</td></tr>';
                         
 	                }
 	                $("#tr_reason").after(afterstr);
@@ -297,47 +296,47 @@
         <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
             <table>
                 <tr style="display:none;">
-                    <td width="70" align="right">ID:</td>
+                    <td width="65" align="right">ID:</td>
                     <td><input type="text" name="ID" id="ID" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">申请人ID:</td>
+                    <td width="65" align="right">申请人ID:</td>
                     <td><input type="text" name="ProposerID" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">申请人姓名:</td>
+                    <td width="65" align="right">申请人姓名:</td>
                     <td><input type="text" name="UserName" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">开始时间:</td>
+                    <td align="right" width="65">开始时间:</td>
                     <td><input type="text" name="StartTime" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">结束时间:</td>
+                    <td align="right" width="65">结束时间:</td>
                     <td><input type="text" name="EndTime" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">时长:</td>
+                    <td align="right" width="65">时长:</td>
                     <td><input type="text" name="Time" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">加班类型:</td>
+                    <td align="right" width="65">加班类型:</td>
                     <td><input type="text" name="OverTimeType" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">加班结算方式:</td>
+                    <td align="right" width="65">结算方式:</td>
                     <td><input type="text" name="Account_Method" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr id="tr_reason">
-                    <td align="right" width="70">加班原因:</td>
+                    <td align="right" width="65">加班原因:</td>
                     <td><input type="text" name="OverTimeReason" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">审批意见:</td>
+                    <td align="right" width="65">审批意见:</td>
                     <td><textarea class="wu-textarea" id="Applyrate" name="Applyrate"></textarea></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">审批结果:</td>
+                    <td align="right" width="65">审批结果:</td>
                     <td>
                         <input type="radio" name="ApplyStatus"  value="1"/>通过
                         <input type="radio" name="ApplyStatus"  value="0"/>驳回

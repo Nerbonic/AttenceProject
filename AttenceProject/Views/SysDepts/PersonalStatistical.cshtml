@@ -213,10 +213,7 @@
             <!-- Begin of toolbar -->
             <div id="wu-toolbar" class="datagrid-toolbar">
                 <div class="wu-toolbar-button">
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="openAdd()" plain="true">添加</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openEdit()" plain="true">修改</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetail()" plain="true">查看详情</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="remove()" plain="true">删除</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetail()" plain="true">查看审批详情</a>
 
                 </div>
                 <div class="wu-toolbar-search">
@@ -228,7 +225,13 @@
                    valueField:'AlternativeGroupID',
                    textField:'AlternativeGroupText'
                            "></select>
-                    <label>备选项名称：</label><input class="wu-text" id="AlternativeText_search" style="width:100px">
+                    <label>员工姓名：</label><input class="wu-text" id="UserName_search" style="width:100px">
+                    <label>员工工号：</label><input class="wu-text" id="UserCode_search" style="width:100px">
+                    <label>审批情况：</label><input class="wu-text" id="ApplyStatus_search" style="width:100px">
+                    <label>申请类型：</label><input class="wu-text" id="type_Search" style="width:100px">
+                    <label>具体类型：</label><input class="wu-text" id="DetailType_Search" style="width:100px">
+                    <label>申请时长：</label><input class="wu-text" id="Time_search" style="width:100px">
+                    <label>申请时间：</label><input class="wu-text" id="OpTime_search" style="width:100px">
                     <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="doSearch()">开始检索</a>
                     <a href="#" class="easyui-linkbutton" onclick="clearquery()">清空条件</a>
 
@@ -236,18 +239,19 @@
             </div>
             <!-- End of toolbar -->
             <table id="wu-datagrid" class="easyui-datagrid" toolbar="#wu-toolbar" title="Basic DataGrid" style="width:inherit; height:inherit"
-                   data-options="singleSelect:true,collapsible:true,url:'../../SysAlternatives/GetJson',pagesize:3,method:'get'"
+                   data-options="singleSelect:true,collapsible:true,url:'../../SysDepts/PersonalCount',pagesize:3,method:'get'"
                    footer="#foot" pagination="true" rownumbers="true" singleselect="true" fitColumns="true">
                 <thead>
                     <tr>
                         <th field="ck" checkbox="true"></th>
-                        <th data-options="field:'ID',width:80">ID</th>
-                        <th data-options="field:'AlternativeText',width:100">备选项名称</th>
-                        <th data-options="field:'AlternativeGroupText',width:80,align:'right'">备选项分组名称</th>
-                        <th data-options="field:'Remarks',width:250">备选项信息</th>
-                        <th data-options="field:'Operator',width:60,align:'center'">操作人</th>
-                        <th data-options="field:'opt',align:'center',halign:'center'" style="width:150;">查看详情</th>
-
+                        <th data-options="field:'ID',width:80" hidden="hidden">ID</th>
+                        <th data-options="field:'UserName',width:100">申请人姓名</th>
+                        <th data-options="field:'UserCode',width:80,align:'right'">申请人工号</th>
+                        <th data-options="field:'OpTime',width:100">申请时间</th>
+                        <th data-options="field:'Time',width:80,align:'right'">申请时长</th>
+                        <th data-options="field:'ApplyStatus',width:100">审批情况</th>
+                        <th data-options="field:'DetailType',width:60,align:'center'">具体类型</th>
+                        <th data-options="field:'type',align:'center',halign:'center',width:100">申请类型</th>
                     </tr>
                 </thead>
             </table>

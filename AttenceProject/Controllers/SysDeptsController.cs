@@ -21,6 +21,7 @@ namespace AttenceProject.Controllers
         private SysOverTimeContext db_overtime = new SysOverTimeContext();
         private SysVacationContext db_vacation = new SysVacationContext();
         private SysWorkOffContext db_workoff = new SysWorkOffContext();
+        private SysAlternativeContext db_alter = new SysAlternativeContext();
 
 
         // GET: SysDepts
@@ -260,7 +261,7 @@ namespace AttenceProject.Controllers
         }
 
         /// <summary>
-        /// 获取某个节点下的所有人员ID
+        /// 递归获取某个节点下的所有人员ID
         /// </summary>
         /// <param name="deptid"></param>
         /// <param name="staffs"></param>
@@ -289,8 +290,215 @@ namespace AttenceProject.Controllers
 
         public ActionResult PersonalStatistical()
         {
+            return View();
+        }
+
+        /// <summary>
+        /// 递归获取所有子节点
+        /// </summary>
+        /// <param name="deptid"></param>
+        /// <param name="depts"></param>
+        /// <returns></returns>
+        public IList<int> GetSonDept(string deptid,IList<int> depts)
+        {
+            var list = db.SysDepts.Where(a => a.ParentNode.ToString().Equals(deptid)).ToList();//取depid的所有子节点
+            if (list.Count > 0)
+            {
+                for(int i = 0; i < list.Count; i++)
+                {
+                    string son_deptid = list[i].ID.ToString();
+                    depts.Add(list[i].ID);
+                    depts = GetSonDept(son_deptid, depts);
+                }
+            }
+            return depts;
 
         }
 
+        /// <summary>
+        /// 获取个人统计列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PersonalCount()
+        {
+            var list_overtime = db_overtime.SysOverTimes.ToList();
+            var list_vacation = db_vacation.SysVacationsContext.ToList();
+            var list_workoff = db_workoff.SysWorkOffs.ToList();
+            var list_user = db_userrole.sur.ToList();
+            var list_alter = db_alter.SysAlternatives.ToList();
+
+            #region 取出三种数据
+            var query_overtime = from a in list_overtime
+                                 join b in list_user
+                                 on a.ProposerID equals b.ID
+                                 select new
+                                 {
+                                     a.ID,
+                                     a.ProposerID,
+                                     a.OpTime,
+                                     a.Time,
+                                     ApplyStatus = (a.ApplyStatus.ToString() == "0" ? "审批中" : "审批完成"),
+                                     a.OverTimeType,
+                                     b.UserName,
+                                     b.UserCode,
+                                     type = "加班"
+                                 };
+            var list_overtime_join = query_overtime.ToList();
+            var query_list1 = from a in list_overtime_join
+                              join b in list_alter
+                              on a.OverTimeType equals b.ID
+                              select new
+                              {
+                                  a.ID,
+                                  a.ProposerID,
+                                  a.OpTime,
+                                  a.Time,
+                                  a.ApplyStatus,
+                                  a.UserName,
+                                  a.UserCode,
+                                  DetailType = b.AlternativeText,
+                                  a.type
+                              };
+            var query_workoff = from a in list_workoff
+                                join b in list_user
+                                on a.ProposerID equals b.ID
+                                select new
+                                {
+                                    a.ID,
+                                    a.ProposerID,
+                                    a.OpTime,
+                                    a.Time,
+                                    ApplyStatus = (a.ApplyStatus.ToString() == "0" ? "审批中" : "审批完成"),
+                                    a.WorkOffType,
+                                    b.UserName,
+                                    b.UserCode,
+                                    type = "调休"
+                                };
+            var list_workoff_join = query_workoff.ToList();
+            var query_list2 = from a in list_workoff_join
+                              join b in list_alter
+                              on a.WorkOffType equals b.ID
+                              select new
+                              {
+                                  a.ID,
+                                  a.ProposerID,
+                                  a.OpTime,
+                                  a.Time,
+                                  a.ApplyStatus,
+                                  a.UserName,
+                                  a.UserCode,
+                                  DetailType = b.AlternativeText,
+                                  a.type
+                              };
+
+            var query_vacation = from a in list_vacation
+                                 join b in list_user
+                                 on a.ProposerID equals b.ID
+                                 select new
+                                 {
+                                     a.ID,
+                                     a.ProposerID,
+                                     a.OpTime,
+                                     a.Time,
+                                     ApplyStatus = (a.ApplyStatus.ToString() == "0" ? "审批中" : "审批完成"),
+                                     a.VacationType,
+                                     b.UserName,
+                                     b.UserCode,
+                                     type = "请假"
+                                 };
+            var list_vacation_join = query_vacation.ToList();
+            var query_list3 = from a in list_vacation_join
+                              join b in list_alter
+                              on a.VacationType equals b.ID
+                              select new
+                              {
+                                  a.ID,
+                                  a.ProposerID,
+                                  a.OpTime,
+                                  a.Time,
+                                  a.ApplyStatus,
+                                  a.UserName,
+                                  a.UserCode,
+                                  DetailType = b.AlternativeText,
+                                  a.type
+                              };
+            #endregion
+
+            var list1 = query_list1.ToList();
+            var list2 = query_list2.ToList();
+            var list3 = query_list3.ToList();
+            string result = JsonTool.LI2J(list1.Union(list2).Union(list3).ToList());
+            int total = list1.Count + list2.Count + list3.Count;
+            var res = new ContentResult();
+            result = "{\"total\":" + total + ",\"rows\":" + result + "}";
+            StringBuilder sb = new StringBuilder();
+            sb.Append(result);
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
+
+        /// <summary>
+        /// 删除员工
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public ActionResult DeletePerson(string userid)
+        {
+            if (string.IsNullOrEmpty(userid))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            SysUsersRole sysuserrole = db_userrole.sur.Find(int.Parse(userid));
+            if (sysuserrole == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            db_userrole.sur.Remove(sysuserrole);
+            db_userrole.SaveChanges();
+
+            return Content("success");
+        }
+
+        /// <summary>
+        /// 删除部门
+        /// </summary>
+        /// <param name="deptid"></param>
+        /// <returns></returns>
+        public ActionResult DeleteDept(string deptid)
+        {
+            if (string.IsNullOrEmpty(deptid))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            SysDept sysdept = db.SysDepts.Find(int.Parse(deptid));
+            if (sysdept == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            db.SysDepts.Remove(sysdept);
+            db.SaveChanges();
+
+            return Content("success");
+        }
+        public ActionResult DeleteAll(string deptid)
+        {
+            IList<int> staffs = new List<int>();
+            IList<int> depts = new List<int>();
+            staffs = GetStaff(deptid, staffs);//员工id的list
+            depts = GetSonDept(deptid, depts);//子部门id的list
+            for (int i = 0; i < staffs.Count; i++)
+            {
+                DeletePerson(staffs[i].ToString());
+            }
+            for(int i = 0; i < depts.Count; i++)
+            {
+                DeleteDept(depts[i].ToString());
+            }
+            DeleteDept(deptid);
+            return Content("success");
+        }
     }
 }

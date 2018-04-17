@@ -194,7 +194,7 @@
 			sn = $("#sn").attr("checked") ? "s" : "",
 			type = { "Y": py + sy, "N": pn + sn };
             zTree.setting.check.chkboxType = type;
-            showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
+            //showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
         }
         var setting2 = {
             check: {
@@ -230,101 +230,100 @@
     </script>
     <!-- Begin of easyui-dialog -->
     <div data-options="closed:false,iconCls:'icon-save'" style="width:600px; padding:10px;">
-        <span>注：此申请将自动抄送给系统指定的抄送人</span>
-
-        <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
-            <table style="">
-                <tr style="display:none">
-                    <td width="100" align="right">ID:</td>
-                    <td><input type="text" name="ID" class="wu-text" value="@cook.Values["UserID"]" /></td>
-                </tr>
-                <tr>
-                    <td width="100" align="right">加班人姓名:</td>
-                    <td><input type="text" name="UserName" class="wu-text" value="@cook.Values["UserName"]" /></td>
-                </tr>
-                <tr>
-                    <td width="100" align="right">工号:</td>
-                    <td><input type="text" name="UserCode" class="wu-text" value="@cook.Values["UserCode"]" /></td>
-                </tr>
-                <tr>
-                    <td width="100" align="right">加班原因:</td>
-                    <td><input type="text" name="OverTimeReason" class="wu-text" /></td>
-                </tr>
-                <tr>
-                    <td width="100" align="right">加班类型:</td>
-                    <td>
-                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="OverTimeType" name="OverTimeType" data-options="required:true,
+        <div class="easyui-panel" title="加班申请发起">
+            <form id="wu-form" method="post" name="form1" style="margin:3%;" action="~/SysOverTimes/SaveAdd">
+                <table style="">
+                    <tr style="display:none">
+                        <td width="100" align="right">ID:</td>
+                        <td><input type="text" name="ID" class="wu-text" value="@cook.Values["UserID"]" /></td>
+                    </tr>
+                    <tr>
+                        <td width="100" align="right">加班人姓名:</td>
+                        <td><input type="text" name="UserName" class="wu-text" value="@cook.Values["UserName"]" /></td>
+                    </tr>
+                    <tr>
+                        <td width="100" align="right">工号:</td>
+                        <td><input type="text" name="UserCode" class="wu-text" value="@cook.Values["UserCode"]" /></td>
+                    </tr>
+                    <tr>
+                        <td width="100" align="right">加班原因:</td>
+                        <td><input type="text" name="OverTimeReason" class="wu-text" /></td>
+                    </tr>
+                    <tr>
+                        <td width="100" align="right">加班类型:</td>
+                        <td>
+                            <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="OverTimeType" name="OverTimeType" data-options="required:true,
                    url:'../../SysOverTimes/GetOverTimeType',
                    method:'get',
                    multiple:false,
                    valueField:'ID',
                    textField:'AlternativeText'
                            "></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td width="100" align="right">加班结算类型:</td>
-                    <td>
-                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="Account_Method" name="Account_Method" data-options="required:true,
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="100" align="right">加班结算类型:</td>
+                        <td>
+                            <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="Account_Method" name="Account_Method" data-options="required:true,
                    url:'../../SysOverTimes/GetAccountMethod',
                    method:'get',
                    multiple:false,
                    valueField:'ID',
                    textField:'AlternativeText'
                            "></select>
-                    </td>
-                </tr>
-                <tr>
-                    <td width="100" align="right">加班开始时间:</td>
-                    <td>
-                        <input class="easyui-datetimebox" value="" name="StartTime" id="StartTime" style="width:200px">
-                    </td>
-                </tr>
-                <tr>
-                    <td width="100" align="right">加班结束时间:</td>
-                    <td>
-                        <input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
-                    </td>
-                </tr>
-                <tr style="display:none">
-                    <td width="100" align="right">审批人流:</td>
-                    <td>
-                        <input type="text" value="" name="SendFor" id="SendFor" style="display:none" />
-                    </td>
-                </tr>
-                <tr style="display:none">
-                    <td width="100" align="right">抄送人流:</td>
-                    <td>
-                        <input type="text" name="CopyFor" id="CopyFor" style="display:none" />
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="100" align="right">加班开始时间:</td>
+                        <td>
+                            <input class="easyui-datetimebox" value="" name="StartTime" id="StartTime" style="width:200px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="100" align="right">加班结束时间:</td>
+                        <td>
+                            <input class="easyui-datetimebox" value="" name="EndTime" id="EndTime" style="width:200px">
+                        </td>
+                    </tr>
+                    <tr style="display:none">
+                        <td width="100" align="right">审批人流:</td>
+                        <td>
+                            <input type="text" value="" name="SendFor" id="SendFor" style="display:none" />
+                        </td>
+                    </tr>
+                    <tr style="display:none">
+                        <td width="100" align="right">抄送人流:</td>
+                        <td>
+                            <input type="text" name="CopyFor" id="CopyFor" style="display:none" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <div id="SendForTree" style="height:190px; margin:3%">
+                <div style="margin-left:5%">选择审批人（将左侧员工向右侧拖入，可规定右侧顺序，规定审批顺序）：</div>
+                <div class="zTreeDemoBackground left" style="float:left;height:190px">
 
-
-            </table>
-           
-
-        </form>
-        <div id="SendForTree" style="height:120px">
-            <div class="zTreeDemoBackground left" style="float:left;height:120px" >
-
-                <ul id="treeDemo" class="ztree" style="height:80px"></ul>
+                    <ul id="treeDemo" class="ztree" style="height:150px"></ul>
+                </div>
+                <div class="right" style="height:80px;float:left;">
+                    <ul id="treeDemo2" class="ztree" style="height:150px"></ul>
+                </div>
             </div>
-            <div class="right" style="height:80px">
-                <ul id="treeDemo2" class="ztree" style="height:80px"></ul>
-            </div>
-        </div>
-        <div id="SendForTree" style="height:120px">
-            <div class="zTreeDemoBackground left" style="float:left;height:120px">
+            <div style="height:10px;">&nbsp;</div>
+            <div id="SendForTree" style="height:190px; float:left; margin:3%;">
+                <div style="margin-left:10%">选择抄送人：</div>
+                <div class="zTreeDemoBackground left" style="float:left;height:190px">
 
-                <ul id="treeDemo3" class="ztree" style="height:80px"></ul>
+                    <ul id="treeDemo3" class="ztree" style="height:150px"></ul>
+                </div>
             </div>
-        </div>
 
-        <div style="width:85%;">
-            <a href="#" class="easyui-linkbutton" onclick="saveOverTime()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%;">
-                提交申请
-            </a>
-        </div>
+            <div style="width:85%;">
+                <a href="#" class="easyui-linkbutton" onclick="saveOverTime()" data-options="iconCls:'icon-ok'" style="padding:2px 0px;width:70%; margin:3%;margin-left:24%">
+                    提交申请
+                </a>
+            </div>
+        </div> 
     </div>
     <!-- End of easyui-dialog -->
 
