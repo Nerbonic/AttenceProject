@@ -22,7 +22,7 @@ namespace AttenceProject.Controllers
         private SysVacationContext db_vacation = new SysVacationContext();
         private SysWorkOffContext db_workoff = new SysWorkOffContext();
         private SysAlternativeContext db_alter = new SysAlternativeContext();
-
+        private SysApplySetContext db_apply = new SysApplySetContext(); 
 
         // GET: SysDepts
         public ActionResult Index()
@@ -74,12 +74,43 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult GetUserInfo(int id)
         {
-            string result = JsonTool.LI2J(db_userrole.sur.Where(m => m.ID == id).ToList());
+            var list = db_userrole.sur.ToList();
+            var list_alter = db_apply.SysApplySets.ToList();
+            var query= from a in list
+                       join b in list_alter
+                       on a.UserRole equals b.ID
+                       where a.ID==id
+                       select new
+                       {
+                           a.ID,
+                           a.UserName,
+                           UserRole=b.ApplyText,
+                           a.UserState
+                       };
+            var list2 = query.ToList();
+            string result = JsonTool.EN2J(query.ToList()[0]);
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
             StringBuilder sbnew = new StringBuilder();
             return Content(sb.ToString().TrimStart('[').TrimEnd(']'));
         }
+
+        /// <summary>
+        /// 获取申请设置
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ContentResult GetApplySetByGroup(int id)
+        {
+            string result = JsonTool.LI2J(db_apply.SysApplySets.Where(m => m.ApplyGroupID == id).Select(s => new { s.ID, s.ApplyText }).ToList());
+            var res = new ContentResult();
+            res.Content = result;
+            res.ContentType = "application/json";
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
+
+
         /// <summary>
         /// 获取人员+部门树的json数据
         /// </summary>
@@ -319,12 +350,40 @@ namespace AttenceProject.Controllers
         /// 获取个人统计列表
         /// </summary>
         /// <returns></returns>
-        public ActionResult PersonalCount()
+        public ActionResult PersonalCount(string username,string applystatus,string type)
         {
             var list_overtime = db_overtime.SysOverTimes.ToList();
             var list_vacation = db_vacation.SysVacationsContext.ToList();
             var list_workoff = db_workoff.SysWorkOffs.ToList();
             var list_user = db_userrole.sur.ToList();
+            if (!string.IsNullOrEmpty(username))
+            {
+                list_user = list_user.Where(a => a.UserName.Contains(username)).ToList();
+            }
+            if (!string.IsNullOrEmpty(applystatus))
+            {
+                list_overtime = list_overtime.Where(a => a.ApplyStatus == int.Parse(applystatus)).ToList();
+                list_vacation = list_vacation.Where(a => a.ApplyStatus == int.Parse(applystatus)).ToList();
+                list_workoff = list_workoff.Where(a => a.ApplyStatus == int.Parse(applystatus)).ToList();
+            }
+            if (!string.IsNullOrEmpty(type))
+            {
+                switch (type)
+                {
+                    case "加班":
+                        list_vacation.Clear();
+                        list_workoff.Clear();
+                        break;
+                    case "请假":
+                        list_overtime.Clear();
+                        list_workoff.Clear();
+                        break;
+                    case "调休":
+                        list_overtime.Clear();
+                        list_vacation.Clear();
+                        break;
+                }
+            }
             var list_alter = db_alter.SysAlternatives.ToList();
 
             #region 取出三种数据

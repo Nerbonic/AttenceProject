@@ -158,10 +158,10 @@ namespace AttenceProject.Controllers
 
         public ActionResult GetJson()
         {
-
+            HttpCookie cook = Request.Cookies["userinfo"];
             var res = new ContentResult();
-
-            var list = db.SysOverTimes.ToList();
+            string userid = cook.Values["UserID"];
+            var list = db.SysOverTimes.Where(m => m.ProposerID.ToString() == userid).ToList();
             //if (AlternativeGroupID != "0" && !string.IsNullOrEmpty(AlternativeGroupID))
             //{
             //    list = list.Where(m => m.AlternativeGroupID == int.Parse(AlternativeGroupID)).ToList();
@@ -171,7 +171,33 @@ namespace AttenceProject.Controllers
             //    list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
             //}
             string result = JsonTool.LI2J(list);
-            result = "{\"total\":" + db.SysOverTimes.ToList().Count + ",\"rows\":" + result + "}";
+            result = "{\"total\":" + list.Count + ",\"rows\":" + result + "}";
+            StringBuilder sb = new StringBuilder();
+            sb.Append(result);
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+
+        }
+
+        public ActionResult GetApproveCopyJson()
+        {
+            HttpCookie cook = Request.Cookies["userinfo"];
+            var res = new ContentResult();
+            string userid = cook.Values["UserID"];
+            var list = db.SysOverTimes.Where(m=>m.CopyFor.Contains("_"+userid+"_")).ToList();
+            //if (AlternativeGroupID != "0" && !string.IsNullOrEmpty(AlternativeGroupID))
+            //{
+            //    list = list.Where(m => m.AlternativeGroupID == int.Parse(AlternativeGroupID)).ToList();
+            //}
+            //if (!string.IsNullOrEmpty(AlternativeText))
+            //{
+            //    list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
+            //}
+            string result = JsonTool.LI2J(list);
+            result = "{\"total\":" + list.Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
             res.Content = result;
@@ -255,6 +281,12 @@ namespace AttenceProject.Controllers
             res.ContentEncoding = Encoding.UTF8;
             return res;
         }
+
+        /// <summary>
+        /// 获取加班数据
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult GetOverTimeInfo(int id)
         {
             var list1 = db.SysOverTimes.Where(m => m.ID == id).ToList() ;
@@ -288,6 +320,13 @@ namespace AttenceProject.Controllers
             return res;
         }
 
+        /// <summary>
+        /// 保存审批时的审批数据
+        /// </summary>
+        /// <param name="applyrate"></param>
+        /// <param name="applystatus"></param>
+        /// <param name="applyid"></param>
+        /// <returns></returns>
         public ActionResult SaveApprove(string applyrate,string applystatus,string applyid)
         {
             IList<SysApprove> list = db_approve.SysApproves.Where(m => m.ApplyID.ToString() == applyid).ToList();
@@ -358,6 +397,12 @@ namespace AttenceProject.Controllers
         }
 
 
+
+        /// <summary>
+        /// 获取审批的通过详情
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult GetApproveDetail(int id)
         {
             var list = db_approve.SysApproves.ToList();

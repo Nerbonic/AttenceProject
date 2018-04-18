@@ -89,6 +89,93 @@
 			}
 		});
 	}
+	function getJsonObjLength(jsonObj) {
+	    var Length = 0;
+	    for (var item in jsonObj) {
+	        Length++;
+	    }
+	    return Length;
+	}
+	function openApprove() {
+	    $('#wu-form').form('clear');
+	    var row = $('#wu-datagrid').datagrid('getSelected');
+	    if (row) {
+	        var id = row.ID;
+	        var type = row.type;
+	        var url="";
+	        switch (type) {
+	            case "加班":
+	                url = '../../SysOverTimes/GetOverTimeInfo';
+	                break;
+	            case "请假":
+	                url = '../../SysVacations/GetVacationInfo';
+	                break;
+	            case "调休":
+	                url = '../../SysWorkOffs/GetWorkOffInfo';
+	                break;
+	        }
+	        $.ajax({
+	            url: url,
+	            data: { id: id },
+	            async: false,
+	            dataType: "json",
+	            method: 'get',
+	            success: function (data) {
+	                $('#wu-form').form('load', data);
+	            }
+	        });
+	        $('#wu-dialog').dialog({
+	            closed: false,
+	            modal: true,
+	            title: "修改信息",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: edit
+	            }, {
+	                text: '取消',
+	                iconCls: 'icon-cancel',
+	                handler: function () {
+	                    $('#wu-dialog').dialog('close');
+	                }
+	            }]
+	        });
+	        var afterstr = "";
+	        $(".tr_after").remove();
+	        var url2 = "";
+	        switch (type) {
+	            case "加班":
+	                url2 = '../../SysOverTimes/GetApproveDetail';
+	                break;
+	            case "请假":
+	                url2 = '../../SysVacations/GetApproveDetail';
+	                break;
+	            case "调休":
+	                url2 = '../../SysWorkOffs/GetApproveDetail';
+	                break;
+	        }
+	        $.ajax({
+	            url: url2,
+	            data: { id: id },
+	            async: false,
+	            dataType: "json",
+	            method: 'get',
+	            success: function (data) {
+	                var length = getJsonObjLength(data);
+	                for (var i = 0; i < length; i++) {
+
+	                    //alert(item);
+	                    afterstr += '<tr class="tr_after"><td align="right" width="30">审批人:</td><td align="left" width="30">' + data[i].UserName + '</td></tr>' +
+	                              '<tr class="tr_after"><td align="right" width="65">审批意见:</td><td align="left" width="30">' + data[i].Applyrate + '</td></tr>' +
+	                             '<tr class="tr_after"><td align="right" width="65">审批结果:</td><td align="left" width="30">' + data[i].ApplyStatus + '</td></tr>';
+
+	                }
+	                $("#tr_reason").after(afterstr);
+	            }
+	        })
+	    }
+
+	}
 
 	/**
 	* Name 打开添加窗口
@@ -186,19 +273,23 @@
 
     //查询按钮
 	function doSearch() {
-	    var atext = $('#AlternativeText_search').val();
-	    var agid = $('#ComboBoxGroup').combobox("getValue");
+	    var username_text = $('#UserName_search').val();
+	    var options_status = $('#ApplyStatus_search').combobox("getValue");
+	    var options_type = $('#type_search').combobox("getValue");
 	    debugger;
 	    $('#wu-datagrid').datagrid('load', {
-	        AlternativeText: atext,
-	        AlternativeGroupID: agid
+	        username: username_text,
+	        applystatus: options_status,
+            type:options_type
 	    });
 	}
 
     //清除搜索条件
 	function clearquery() {
-	    $('#AlternativeText_search').val('');
-	    $('#ComboBoxGroup').combobox('setValue', '0');
+	    $('#UserName_search').val('');
+	    $('#ApplyStatus_search').combobox('setValue', '');
+	    $('#type_search').combobox('setValue', '');
+
 	}
 
 	$(document).ready(function () {
@@ -213,25 +304,25 @@
             <!-- Begin of toolbar -->
             <div id="wu-toolbar" class="datagrid-toolbar">
                 <div class="wu-toolbar-button">
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openDetail()" plain="true">查看审批详情</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="openApprove()" plain="true">查看审批详情</a>
 
                 </div>
                 <div class="wu-toolbar-search">
-                    <label>备选项分组：</label>
-                    <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="ComboBoxGroup" name="ComboBoxGroup" data-options="required:true,
-                   url:'../../SysAlternatives/GetGroup/0',
-                   method:'get',
-                   multiple:false,
-                   valueField:'AlternativeGroupID',
-                   textField:'AlternativeGroupText'
-                           "></select>
                     <label>员工姓名：</label><input class="wu-text" id="UserName_search" style="width:100px">
-                    <label>员工工号：</label><input class="wu-text" id="UserCode_search" style="width:100px">
-                    <label>审批情况：</label><input class="wu-text" id="ApplyStatus_search" style="width:100px">
-                    <label>申请类型：</label><input class="wu-text" id="type_Search" style="width:100px">
-                    <label>具体类型：</label><input class="wu-text" id="DetailType_Search" style="width:100px">
-                    <label>申请时长：</label><input class="wu-text" id="Time_search" style="width:100px">
-                    <label>申请时间：</label><input class="wu-text" id="OpTime_search" style="width:100px">
+                    <label>审批情况：</label>
+                    <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="ApplyStatus_search" name="ApplyStatus_search">
+                        <option value="">全部情况</option>
+                         <option value="1">审批完成</option>
+                        <option value="0">审批中</option>
+                        <option value="-1">审批被驳回</option>
+                    </select>
+                    <label>申请类型：</label>
+                    <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="type_search" name="type_search">
+                        <option value="">全部类型</option>
+                        <option value="加班">加班</option>
+                        <option value="请假">请假</option>
+                        <option value="调休">调休</option>
+                    </select>                    
                     <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="doSearch()">开始检索</a>
                     <a href="#" class="easyui-linkbutton" onclick="clearquery()">清空条件</a>
 
@@ -259,32 +350,45 @@
     </div>
     <!-- Begin of easyui-dialog -->
     <div id="wu-dialog" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
-        <form id="wu-form" method="post">
+        <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
             <table>
                 <tr style="display:none;">
-                    <td width="70" align="right">ID:</td>
-                    <td><input type="text" name="ID" class="wu-text" /></td>
+                    <td width="65" align="right">ID:</td>
+                    <td><input type="text" name="ID" id="ID" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td width="70" align="right">备选项名称:</td>
-                    <td><input type="text" name="AlternativeText" class="wu-text" /></td>
+                    <td width="65" align="right">申请人ID:</td>
+                    <td><input type="text" name="ProposerID" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">备选项名称:</td>
-                    <td>
-                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="AlternativeGroupID" name="AlternativeGroupID" data-options="required:true,
-                   url:'../../SysAlternatives/GetGroup/1',
-                   method:'get',
-                   multiple:false,
-                   valueField:'AlternativeGroupID',
-                   textField:'AlternativeGroupText'
-                           "></select>
-                    </td>
+                    <td width="65" align="right">申请人姓名:</td>
+                    <td><input type="text" name="UserName" disabled="disabled" class="wu-text" /></td>
                 </tr>
                 <tr>
-                    <td align="right" width="70">备选项信息:</td>
-                    <td><input type="text" name="Remarks" class="wu-text" /></td>
+                    <td align="right" width="65">开始时间:</td>
+                    <td><input type="text" name="StartTime" disabled="disabled" class="wu-text" /></td>
                 </tr>
+                <tr>
+                    <td align="right" width="65">结束时间:</td>
+                    <td><input type="text" name="EndTime" disabled="disabled" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td align="right" width="65">时长:</td>
+                    <td><input type="text" name="Time" disabled="disabled" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td align="right" width="65">加班类型:</td>
+                    <td><input type="text" name="OverTimeType" disabled="disabled" class="wu-text" /></td>
+                </tr>
+                <tr>
+                    <td align="right" width="65">结算方式:</td>
+                    <td><input type="text" name="Account_Method" disabled="disabled" class="wu-text" /></td>
+                </tr>
+                <tr id="tr_reason">
+                    <td align="right" width="65">加班原因:</td>
+                    <td><input type="text" name="OverTimeReason" disabled="disabled" class="wu-text" /></td>
+                </tr>
+                
             </table>
         </form>
     </div>

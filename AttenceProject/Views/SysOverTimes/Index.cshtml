@@ -153,7 +153,12 @@
             $("#StartTime").datebox('calendar').calendar({ 
                 validator: function (beginDate) {
                     var date = new Date();
-                    return beginDate >= date;
+                    var enddate = $("#EndTime").datebox("getValue");
+                    //alert(enddate);
+                    if (enddate != "") {
+                        enddate = 01 / 01 / 9999;
+                    }
+                    return beginDate >= date&&beginDate<=enddate;
                 }
             });
             $("#EndTime").datebox({

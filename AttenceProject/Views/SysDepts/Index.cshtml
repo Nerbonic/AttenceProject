@@ -62,7 +62,7 @@
                     dataType: "json",
                     success: function (result) {
                         var username = result.UserName;
-                        var userstate = result.UserState;
+                        var userstate = result.UserState==1?"启用":"停用";
                         var userrole = result.UserRole
                         var userid = result.ID;
                         $("#UserID").val(userid);
@@ -283,57 +283,45 @@
                     <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="EditDept()" plain="true">编辑部门</a>
                     <a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="EditPerson()" plain="true">编辑员工</a>
                     </div>
-                <div class="wu-toolbar-search">
-                    <label>起始时间：</label><input class="easyui-datebox" style="width:100px">
-                    <label>结束时间：</label><input class="easyui-datebox" style="width:100px">
-                    <label>用户组：</label>
-                    <select class="easyui-combobox" panelHeight="auto" style="width:100px">
-                    </select>
-                    <label>关键词：</label><input class="wu-text" style="width:100px">
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-search">开始检索</a>
+                <div class="easyui-panel" title="部门人员信息" style="width:500px;" >
+                    <form id="wu-form" method="post" class="deptinfo">
+                        <table>
+                            <tr style="">
+                                <td width="70" align="right">ID:</td>
+                                <td><input type="text" name="DeptID" id="DeptID" class="wu-text" disabled="disabled" /></td>
+                            </tr>
+                            <tr>
+                                <td width="70" align="right">部门名称:</td>
+                                <td><input type="text" id="DeptName" name="DeptName" class="wu-text" disabled="disabled" /></td>
+                            </tr>
+                        </table>
+                    </form>
+                    <form id="wu-form" method="post" class="userinfo">
+                        <table>
+                            <tr style="">
+                                <td width="70" align="right">ID:</td>
+                                <td><input type="text" name="UserID" id="UserID" class="wu-text" disabled="disabled" /></td>
+                            </tr>
+                            <tr>
+                                <td width="70" align="right">用户名称:</td>
+                                <td><input type="text" id="UserName" name="UserName" class="wu-text"  disabled="disabled"/></td>
+                            </tr>
+                            <tr>
+                                <td width="70" align="right">用户权限:</td>
+                                <td>
+                                    <input type="text" id="UserRole" name="UserRole" class="wu-text" disabled="disabled" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="70" align="right">用户账户状态:</td>
+                                <td><input type="text" id="UserState" name="UserState" class="wu-text" disabled="disabled" /></td>
+                            </tr>
+                        </table>
+                    </form>
                 </div>
-                <form id="wu-form" method="post" class="deptinfo">
-                    <table>
-                        <tr style="">
-                            <td width="70" align="right">ID:</td>
-                            <td><input type="text" name="DeptID" id="DeptID" class="wu-text" /></td>
-                        </tr>
-                        <tr>
-                            <td width="70" align="right">部门名称:</td>
-                            <td><input type="text" id="DeptName" name="DeptName" class="wu-text" /></td>
-                        </tr>
-                    </table>
-                </form>
-    
-                <form id="wu-form" method="post" class="userinfo">
-                    <table>
-                        <tr style="">
-                            <td width="70" align="right">ID:</td>
-                            <td><input type="text" name="UserID" id="UserID" class="wu-text" /></td>
-                        </tr>
-                        <tr>
-                            <td width="70" align="right">用户名称:</td>
-                            <td><input type="text" id="UserName" name="UserName" class="wu-text" /></td>
-                        </tr>
-                        <tr>
-                            <td width="70" align="right">用户权限:</td>
-                            <td>
-                            <input type="text" id="UserRole" name="UserRole" class="wu-text" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="70" align="right">用户账户状态:</td>
-                            <td><input type="text" id="UserState" name="UserState" class="wu-text" /></td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
             <!-- End of toolbar -->
             <table id="wu-datagrid" toolbar="#wu-toolbar"></table>
         </div>
-        <p>
-            @Html.ActionLink("Create New", "Create")
-        </p>
     </div>
     <!-- Begin of easyui-dialog （部门添加窗口）-->
     <div id="wu-dialog-add" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
@@ -378,7 +366,15 @@
                 </tr>
                 <tr>
                     <td width="70" align="right">员工角色权限:</td>
-                    <td><input type="text" name="UserRole" class="wu-text" /></td>
+                    <td>
+                        <select class="easyui-combobox" panelHeight="auto" style="width:100px" id="UserRole" name="UserRole" data-options="required:true,
+                   url:'../../SysDepts/GetApplySetByGroup/5',
+                   method:'get',
+                   multiple:false,
+                   valueField:'ID',
+                   textField:'ApplyText'
+                           "></select>
+                    </td>
                 </tr>
 
             </table>

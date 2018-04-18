@@ -113,23 +113,15 @@ namespace AttenceProject.Controllers
             if (list.Count > 0)
             {
                 string ApplyGroupText = list[0].ApplyGroupText;
-                SysApplySet sys = db.SysApplySets.Where(m => m.ID == int.Parse(ID)).ToList()[0];
+                SysApplySet sys = db.SysApplySets.Where(m => m.ID.ToString() == ID).ToList()[0];
                 sys.ApplyText = ApplyText;
                 sys.ApplyGroupText = ApplyGroupText;
                 sys.Remarks = Remarks;
                 sys.Operator = "admin";
                 sys.OpTime = DateTime.Now;
                 sys.ApplyGroupID = int.Parse(ApplyGroupID);
-                db.Entry(sys).State = EntityState.Unchanged;
-                db.Entry(sys).Property(m => m.ApplyText).IsModified = true;
-                db.Entry(sys).Property(m => m.Remarks).IsModified = true;
-                db.Entry(sys).Property(m => m.ApplyGroupID).IsModified = true;
-                db.Entry(sys).Property(m => m.ApplyGroupText).IsModified = true;
-                db.Entry(sys).Property(m => m.Operator).IsModified = true;
-                db.Entry(sys).Property(m => m.OpTime).IsModified = true;
-
+                db.Entry<SysApplySet>(sys).State = EntityState.Modified;
                 db.SaveChanges();
-
             }
             return Content("success");
         }
