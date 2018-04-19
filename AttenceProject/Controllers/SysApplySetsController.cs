@@ -55,11 +55,11 @@ namespace AttenceProject.Controllers
         }
 
         // GET:SysApplySets/GetJson
-        public ContentResult GetJson(string ApplyGroupID, string ApplyText)
+        public ContentResult GetJson(string ApplyGroupID, string ApplyText,string CurPage,string PageSize)
         {
             var res = new ContentResult();
 
-            var list = db.SysApplySets.ToList();
+            var list = db.SysApplySets.Take(int.Parse(CurPage) * int.Parse(PageSize)).Skip(int.Parse(PageSize) * (int.Parse(CurPage) - 1)).ToList();
             if (ApplyGroupID != "0" && !string.IsNullOrEmpty(ApplyGroupID))
             {
                 list = list.Where(m => m.ApplyGroupID == int.Parse(ApplyGroupID)).ToList();

@@ -11,5 +11,8 @@ namespace AttenceProject.Services.Face
         List<SysAlternative> GetSysAlternatives();
 
         List<SysAlternative> GetSysAlternativesCondition(string AlternativeGroupID, string AlternativeText);
+
+        string Delete(string ids);
+
     }
 }

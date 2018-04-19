@@ -43,6 +43,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.7.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.7.1\lib\net45\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.5.8.0\lib\net45\CommonServiceLocator.dll</HintPath>
       <Private>True</Private>
@@ -112,34 +116,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="Unity.Abstractions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.0\lib\net45\Unity.Abstractions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.Configuration, Version=5.2.1.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.0\lib\net45\Unity.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.Container, Version=5.8.0.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.0\lib\net45\Unity.Container.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.Interception, Version=5.5.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.0\lib\net45\Unity.Interception.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.Interception.Configuration, Version=5.1.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.0\lib\net45\Unity.Interception.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.RegistrationByConvention, Version=2.1.5.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.0\lib\net45\Unity.RegistrationByConvention.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.ServiceLocation, Version=2.1.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.0\lib\net45\Unity.ServiceLocation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Web.Razor">
@@ -5654,7 +5630,7 @@
     <Content Include="zTree_v3\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Core\UnityContainerHelp.cs" />
+    <Compile Include="App_Start\CookieHelper.cs" />
     <Compile Include="App_Start\JsonTool.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -5674,7 +5650,6 @@
     <Compile Include="Models\ModelContexts\SysApplySetContext.cs" />
     <Compile Include="Models\ModelContexts\SysVacationContext.cs" />
     <Compile Include="Models\ModelContexts\SysOverTimeContext.cs" />
-    <Compile Include="Models\ModelContexts\View_SysUserInDeptContext - 复制.cs" />
     <Compile Include="Models\OriginalModel\SysDeptStatistical.cs" />
     <Compile Include="Models\OriginalModel\SysApprove.cs" />
     <Compile Include="Models\OriginalModel\SysAccount.cs" />
@@ -5695,11 +5670,12 @@
     <Compile Include="Models\OriginalModel\SysMenu.cs" />
     <Compile Include="Models\OriginalModel\SysUsersRole.cs" />
     <Compile Include="Models\OriginalModel\SysWorkOff.cs" />
-    <Compile Include="Models\ModelContexts\View_GeneralTreeContext.cs" />
     <Compile Include="Models\ViewModel\View_GeneralTree.cs" />
     <Compile Include="Models\ViewModel\View_SysUserInDept.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Face\ILogin.cs" />
     <Compile Include="Services\Face\ISysAlternative.cs" />
+    <Compile Include="Services\Impl\LoginImpl.cs" />
     <Compile Include="Services\Impl\SysAlternativeImpl.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -5746,6 +5722,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Core\" />
     <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\SysAccounts\" />

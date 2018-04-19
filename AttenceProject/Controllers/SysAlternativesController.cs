@@ -17,35 +17,20 @@ namespace AttenceProject.Controllers
     public class SysAlternativesController : Controller
     {
         private SysAlternativeContext db = new SysAlternativeContext();
-        public ISysAlternative service { get; set; }
+        public ISysAlternative service_alter { get; set; }
         // GET: SysAlternatives
         public ActionResult Index()
         {
-            return View(db.SysAlternatives.ToList());
+            return View(service_alter.GetSysAlternatives());
         }
 
 
         // GET: SysAlternatives/Delete
         public ActionResult Delete(string ids)
         {
-            if (string.IsNullOrEmpty(ids))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            string id = ids.TrimStart('[').TrimEnd(']');
-            SysAlternative sysAlternative = null;
-            for (int i = 0; i < id.Split(',').Count(); i++)
-            {
-                sysAlternative = db.SysAlternatives.Find(int.Parse(id));
-                if (sysAlternative == null)
-                {
-                    continue;
-                }
-                db.SysAlternatives.Remove(sysAlternative);
-                db.SaveChanges();
-            }
+            string rtrStr=service_alter.Delete(ids);
 
-            return Content("success");
+            return Content(rtrStr);
         }
 
         protected override void Dispose(bool disposing)

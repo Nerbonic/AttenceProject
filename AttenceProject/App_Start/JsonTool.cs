@@ -21,13 +21,18 @@ namespace AttenceProject.App_Start
         public static string EN2J(object obj)
         {
             string result = "";
-            result = JsonConvert.SerializeObject(obj);
+            //result = JsonConvert.SerializeObject(obj);
             return result;
         }
 
         internal static string LI2J(object p)
         {
             throw new NotImplementedException();
+        }
+
+        public static string FailJson(string message,string status)
+        {
+            return "{\"status\":\""+status+"\", \"messsage\":\""+message+"！\",\"total\":\"0\",\"rows\":[]}";
         }
 
         ///<summary>

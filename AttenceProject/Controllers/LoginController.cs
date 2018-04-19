@@ -1,4 +1,7 @@
 ﻿using AttenceProject.Models;
+using AttenceProject.Services.Face;
+using AttenceProject.Services.Impl;
+using Autofac;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +12,9 @@ namespace AttenceProject.Controllers
 {
     public class LoginController : BaseController
     {
+        public ILogin service_login;
         private SysUsersRoleDbContext db = new SysUsersRoleDbContext();
+
 
         // GET: Login
         /// <summary>
@@ -25,7 +30,6 @@ namespace AttenceProject.Controllers
         [HttpPost]
         public ActionResult DoLogin(string username, string password)
         {
-
             IList<SysUsersRole> list = db.sur.Where(m => m.LoginName == username).ToList();
             if (list.Count == 0)
             {
@@ -38,11 +42,9 @@ namespace AttenceProject.Controllers
             else
             {
                 HttpCookie cook = new HttpCookie("userinfo");
-
                 cook.Values.Set("UserID", list[0].ID.ToString());
                 cook.Values.Set("UserName", list[0].UserName);
                 cook.Values.Set("UserCode", list[0].UserCode);
-
                 cook.Expires.AddDays(1);//设置过期时间  
                 Response.SetCookie(cook);//若已有此cookie，更新内容  
                 Response.Cookies.Add(cook);//添加此cookie  

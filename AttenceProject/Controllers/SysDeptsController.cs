@@ -16,7 +16,6 @@ namespace AttenceProject.Controllers
     public class SysDeptsController : Controller
     {
         private SysDeptContext db = new SysDeptContext();
-        private View_GeneralTreeContext db_GeneralTree = new View_GeneralTreeContext();
         private SysUsersRoleDbContext db_userrole = new SysUsersRoleDbContext();
         private SysOverTimeContext db_overtime = new SysOverTimeContext();
         private SysVacationContext db_vacation = new SysVacationContext();

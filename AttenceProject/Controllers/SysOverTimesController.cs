@@ -21,7 +21,6 @@ namespace AttenceProject.Controllers
         private SysApplySetContext db_apply = new SysApplySetContext();
         private SysUsersRoleDbContext db_user = new SysUsersRoleDbContext();
         private SysApproveContext db_approve = new SysApproveContext();
-        private View_SysUserInDeptContext db_ViewUserInDept = new View_SysUserInDeptContext();
         // GET: SysOverTimes
         public ActionResult Index()
         {
@@ -423,7 +422,7 @@ namespace AttenceProject.Controllers
                 return HttpNotFound();
             }
             var res = new ContentResult();
-            res.Content = result.TrimStart('{').TrimEnd('}');
+            res.Content = result.TrimStart('[').TrimEnd(']');
             //res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
             res.ContentType = "application/json";
             res.ContentEncoding = Encoding.UTF8;
