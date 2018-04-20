@@ -21,7 +21,7 @@ namespace AttenceProject.App_Start
         public static string EN2J(object obj)
         {
             string result = "";
-            //result = JsonConvert.SerializeObject(obj);
+            result = JsonConvert.SerializeObject(obj);
             return result;
         }
 

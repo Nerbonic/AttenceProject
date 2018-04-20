@@ -16,8 +16,9 @@ namespace AttenceProject.Controllers
 {
     public class SysAlternativesController : Controller
     {
-        private SysAlternativeContext db = new SysAlternativeContext();
-        public ISysAlternative service_alter { get; set; }
+
+
+        public ISysAlternative service_alter = new SysAlternativeImpl();
         // GET: SysAlternatives
         public ActionResult Index()
         {
@@ -33,32 +34,16 @@ namespace AttenceProject.Controllers
             return Content(rtrStr);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
 
         // GET:SysAlternatives/GetJson
         public ContentResult GetJson(string AlternativeGroupID, string AlternativeText)
         {
             var res = new ContentResult();
 
-            //var list = service.GetSysAlternativesCondition(AlternativeGroupID, AlternativeText);
-            var list = db.SysAlternatives.ToList();
-            if (AlternativeGroupID != "0" && !string.IsNullOrEmpty(AlternativeGroupID))
-            {
-                list = list.Where(m => m.AlternativeGroupID == int.Parse(AlternativeGroupID)).ToList();
-            }
-            if (!string.IsNullOrEmpty(AlternativeText))
-            {
-                list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
-            }
+            var list = service_alter.GetSysAlternativesCondition(AlternativeGroupID, AlternativeText);
+            
             string result = JsonTool.LI2J(list);
-            result = "{\"total\":" + db.SysAlternatives.ToList().Count + ",\"rows\":" + result + "}";
+            result = "{\"total\":" + list.Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
             res.Content = result;
@@ -70,13 +55,13 @@ namespace AttenceProject.Controllers
 
 
         // Get: SysAlternatives/GetInfo
-        public ActionResult GetInfo(int? id)
+        public ActionResult GetInfo(int id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SysAlternative sysAlternative = db.SysAlternatives.Find(id);
+            SysAlternative sysAlternative = service_alter.GetInfo(id);
             if (sysAlternative == null)
             {
                 return HttpNotFound();
@@ -100,20 +85,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult SaveEdit(string ID, string AlternativeText, string Remarks, string AlternativeGroupID)
         {
-            IList<SysAlternative> list = db.SysAlternatives.Where(m => m.AlternativeGroupID.ToString() == AlternativeGroupID).ToList();
-            SysAlternative sys = db.SysAlternatives.Where(a => a.ID.ToString() == ID).ToList()[0];
-            if (list.Count >0)
-            {
-                string AlternativeGroupText = list[0].AlternativeGroupText;
-                sys.AlternativeText = AlternativeText;
-                sys.AlternativeGroupText = AlternativeGroupText;
-                sys.Remarks = Remarks;
-                sys.Operator = "admin";
-                sys.OpTime = DateTime.Now;
-                sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
-                db.Entry<SysAlternative>(sys).State = EntityState.Modified;
-                db.SaveChanges();
-            }
+            service_alter.SaveEdit(ID, AlternativeText, Remarks, AlternativeGroupID);
             return Content("success");
         }
 
@@ -124,7 +96,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ContentResult GetGroup(int id)
         {
-            string result = JsonTool.LI2J(db.SysAlternatives.Select(s => new { s.AlternativeGroupID, s.AlternativeGroupText }).Distinct().ToList());
+            string result = service_alter.GetGroup(id);
             if (id == 0)
             {
                 result = "[{\"AlternativeGroupID\":0,\"AlternativeGroupText\":\"全部分组\"}," + result.TrimStart('[');
@@ -144,7 +116,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ContentResult GetAlternativeByGroup(int id)
         {
-            string result = JsonTool.LI2J(db.SysAlternatives.Where(m => m.AlternativeGroupID == id).Select(s => new { s.ID, s.AlternativeText }).ToList());
+            string result = service_alter.GetAlternativbeByGroup(id);
             var res = new ContentResult();
             res.Content = result;
             res.ContentType = "application/json";
@@ -162,21 +134,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult SaveAdd(string AlternativeText, string Remarks, string AlternativeGroupID)
         {
-            IList<SysAlternative> list = db.SysAlternatives.Where(m => m.AlternativeGroupID.ToString() == AlternativeGroupID).ToList();
-            if (list.Count >0)
-            {
-                string AlternativeGroupText = list[0].AlternativeGroupText;
-
-                SysAlternative sys = new SysAlternative();
-                sys.AlternativeText = AlternativeText;
-                sys.AlternativeGroupText = AlternativeGroupText;
-                sys.Remarks = Remarks;
-                sys.Operator = "admin";
-                sys.OpTime = DateTime.Now;
-                sys.AlternativeGroupID = int.Parse(AlternativeGroupID);
-                db.SysAlternatives.Add(sys);
-                db.SaveChanges();
-            }
+            service_alter.SaveAdd(AlternativeText, Remarks, AlternativeGroupID);
             return Content("success");
 
         }

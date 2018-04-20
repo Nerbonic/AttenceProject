@@ -14,5 +14,14 @@ namespace AttenceProject.Services.Face
 
         string Delete(string ids);
 
+        SysAlternative GetInfo(int id);
+
+        int SaveEdit(string ID, string AlternativeText, string Remarks, string AlternativeGroupID);
+
+        int SaveAdd(string AlternativeText, string Remarks, string AlternativeGroupID);
+
+        string GetGroup(int id);
+
+        string GetAlternativbeByGroup(int id);
     }
 }

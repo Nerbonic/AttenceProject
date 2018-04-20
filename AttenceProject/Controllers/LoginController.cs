@@ -12,10 +12,17 @@ namespace AttenceProject.Controllers
 {
     public class LoginController : BaseController
     {
-        public ILogin service_login;
-        private SysUsersRoleDbContext db = new SysUsersRoleDbContext();
 
+        ILogin service_login = new LoginImpl();
 
+        public LoginController(ILogin _service_login)
+        {
+            service_login = _service_login;
+        }
+        public LoginController()
+        {
+
+        }
         // GET: Login
         /// <summary>
         /// 登录页面
@@ -30,7 +37,8 @@ namespace AttenceProject.Controllers
         [HttpPost]
         public ActionResult DoLogin(string username, string password)
         {
-            IList<SysUsersRole> list = db.sur.Where(m => m.LoginName == username).ToList();
+            IList<SysUsersRole> list = service_login.GetUserInfoByName(username);
+            //IList<SysUsersRole> list = db.sur.Where(m => m.LoginName == username).ToList();
             if (list.Count == 0)
             {
                 return Content("<script>alert('不存在此用户!登陆失败');window.location.href='/Login/Index';</script>");

@@ -9,12 +9,15 @@ using System.Web.Mvc;
 using AttenceProject.Models;
 using AttenceProject.App_Start;
 using System.Text;
+using AttenceProject.Services.Face;
+using AttenceProject.Services.Impl;
 
 namespace AttenceProject.Controllers
 {
     public class SysApplySetsController : Controller
     {
         private SysApplySetContext db = new SysApplySetContext();
+        public ISysApplySet service_apply = new SysApplySetImpl();
 
         // GET: SysApplySets
         public ActionResult Index()
@@ -25,24 +28,10 @@ namespace AttenceProject.Controllers
         // GET: SysApplySets/Delete
         public ActionResult Delete(string ids)
         {
-            if (string.IsNullOrEmpty(ids))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            string id = ids.TrimStart('[').TrimEnd(']');
-            SysApplySet SysApplySets = null;
-            for (int i = 0; i < id.Split(',').Count(); i++)
-            {
-                SysApplySets = db.SysApplySets.Find(int.Parse(id));
-                if (SysApplySets == null)
-                {
-                    continue;
-                }
-                db.SysApplySets.Remove(SysApplySets);
-                db.SaveChanges();
-            }
+             string rtrStr=service_apply.Delete(ids);
 
-            return Content("success");
+            return Content(rtrStr);
+            //return Content("success");
         }
 
         protected override void Dispose(bool disposing)
@@ -55,19 +44,11 @@ namespace AttenceProject.Controllers
         }
 
         // GET:SysApplySets/GetJson
-        public ContentResult GetJson(string ApplyGroupID, string ApplyText,string CurPage,string PageSize)
+        public ContentResult GetJson(string ApplyGroupID, string ApplyText)
         {
             var res = new ContentResult();
 
-            var list = db.SysApplySets.Take(int.Parse(CurPage) * int.Parse(PageSize)).Skip(int.Parse(PageSize) * (int.Parse(CurPage) - 1)).ToList();
-            if (ApplyGroupID != "0" && !string.IsNullOrEmpty(ApplyGroupID))
-            {
-                list = list.Where(m => m.ApplyGroupID == int.Parse(ApplyGroupID)).ToList();
-            }
-            if (!string.IsNullOrEmpty(ApplyText))
-            {
-                list = list.Where(m => m.ApplyText.Contains(ApplyText)).ToList();
-            }
+            var list = service_apply.GetSysApplySetsCondition(ApplyGroupID, ApplyText);
             string result = JsonTool.LI2J(list);
             result = "{\"total\":" + db.SysApplySets.ToList().Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
@@ -81,13 +62,13 @@ namespace AttenceProject.Controllers
 
 
         // Get: SysApplySets/GetInfo
-        public ActionResult GetInfo(int? id)
+        public ActionResult GetInfo(int id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SysApplySet SysApplySets = db.SysApplySets.Find(id);
+            SysApplySet SysApplySets = service_apply.GetInfo(id);
             if (SysApplySets == null)
             {
                 return HttpNotFound();
@@ -109,20 +90,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult SaveEdit(string ID, string ApplyText, string Remarks, string ApplyGroupID)
         {
-            IList<SysApplySet> list = db.SysApplySets.Where(m => m.ApplyGroupID.ToString() == ApplyGroupID).ToList();
-            if (list.Count > 0)
-            {
-                string ApplyGroupText = list[0].ApplyGroupText;
-                SysApplySet sys = db.SysApplySets.Where(m => m.ID.ToString() == ID).ToList()[0];
-                sys.ApplyText = ApplyText;
-                sys.ApplyGroupText = ApplyGroupText;
-                sys.Remarks = Remarks;
-                sys.Operator = "admin";
-                sys.OpTime = DateTime.Now;
-                sys.ApplyGroupID = int.Parse(ApplyGroupID);
-                db.Entry<SysApplySet>(sys).State = EntityState.Modified;
-                db.SaveChanges();
-            }
+            service_apply.SaveEdit(ID, ApplyText, Remarks, ApplyGroupID);
             return Content("success");
         }
 
@@ -134,7 +102,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ContentResult GetGroup(int id)
         {
-            string result = JsonTool.LI2J(db.SysApplySets.Select(s => new { s.ApplyGroupID, s.ApplyGroupText }).Distinct().ToList());
+            string result = service_apply.GetGroup(id);
             if (id == 0)
             {
                 result = "[{\"ApplyGroupID\":0,\"ApplyGroupText\":\"全部分组\"}," + result.TrimStart('[');
@@ -154,7 +122,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ContentResult GetApplySetByGroup(int id)
         {
-            string result = JsonTool.LI2J(db.SysApplySets.Where(m => m.ApplyGroupID == id).Select(s => new { s.ID, s.ApplyText }).ToList());
+            string result = service_apply.GetApplySetByGroup(id);
             var res = new ContentResult();
             res.Content = result;
             res.ContentType = "application/json";
@@ -172,21 +140,7 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult SaveAdd(string ApplyText, string Remarks, string ApplyGroupID)
         {
-            IList<SysApplySet> list = db.SysApplySets.Where(m => m.ApplyGroupID.ToString() == ApplyGroupID).ToList();
-            if (list.Count > 0)
-            {
-                string ApplyGroupText = list[0].ApplyGroupText;
-
-                SysApplySet sys = new SysApplySet();
-                sys.ApplyText = ApplyText;
-                sys.ApplyGroupText = ApplyGroupText;
-                sys.Remarks = Remarks;
-                sys.Operator = "admin";
-                sys.OpTime = DateTime.Now;
-                sys.ApplyGroupID = int.Parse(ApplyGroupID);
-                db.SysApplySets.Add(sys);
-                db.SaveChanges();
-            }
+            service_apply.SaveAdd(ApplyText, Remarks, ApplyGroupID);
             return Content("success");
 
         }

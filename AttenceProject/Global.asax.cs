@@ -1,4 +1,5 @@
-﻿using AttenceProject.Services.Face;
+﻿using AttenceProject.App_Start;
+using AttenceProject.Services.Face;
 using AttenceProject.Services.Impl;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace AttenceProject
             //AuthConfig.RegisterAuth();
 
             //注入 Ioc
-
+            AutoFacConfig.Register();
         }
         
 
