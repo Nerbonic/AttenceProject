@@ -38,19 +38,19 @@ namespace AttenceProject.Controllers
         public ActionResult DoLogin(string username, string password)
         {
 
-            ContainerBuilder builder = new ContainerBuilder();
-            builder.regi
-            builder.RegisterModule(new LoginImpl());
-            //builder.RegisterType<Test>();
+            //ContainerBuilder builder = new ContainerBuilder();
+            
+            //builder.RegisterModule(new LoginImpl());
+            ////builder.RegisterType<Test>();
 
 
-            //builder.Register(t => new Test()).As<Test>();
-            builder.RegisterType<Test2>();
-            var container = builder.Build();
+            ////builder.Register(t => new Test()).As<Test>();
+            //builder.RegisterType<Test2>();
+            //var container = builder.Build();
 
-            Test2 test2 = container.Resolve<Test2>();
-            // Test2 ee = new Test2();
-            test2.Show();
+            //Test2 test2 = container.Resolve<Test2>();
+            //// Test2 ee = new Test2();
+            //test2.Show();
             IList<SysUsersRole> list = service_login.GetUserInfoByName(username);
             //IList<SysUsersRole> list = db.sur.Where(m => m.LoginName == username).ToList();
             if (list.Count == 0)
