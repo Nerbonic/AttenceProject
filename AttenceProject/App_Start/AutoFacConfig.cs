@@ -16,12 +16,17 @@ namespace AttenceProject.App_Start
     {
         public static void Register()
         {
-            ContainerBuilder builder = new ContainerBuilder();
-            builder.RegisterType<LoginImpl>().As<ILogin>().InstancePerLifetimeScope();
             // then     
-            IContainer container = builder.Build();
+            //Create your builder.
+            var builder = new ContainerBuilder();
 
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            // Usually you're only interested in exposing the type
+            // via its interface:
+            builder.RegisterType<LoginImpl>().As<ILogin>();
+
+            // However, if you want BOTH services (not as common)
+            // you can say so:
+            builder.RegisterType<LoginImpl>().AsSelf().As<ILogin>();
             //LoginImpl result = (LoginImpl)container.Resolve<ILogin>();
             
             //var a = container.ResolveOptional(typeof(IAddService));
