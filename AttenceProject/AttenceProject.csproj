@@ -5678,11 +5678,13 @@
     <Compile Include="Models\ViewModel\View_GeneralTree.cs" />
     <Compile Include="Models\ViewModel\View_SysUserInDept.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Face\ISysVacation.cs" />
     <Compile Include="Services\Face\ISysOverTime.cs" />
     <Compile Include="Services\Face\ISysDept.cs" />
     <Compile Include="Services\Face\ILogin.cs" />
     <Compile Include="Services\Face\ISysApplySet.cs" />
     <Compile Include="Services\Face\ISysAlternative.cs" />
+    <Compile Include="Services\Impl\SysVacationImpl.cs" />
     <Compile Include="Services\Impl\SysOverTimeImpl.cs" />
     <Compile Include="Services\Impl\SysDeptImpl.cs" />
     <Compile Include="Services\Impl\LoginImpl.cs" />
@@ -5725,6 +5727,8 @@
     <Content Include="Views\SysOverTimes\ApproveCopy.cshtml" />
     <Content Include="Views\SysDepts\DeptStatistical.cshtml" />
     <Content Include="Views\SysDepts\PersonalStatistical.cshtml" />
+    <Content Include="Views\SysVacations\ApproveCopy.cshtml" />
+    <Content Include="Views\SysWorkOffs\ApproveCopy.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

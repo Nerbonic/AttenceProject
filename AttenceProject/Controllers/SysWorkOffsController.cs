@@ -369,6 +369,77 @@ namespace AttenceProject.Controllers
             }
             base.Dispose(disposing);
         }
+        public ActionResult ApproveCopy()
+        {
+            return View();
+        }
+
+        public ActionResult GetApproveCopyJson()
+        {
+            HttpCookie cook = Request.Cookies["userinfo"];
+            #region 取出最近的加班的审批进度
+            //这段linq是用来将所有最新的审批进度取出来
+            var list = db_approve.SysApproves.Where(a => a.ApplyType == "加班");//取出所有进度
+            var query = from d in list
+                        group d by d.ApplyID into g
+                        select new
+                        {
+                            OpTime = g.Max(x => x.OpTime),
+                            ApplyID = g.Key
+                        };
+            //按不同审批找出不同审批的最大时间，返回审批ID和时间
+
+            var query_final = from b in list
+                              join aa in query
+                              on new { b.OpTime, b.ApplyID }
+                              equals new { aa.OpTime, aa.ApplyID }
+                              select b;
+            //按照找出的审批ID和时间在所有进度里进行筛选
+
+            var list_end = query_final.ToList();//找出所有审批的最新进度
+
+            var list_overtime = db.SysWorkOffs.ToList();
+
+            var query_show = from a in list_end
+                             join b in list_overtime
+                             on a.ApplyID equals b.ID
+                             where (b.CopyFor.Contains("_" + cook.Values["UserID"] + "_"))
+                             select new
+                             {
+                                 b.ID,
+                                 b.ProposerID,
+                                 b.SendFor,
+                                 b.VacationEnd,
+                                 b.VacationStart,
+                                 b.OverTimeEnd,
+                                 b.OverTimeStart,
+                                 b.Time,
+                                 b.WorkOffType,
+                                 b.VacationReason,
+                                 b.CopyFor,
+                                 a.ApplyID,
+                                 a.LastChecker,
+                                 a.NextChecker,
+                                 a.NowChecker,
+                                 a.Applyrate,
+                                 a.ApplyStatus
+                             };
+            #endregion
+            var list_show = query_show.ToList();
+            //list_show.OrderBy(m=>m.ID)
+            string result = JsonTool.LI2J(list_show);
+            result = "{\"total\":" + list_show.Count.ToString() + ",\"rows\":" + result + "}";
+            
+            var res = new ContentResult();
+            StringBuilder sb = new StringBuilder();
+            sb.Append(result);
+            res.Content = result;
+            res.ContentType = "application/json";
+            //res.Data = sb.ToString();
+            res.ContentEncoding = Encoding.UTF8;
+            return res;
+        }
+
     }
 }
 

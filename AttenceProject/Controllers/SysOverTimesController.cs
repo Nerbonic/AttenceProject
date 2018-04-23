@@ -118,7 +118,7 @@ namespace AttenceProject.Controllers
             //{
             //    list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
             //}
-            string result = JsonTool.LI2J(list);
+            string result = JsonTool.LI2J(list.ToList());
             result = "{\"total\":" + list.Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
@@ -144,7 +144,7 @@ namespace AttenceProject.Controllers
             //{
             //    list = list.Where(m => m.AlternativeText.Contains(AlternativeText)).ToList();
             //}
-            string result = JsonTool.LI2J(list);
+            string result = JsonTool.LI2J(list.ToList());
             result = "{\"total\":" + list.Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
@@ -208,71 +208,9 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult SaveApprove(string applyrate,string applystatus,string applyid)
         {
-            IList<SysApprove> list = db_approve.SysApproves.Where(m => m.ApplyID.ToString() == applyid).ToList();
-            SysOverTime sys_overtime = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
-            //获取请假信息及最近一次的审批信息
-
-            string sendfor = sys_overtime.SendFor;
-            string[] sendfors = sendfor.TrimEnd('_').Split('_');
-            IList sendlist = sendfors.ToList();
-
-            SysApprove sys = new SysApprove();
-            SysApprove sys_first = list[0];
-            sys.ApplyID = int.Parse(applyid);
-            sys.Applyrate = applyrate;
-            sys.ApplyStatus = int.Parse(applystatus);
-            sys.OpTime = DateTime.Now;
-            sys.ApplyType = "加班";
-            
             HttpCookie cook = Request.Cookies["userinfo"];
-            int NowCheckerIndex = sendlist.IndexOf(cook.Values["UserID"]);
-            if (NowCheckerIndex == sendfors.Length - 1)
-            {
-                //如果是最后一个人的审批的此条申请
-                //保存最后一个人的审批信息
-                sys.NextChecker = 0;
-                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
-                sys.NowChecker = 0;
-                db_approve.SysApproves.Add(sys);
-                db_approve.SaveChanges();
-
-                //结束一个审批流程：
-                //结束审批流程要做的事情：修改申请信息为通过：
-                SysOverTime sys_overtime_base = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
-                sys_overtime_base.ApplyStatus = 1;
-                db.Entry<SysOverTime>(sys_overtime_base).State = EntityState.Modified;
-                db.SaveChanges();
-
-                //如果是请假则不需要增加可用加班时间，如果是加班需要在个人账户上增加可用加班时间：
-                SysUsersRole sys_user = db_user.sur.Find(cook.Values["UserID"]);
-                //sys_user.OverTime=list_overtime[0].Time
-
-                return Content("success");
-            }
-            else if (NowCheckerIndex == sendfors.Length - 2)
-            {
-                //如果是倒数第二个人审批的此条申请
-                //增加一条审批信息，修改nowchecker,并nextchecker设置为0
-                sys.NextChecker = 0;
-                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
-                sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
-                db_approve.SysApproves.Add(sys);
-                db_approve.SaveChanges();
-                return Content("success");
-            }
-            else
-            {
-                //如果是其他情况，即还有至少两个人在审批流程上
-                //增加一条审批信息，修改nowchecker和nextchecker
-                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
-                sys.NextChecker= int.Parse(sendfors[NowCheckerIndex + 2]);
-                sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
-                db_approve.SysApproves.Add(sys);
-                db_approve.SaveChanges();
-                return Content("success");
-
-            }
-
+            service_overtime.SaveApprove(cook, applyrate, applystatus, applyid);
+            return Content("success");
         }
 
 
@@ -284,25 +222,14 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult GetApproveDetail(int id)
         {
-            var list = db_approve.SysApproves.ToList();
-            var list_user = db_user.sur.ToList();
-            var query = from a in list
-                        join b in list_user
-                        on a.LastChecker equals b.ID
-                        where a.ApplyID == id && a.LastChecker != 0 && a.ApplyType == "加班"
-                        select new
-                        {
-                            b.UserName,
-                            a.Applyrate,
-                            ApplyStatus = a.ApplyStatus == 1 ? "通过" : "驳回"
-                        };
-            string result = JsonTool.LI2J(query.ToList());
+
+            string result = service_overtime.GetApproveDetail(id);
             if (string.IsNullOrEmpty(result))
             {
                 return HttpNotFound();
             }
             var res = new ContentResult();
-            res.Content = result.TrimStart('[').TrimEnd(']');
+            res.Content = result;
             //res.Content = sysAlternative.AlternativeText + "_" + sysAlternative.AlternativeGroupText + "_" + sysAlternative.Remarks;
             res.ContentType = "application/json";
             res.ContentEncoding = Encoding.UTF8;
@@ -315,62 +242,11 @@ namespace AttenceProject.Controllers
         /// <param name="row">一页的行数</param>
         /// <param name="page">第几页</param>
         /// <returns></returns>
-        public ActionResult GetApproveCopy(int row,int page)
+        public ActionResult GetApproveCopy()
         {
             HttpCookie cook = Request.Cookies["userinfo"];
-
-            #region 取出最近的加班的审批进度
-            //这段linq是用来将所有最新的审批进度取出来
-            var list = db_approve.SysApproves.Where(a => a.ApplyType == "加班");//取出所有进度
-            var query = from d in list
-                        group d by d.ApplyID into g
-                        select new
-                        {
-                            OpTime = g.Max(x => x.OpTime),
-                            ApplyID = g.Key
-                        };
-            //按不同审批找出不同审批的最大时间，返回审批ID和时间
-
-            var query_final = from b in list
-                              join aa in query
-                              on new { b.OpTime, b.ApplyID }
-                              equals new { aa.OpTime, aa.ApplyID }
-                              select b;
-            //按照找出的审批ID和时间在所有进度里进行筛选
-
-            var list_end = query_final.ToList();//找出所有审批的最新进度
-
-            var list_overtime = db.SysOverTimes.ToList();
-
-            var query_show = from a in list_end
-                             join b in list_overtime
-                             on a.ApplyID equals b.ID
-                             where (b.CopyFor.Contains("_"+cook.Values["UserID"]+"_"))
-                             select new
-                             {
-                                 b.ID,
-                                 b.ProposerID,
-                                 b.SendFor,
-                                 b.StartTime,
-                                 b.EndTime,
-                                 b.Time,
-                                 b.OverTimeType,
-                                 b.Account_Method,
-                                 b.OverTimeReason,
-                                 b.CopyFor,
-                                 a.ApplyID,
-                                 a.LastChecker,
-                                 a.NextChecker,
-                                 a.NowChecker,
-                                 a.Applyrate,
-                                 a.ApplyStatus
-                             };
-            #endregion
-            var list_show = query_show.ToList();
-            //list_show.OrderBy(m=>m.ID)
+            string result = service_overtime.GetApproveCopy(cook);
             var res = new ContentResult();
-            string result = JsonTool.LI2J(list_show);
-            result = "{\"total\":" + list_show.Count + ",\"rows\":" + result + "}";
             StringBuilder sb = new StringBuilder();
             sb.Append(result);
             res.Content = result;

@@ -147,9 +147,10 @@
             var zTree = $.fn.zTree.getZTreeObj("treeDemo");
             zTree.setting.edit.drag.autoExpandTrigger = $("#callbackTrigger").attr("checked");
         }
+        
         $(function () {
 
-            //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期
+            //日期控制扩展选择日期大于等于当前日期，开始日期小于等于结束日期
             $("#StartTime").datebox('calendar').calendar({ 
                 validator: function (beginDate) {
                     var date = new Date();
@@ -158,7 +159,7 @@
                     if (enddate != "") {
                         enddate = 01 / 01 / 9999;
                     }
-                    return beginDate >= date&&beginDate<=enddate;
+                    return beginDate >= date && beginDate <= enddate;
                 }
             });
             $("#EndTime").datebox({

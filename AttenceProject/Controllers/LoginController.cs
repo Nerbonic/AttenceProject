@@ -53,6 +53,7 @@ namespace AttenceProject.Controllers
                 cook.Values.Set("UserID", list[0].ID.ToString());
                 cook.Values.Set("UserName", list[0].UserName);
                 cook.Values.Set("UserCode", list[0].UserCode);
+                cook.Values.Set("UserRole", list[0].UserRole.ToString());
                 cook.Expires.AddDays(1);//设置过期时间  
                 Response.SetCookie(cook);//若已有此cookie，更新内容  
                 Response.Cookies.Add(cook);//添加此cookie  

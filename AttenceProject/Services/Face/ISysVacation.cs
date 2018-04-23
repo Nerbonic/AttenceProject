@@ -6,7 +6,7 @@ using System.Web;
 
 namespace AttenceProject.Services.Face
 {
-    public interface ISysOverTime
+    public interface ISysVacation
     {
         /// <summary>
         /// 获取备选项信息的通用方法
@@ -34,21 +34,21 @@ namespace AttenceProject.Services.Face
         /// <param name="SendFor"></param>
         /// <param name="CopyFor"></param>
         /// <returns></returns>
-        int SaveAdd(HttpCookie cook,string OverTimeReason, string OverTimeType, string Account_Method, string StartTime, string EndTime, string SendFor, string CopyFor);
+        int SaveAdd(HttpCookie cook, string VacationReason, string VacationType, string Emergency, string StartTime, string EndTime, string SendFor, string CopyFor);
 
         /// <summary>
         /// 获取申请列表
         /// </summary>
         /// <param name="userid"></param>
         /// <returns></returns>
-        IList<SysOverTime> GetList(string userid);
+        IList<SysVacation> GetList(string userid);
 
         /// <summary>
         /// 抄送人获取申请列表
         /// </summary>
         /// <param name="userid"></param>
         /// <returns></returns>
-        IList<SysOverTime> GetCopyList(string userid);
+        IList<SysVacation> GetCopyList(string userid);
 
         /// <summary>
         /// 获取审批信息
@@ -62,7 +62,7 @@ namespace AttenceProject.Services.Face
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        string GetOverTimeInfo(int id);
+        string GetVacationInfo(int id);
 
         /// <summary>
         /// 保存加班信息
@@ -81,13 +81,6 @@ namespace AttenceProject.Services.Face
         /// <returns></returns>
         string GetApproveDetail(int id);
 
-        /// <summary>
-        /// 获取抄送人信息
-        /// </summary>
-        /// <param name="cook"></param>
-        /// <param name="row"></param>
-        /// <param name="page"></param>
-        /// <returns></returns>
         string GetApproveCopy(HttpCookie cook);
     }
 }

@@ -13,11 +13,16 @@ namespace AttenceProject.Controllers
     public class SysMenusController : BaseController
     {
         private SysMenuContext db = new SysMenuContext();
+        private SysUsersRoleDbContext db_user = new SysUsersRoleDbContext();
 
         // GET: SysMenus
         public ActionResult Index()
         {
-            return View(db.SysMenus.ToList());
+            HttpCookie cook = Request.Cookies["userinfo"];
+            string userid = cook.Values["UserID"];
+            int userquanxian = db_user.sur.Where(a => a.ID.ToString() == userid).ToList()[0].UserRole;
+
+            return View(db.SysMenus.Where(a => a.Operator == userquanxian.ToString()).ToList());
         }
 
         // GET: SysMenus/Details/5

@@ -18,31 +18,40 @@
         <div class="wu-header-left">
             <h1>AttenceProject</h1>
         </div>
+        @{
+            HttpCookie cook = Request.Cookies["userinfo"];
+
+        }
         <div class="wu-header-right">
-            <p><strong class="easyui-tooltip" title="2条未读消息">admin</strong>，欢迎您！</p>
-            <p><a href="#">网站首页</a>|<a href="#">支持论坛</a>|<a href="#">帮助中心</a>|<a href="../../Login/Index">安全退出</a></p>
+            <p><strong class="easyui-tooltip" title="">@cook.Values["UserName"]</strong>，欢迎您！</p>
+            <p><a href="../../Login/Index">安全退出</a></p>
         </div>
     </div>
     <div class="wu-sidebar" data-options="region:'west',split:true,border:true,title:'导航菜单'">
         @{
             List<SysMenu> list = ViewData["menus"] as List<SysMenu>;
             List<SysMenu> listson = ViewData["sonmenus"] as List<SysMenu>;
+            string userrole = cook.Values["UserRole"];
 
         }
+
         <div class="easyui-accordion" data-options="border:false,fit:true">
             @foreach (var m in list)
             {
-                <div title="@m.MenuText" data-options="iconCls:'icon-application-cascade'" style="padding:5px;">
-                    <ul class="easyui-tree wu-side-tree">
-                        @foreach (var n in listson)
-                        {
-                            if (m.ID == n.MenuParentID)
+                if (m.Operator.Contains(userrole))
+                {
+                    <div title="@m.MenuText" data-options="iconCls:'icon-application-cascade'" style="padding:5px;">
+                        <ul class="easyui-tree wu-side-tree">
+                            @foreach (var n in listson)
                             {
-                                <li iconCls="icon-chart-organisation"><a data-icon="icon-chart-organisation" onclick="switchs('@n.Path','@n.MenuText')" iframe="0">@n.MenuText</a></li>
+                                if (m.ID == n.MenuParentID)
+                                {
+                                    <li iconCls="icon-chart-organisation"><a data-icon="icon-chart-organisation" onclick="switchs('@n.Path','@n.MenuText')" iframe="0">@n.MenuText</a></li>
+                                }
                             }
-                        }
-                    </ul>
-                </div>
+                        </ul>
+                    </div>
+                }
             }
         </div>
     </div>
@@ -50,7 +59,7 @@
     <div class="wu-main" data-options="region:'center'">
         <div id="tabs" class="easyui-tabs" fit="true" style="width:100%; height:100%; overflow:hidden;">
             <div title="我的桌面" style="overflow:hidden;">
-                <iframe id="leftframe" src="../SysUsersRoles/Index" style="width:100%;height:100%;"> </iframe>
+                <iframe id="leftframe" src="../SysOverTimes/Index" style="width:100%;height:100%;"> </iframe>
 
             </div>
         </div>

@@ -10,9 +10,10 @@ using System.Collections;
 
 namespace AttenceProject.Services.Impl
 {
-    public class SysOverImpl : ISysOverTime
+    public class SysVacationImpl : ISysVacation
     {
-        private SysOverTimeContext db = new SysOverTimeContext();
+        private SysVacationContext db = new SysVacationContext();
+        private SysOverTimeContext db_overtime = new SysOverTimeContext();
         private SysAlternativeContext db_alter = new SysAlternativeContext();
         private SysApplySetContext db_apply = new SysApplySetContext();
         private SysUsersRoleDbContext db_user = new SysUsersRoleDbContext();
@@ -29,50 +30,46 @@ namespace AttenceProject.Services.Impl
             return result;
         }
 
-        public int SaveAdd(HttpCookie cook, string OverTimeReason, string OverTimeType, string Account_Method, string StartTime, string EndTime, string SendFor, string CopyFor)
+        public int SaveAdd(HttpCookie cook, string VacationReason, string VacationType, string Emergency, string StartTime, string EndTime, string SendFor, string CopyFor)
         {
             string userid = cook.Values["UserID"];
             string username = cook.Values["UserName"];
             string usercode = cook.Values["UserCode"];
             try
             {
-                #region 新建加班信息
-                SysOverTime sys = new SysOverTime();
-                sys.OverTimeReason = OverTimeReason;
+                #region 新建请假信息
+                SysVacation sys = new SysVacation();
+                sys.VacationReason = VacationReason;
                 sys.ProposerID = int.Parse(userid);
-                sys.OverTimeType = int.Parse(OverTimeType);
-                sys.Account_Method = int.Parse(Account_Method);
+                sys.VacationType = int.Parse(VacationType);
+                sys.Emergency = Emergency;
+
                 sys.ApplyStatus = 0;
                 sys.StartTime = DateTime.Parse(StartTime);
                 sys.EndTime = DateTime.Parse(EndTime);
+                sys.CopyFor = "11";
                 string[] SendFors = SendFor.TrimEnd('_').Split('_');
-                string[] CopyFors = CopyFor.TrimEnd('_').Split('_');
                 foreach (var sendfor in SendFors)
                 {
                     sys.SendFor += (int.Parse(sendfor) - 10000).ToString() + '_';
                 }
-                foreach (var copyfor in CopyFors)
-                {
-                    sys.CopyFor += (int.Parse(copyfor) - 10000).ToString() + '_';
-                }
-                sys.CopyFor = '_' + sys.CopyFor;
-                TimeSpan ts1 = sys.EndTime - sys.StartTime;//计算加班总经历时间的时间戳
-                int hours = ts1.Hours - 9;//计算加班结束当天的多出来的加班时间
-                int days = ts1.Days;//若加班大于1天，计算加班天数
+                TimeSpan ts1 = sys.EndTime - sys.StartTime;//计算请假总经历时间的时间戳
+                int hours = ts1.Hours - 9;//计算请假结束当天的多出来的请假时间
+                int days = ts1.Days;//若请假大于1天，计算请假天数
                 if (days == 0)
                 {
                     hours = ts1.Hours;
                 }
                 sys.Time = days + hours / 24;//计算出总时长，形式：4.2代表4天+0.2天，即4天+4.8小时
                 sys.OpTime = DateTime.Now;
-                db.SysOverTimes.Add(sys);
+                db.SysVacationsContext.Add(sys);
                 db.SaveChanges();
 
                 #endregion
 
                 #region 新建审批流信息
                 SysApprove sysapprove = new SysApprove();
-                sysapprove.ApplyType = "加班";
+                sysapprove.ApplyType = "请假";
                 sysapprove.ApplyID = sys.ID;
                 sysapprove.LastChecker = 0;
                 sysapprove.ApplyStatus = 0;
@@ -96,14 +93,14 @@ namespace AttenceProject.Services.Impl
             }
         }
 
-        public IList<SysOverTime> GetList(string userid)
+        public IList<SysVacation> GetList(string userid)
         {
-            var list=db.SysOverTimes.Where(m => m.ProposerID.ToString() == userid).ToList();
+            var list=db.SysVacationsContext.Where(m => m.ProposerID.ToString() == userid).ToList();
             return list;
         }
-        public IList<SysOverTime> GetCopyList(string userid)
+        public IList<SysVacation> GetCopyList(string userid)
         {
-            var list = db.SysOverTimes.Where(m => m.CopyFor.Contains("_" + userid + "_")).ToList();
+            var list = db.SysVacationsContext.Where(m => m.CopyFor.Contains("_" + userid + "_")).ToList();
             return list;
         }
 
@@ -111,8 +108,8 @@ namespace AttenceProject.Services.Impl
         {
             string userid = cook.Values["UserID"];
             #region 取出最近的加班的审批进度
-            //这段linq是用来将所有最新的审批进度取出来
-            var list = db_approve.SysApproves.Where(a => a.ApplyType == "加班");//取出所有进度
+            //这段linq是用来将所有最新的【请假】审批进度取出来
+            var list = db_approve.SysApproves.Where(a => a.ApplyType == "请假");//取出所有进度
             var query = from d in list
                         group d by d.ApplyID into g
                         select new
@@ -131,12 +128,12 @@ namespace AttenceProject.Services.Impl
 
             var list_end = query_final.ToList();//找出所有审批的最新进度
 
-            var list_overtime = db.SysOverTimes.ToList();
+            var list_vacation = db.SysVacationsContext.ToList();
 
             var query_show = from a in list_end
-                             join b in list_overtime
+                             join b in list_vacation
                              on a.ApplyID equals b.ID
-                             where b.ApplyStatus != 1 && a.NowChecker == int.Parse(userid)
+                             where b.ApplyStatus != 1 && a.NowChecker == int.Parse(cook.Values["UserID"])
                              select new
                              {
                                  b.ID,
@@ -145,9 +142,9 @@ namespace AttenceProject.Services.Impl
                                  b.StartTime,
                                  b.EndTime,
                                  b.Time,
-                                 b.OverTimeType,
-                                 b.Account_Method,
-                                 b.OverTimeReason,
+                                 b.VacationType,
+                                 b.VacationReason,
+                                 b.Emergency,
                                  b.CopyFor,
                                  a.ApplyID,
                                  a.LastChecker,
@@ -155,7 +152,6 @@ namespace AttenceProject.Services.Impl
                                  a.NowChecker,
                                  a.Applyrate,
                                  a.ApplyStatus
-
                              };
             #endregion
 
@@ -163,9 +159,9 @@ namespace AttenceProject.Services.Impl
             result = "{\"total\":" + list_end.Count + ",\"rows\":" + result + "}";
             return result;
         }
-        public string GetOverTimeInfo(int id)
+        public string GetVacationInfo(int id)
         {
-            var list1 = db.SysOverTimes.Where(m => m.ID == id).ToList();
+            var list1 = db.SysVacationsContext.Where(m => m.ID == id).ToList();
 
             var list2 = db_user.sur.ToList();
 
@@ -180,9 +176,9 @@ namespace AttenceProject.Services.Impl
                             a.StartTime,
                             a.EndTime,
                             a.Time,
-                            a.OverTimeType,
-                            a.OverTimeReason,
-                            a.Account_Method
+                            a.VacationType,
+                            a.VacationReason,
+                            a.Emergency
                         };
             string result = JsonTool.LI2J(query.ToList());
             return result;
@@ -192,10 +188,10 @@ namespace AttenceProject.Services.Impl
         public int SaveApprove(HttpCookie cook, string applyrate, string applystatus, string applyid)
         {
             IList<SysApprove> list = db_approve.SysApproves.Where(m => m.ApplyID.ToString() == applyid).ToList();
-            SysOverTime sys_overtime = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
+            IList<SysVacation> list_vacation = db.SysVacationsContext.Where(s => s.ID.ToString() == applyid).ToList();
             //获取请假信息及最近一次的审批信息
 
-            string sendfor = sys_overtime.SendFor;
+            string sendfor = list_vacation[0].SendFor;
             string[] sendfors = sendfor.TrimEnd('_').Split('_');
             IList sendlist = sendfors.ToList();
 
@@ -205,9 +201,7 @@ namespace AttenceProject.Services.Impl
             sys.Applyrate = applyrate;
             sys.ApplyStatus = int.Parse(applystatus);
             sys.OpTime = DateTime.Now;
-            sys.ApplyType = "加班";
-
-            
+            sys.ApplyType = "请假";
             int NowCheckerIndex = sendlist.IndexOf(cook.Values["UserID"]);
             if (NowCheckerIndex == sendfors.Length - 1)
             {
@@ -219,16 +213,13 @@ namespace AttenceProject.Services.Impl
                 db_approve.SysApproves.Add(sys);
                 db_approve.SaveChanges();
 
-                //结束一个审批流程：
-                //结束审批流程要做的事情：修改申请信息为通过：
-                SysOverTime sys_overtime_base = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
-                sys_overtime_base.ApplyStatus = 1;
-                db.Entry<SysOverTime>(sys_overtime_base).State = EntityState.Modified;
+                //结束一个审批流程
+                //结束审批流程要做的事情：修改申请信息为通过:
+                SysVacation sys_vacation_base = db.SysVacationsContext.Where(s => s.ID.ToString() == applyid).ToList()[0];
+                sys_vacation_base.ApplyStatus = 1;
+                db.Entry<SysVacation>(sys_vacation_base).State = EntityState.Modified;
                 db.SaveChanges();
-
-                //如果是请假则不需要增加可用加班时间，如果是加班需要在个人账户上增加可用加班时间：
-                SysUsersRole sys_user = db_user.sur.Find(cook.Values["UserID"]);
-                //sys_user.OverTime=list_overtime[0].Time
+                //如果是请假则需要在个人账户上减少时间，如果是加班需要在个人账户上增加可用加班时间
 
                 return 1;
             }
@@ -274,6 +265,7 @@ namespace AttenceProject.Services.Impl
             string result = JsonTool.LI2J(query.ToList());
             return result;
         }
+
         public string GetApproveCopy(HttpCookie cook)
         {
             #region 取出最近的加班的审批进度
@@ -297,7 +289,7 @@ namespace AttenceProject.Services.Impl
 
             var list_end = query_final.ToList();//找出所有审批的最新进度
 
-            var list_overtime = db.SysOverTimes.ToList();
+            var list_overtime = db.SysVacationsContext.ToList();
 
             var query_show = from a in list_end
                              join b in list_overtime
@@ -311,9 +303,8 @@ namespace AttenceProject.Services.Impl
                                  b.StartTime,
                                  b.EndTime,
                                  b.Time,
-                                 b.OverTimeType,
-                                 b.Account_Method,
-                                 b.OverTimeReason,
+                                 b.VacationType,
+                                 b.VacationReason,
                                  b.CopyFor,
                                  a.ApplyID,
                                  a.LastChecker,
@@ -329,6 +320,7 @@ namespace AttenceProject.Services.Impl
             result = "{\"total\":" + list_show.Count + ",\"rows\":" + result + "}";
             return result;
         }
+
 
     }
 }

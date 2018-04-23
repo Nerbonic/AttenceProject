@@ -25,11 +25,6 @@ namespace AttenceProject.App_Start
             return result;
         }
 
-        internal static string LI2J(object p)
-        {
-            throw new NotImplementedException();
-        }
-
         public static string FailJson(string message,string status)
         {
             return "{\"status\":\""+status+"\", \"messsage\":\""+message+"！\",\"total\":\"0\",\"rows\":[]}";

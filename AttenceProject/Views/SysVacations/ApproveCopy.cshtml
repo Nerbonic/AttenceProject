@@ -46,7 +46,7 @@
             var applyrate = $("#Applyrate").val();
             var applyid = $("#ID").val();
             $.ajax({
-                url: '../../SysOverTimes/SaveApprove',
+                url: '../../SysVacations/SaveApprove',
                 data: { applystatus: applystatus, applyrate: applyrate, applyid: applyid },
                 async: false,
                 method: 'get',
@@ -133,7 +133,7 @@
             if (row) {
                 var id = row.ID;
                 $.ajax({
-                    url: '../../SysOverTimes/GetOverTimeInfo',
+                    url: '../../SysVacations/GetVacationInfo',
                     data: { id: id },
                     async: false,
                     dataType: "json",
@@ -161,7 +161,7 @@
                 var afterstr = "";
                 $(".tr_after").remove();
                 $.ajax({
-                    url: '../../SysOverTimes/GetApproveDetail',
+                    url: '../../SysVacations/GetApproveDetail',
                     data: { id: id },
                     async: false,
                     dataType: "json",
@@ -248,7 +248,7 @@
                 striped: true,//设置为true将交替显示行背景。
                 collapsible: true,//显示可折叠按钮
                 toolbar: "#tb",//在添加 增添、删除、修改操作的按钮要用到这个
-                url: '../../SysOverTimes/GetApproveCopy',//url调用Action方法
+                url: '../../SysVacations/GetApproveCopyJson',//url调用Action方法
                 method: 'get',
                 loadMsg: '数据装载中......',
                 singleSelect: true,//为true时只能选择单行
@@ -287,7 +287,7 @@
             </div>
             <!-- End of toolbar -->
             <table id="wu-datagrid" class="easyui-datagrid" toolbar="#wu-toolbar" title="Basic DataGrid" style="width:inherit; height:inherit"
-                   data-options="singleSelect:true,collapsible:true,url:'../../SysOverTimes/GetApproveCopy',pagesize:3,method:'get'"
+                   data-options="singleSelect:true,collapsible:true,url:'../../SysVacations/GetApproveCopyJson',pagesize:3,method:'get'"
                    footer="#foot" pagination="true" rownumbers="true" singleselect="true" fitColumns="true">
                 <thead>
                     <tr>
@@ -310,7 +310,7 @@
 
     <!-- Begin of easyui-dialog -->
     <div id="wu-dialog" class="easyui-dialog" data-options="closed:true,iconCls:'icon-save'" style="width:400px; padding:10px;">
-        <form id="wu-form" method="post" name="form1" action="~/SysOverTimes/SaveAdd">
+        <form id="wu-form" method="post" name="form1" action="~/SysVacations/SaveAdd">
             <table>
                 <tr style="display:none;">
                     <td width="70" align="right">ID:</td>
