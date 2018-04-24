@@ -144,26 +144,36 @@
             var zTree = $.fn.zTree.getZTreeObj("treeDemo");
             zTree.setting.edit.drag.autoExpandTrigger = $("#callbackTrigger").attr("checked");
         }
-        //$(function () {
+        $(function () {
+            $("#VacationStart").datebox('calendar').calendar({
+                validator: function (beginDate) {
+                    var date = new Date();
 
-        //    //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期
-        //    $("#StartTime").datebox('calendar').calendar({ 
-        //        validator: function (beginDate) {
-        //            var date = new Date();
-        //            return beginDate >= date;
-        //        }
-        //    });
-        //    $("#EndTime").datebox({
-        //        onSelect: function (beginDate) {
-        //            $('#EndTime').datebox().datebox('calendar').calendar({
-        //                validator: function (endDate) {
-        //                    var date = new Date();
-        //                    return beginDate <= endDate && endDate > date;
-        //                }
-        //            });
-        //        }
-        //    });
-        //});
+                    return beginDate >= date;
+                }
+            });
+            $("#VacationEnd").datebox('calendar').calendar({
+                validator: function (beginDate) {
+                    var date = new Date();
+
+                    return beginDate >= date;
+                }
+            });
+            $("#OverTimeStart").datebox('calendar').calendar({
+                validator: function (beginDate) {
+                    var date = new Date();
+
+                    return beginDate >= date;
+                }
+            });
+            $("#OverTimeEnd").datebox('calendar').calendar({
+                validator: function (beginDate) {
+                    var date = new Date();
+
+                    return beginDate >= date;
+                }
+            });
+        });
         function saveWorkOff() {
             
             var treeObj = $.fn.zTree.getZTreeObj("treeDemo2");
@@ -209,7 +219,7 @@
             $.ajax({
                 url: "../../SysDepts/GetGeneralDeptJson", success: function (result) {
                     //alert(result);
-                    console.log("1");
+                   // console.log("1");
                     zNodes = JSON.parse(result);
                     $.fn.zTree.init($("#treeDemo"), setting, zNodes);
                     $.fn.zTree.init($("#treeDemo2"), setting);

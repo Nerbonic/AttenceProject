@@ -1,10 +1,12 @@
-﻿using AttenceProject.Models;
+﻿using AttenceProject.App_Start;
+using AttenceProject.Models;
 using AttenceProject.Services.Face;
 using AttenceProject.Services.Impl;
 using Autofac;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
 
@@ -38,26 +40,14 @@ namespace AttenceProject.Controllers
         public ActionResult DoLogin(string username, string password)
         {
 
-            //ContainerBuilder builder = new ContainerBuilder();
-            
-            //builder.RegisterModule(new LoginImpl());
-            ////builder.RegisterType<Test>();
-
-
-            ////builder.Register(t => new Test()).As<Test>();
-            //builder.RegisterType<Test2>();
-            //var container = builder.Build();
-
-            //Test2 test2 = container.Resolve<Test2>();
-            //// Test2 ee = new Test2();
-            //test2.Show();
             IList<SysUsersRole> list = service_login.GetUserInfoByName(username);
+            string md5 = JsonTool.GetMd5Hash(password);
             //IList<SysUsersRole> list = db.sur.Where(m => m.LoginName == username).ToList();
             if (list.Count == 0)
             {
                 return Content("<script>alert('不存在此用户!登陆失败');window.location.href='/Login/Index';</script>");
             }
-            else if (list.Where(m => m.PassWord == password).ToList().Count == 0)
+            else if (list.Where(m => m.PassWord == md5).ToList().Count == 0)
             {
                 return Content("<script>alert('密码错误!登陆失败');window.location.href='/Login/Index';</script>");
             }

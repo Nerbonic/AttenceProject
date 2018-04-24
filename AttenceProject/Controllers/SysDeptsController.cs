@@ -139,7 +139,8 @@ namespace AttenceProject.Controllers
         /// <returns></returns>
         public ActionResult SaveUserAdd(string ParentNode,string UserName,string LoginName,string UserCode,string PassWord,string UserRole)
         {
-            service_dept.SaveUserAdd(ParentNode, UserName, LoginName, UserCode, PassWord, UserRole);
+            string md5 = JsonTool.GetMd5Hash(PassWord);
+            service_dept.SaveUserAdd(ParentNode, UserName, LoginName, UserCode, md5, UserRole);
             return Content("success");
 
         }

@@ -218,6 +218,16 @@
 
 	    });
 	})
+	function formatterApplyStatus(value, row, index) {
+	    if (row.ApplyStatus == 1) {
+	        return "审批完成";
+	    } else if (row.ApplyStatus == 0) {
+	        return "审批中";
+	    } else if (row.ApplyStatus == -1) {
+	        return "审批被驳回";
+	    }
+	}
+
     </script>
 </head>
 <body>
@@ -263,9 +273,8 @@
                         <th data-options="field:'OverTimeType',width:80,align:'right'">加班类型</th>
                         <th data-options="field:'Account_Method',width:120">加班结算方式</th>
                         <th data-options="field:'OverTimeReason',width:200,align:'center'">加班原因</th>
-                        <th data-options="field:'CopyFor',width:120">抄送人</th>
-                        <th data-options="field:'ApplyStatus',width:60,align:'center'">申请状态</th>
-
+                        @*<th data-options="field:'CopyFor',width:120">抄送人</th>*@
+                        <th data-options="field:'ApplyStatus',width:60,align:'center'" formatter="formatterApplyStatus">申请状态</th>
                         <th data-options="field:'opt',align:'center',halign:'center'" >查看申请详情</th>
 
                     </tr>

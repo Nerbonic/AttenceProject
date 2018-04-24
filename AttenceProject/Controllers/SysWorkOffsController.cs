@@ -302,7 +302,7 @@ namespace AttenceProject.Controllers
 
                 //结束一个审批流程
                 //结束审批流程要做的事情：修改申请信息为通过:
-                sys_workoff_base.ApplyStatus = 1;
+                sys_workoff_base.ApplyStatus = int.Parse(applystatus);
                 db.Entry<SysWorkOff>(sys_workoff_base).State = EntityState.Modified;
                 db.SaveChanges();
                 //如果是请假则需要在个人账户上减少时间，如果是加班需要在个人账户上增加可用加班时间
@@ -312,23 +312,57 @@ namespace AttenceProject.Controllers
             else if (NowCheckerIndex == sendfors.Length - 2)
             {
                 //如果是倒数第二个人审批的此条申请
+                if (applystatus.Equals("-1"))//驳回
+                {
+                    sys.NextChecker = 0;
+                    sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                    sys.NowChecker = 0;
+                    db_approve.SysApproves.Add(sys);
+                    db_approve.SaveChanges();
+                    //结束一个审批流程
+                    //结束审批流程要做的事情：修改申请信息为通过:
+                    sys_workoff_base.ApplyStatus = int.Parse(applystatus);
+                    db.Entry<SysWorkOff>(sys_workoff_base).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                }
+                else//通过
+                {
+                    sys.NextChecker = 0;
+                    sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                    sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
+                    db_approve.SysApproves.Add(sys);
+                    db_approve.SaveChanges();
+                }
                 //增加一条审批信息，修改nowchecker,并nextchecker设置为0
-                sys.NextChecker = 0;
-                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
-                sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
-                db_approve.SysApproves.Add(sys);
-                db_approve.SaveChanges();
                 return Content("success");
             }
             else
             {
+                if (applystatus.Equals("-1"))//驳回
+                {
+                    sys.NextChecker = 0;
+                    sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                    sys.NowChecker = 0;
+                    db_approve.SysApproves.Add(sys);
+                    db_approve.SaveChanges();
+                    //结束一个审批流程
+                    //结束审批流程要做的事情：修改申请信息为通过:
+                    sys_workoff_base.ApplyStatus = int.Parse(applystatus);
+                    db.Entry<SysWorkOff>(sys_workoff_base).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                }
+                else
+                {
+                    sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                    sys.NextChecker = int.Parse(sendfors[NowCheckerIndex + 2]);
+                    sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
+                    db_approve.SysApproves.Add(sys);
+                    db_approve.SaveChanges();
+                }
                 //如果是其他情况，即还有至少两个人在审批流程上
                 //增加一条审批信息，修改nowchecker和nextchecker
-                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
-                sys.NextChecker = int.Parse(sendfors[NowCheckerIndex + 2]);
-                sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
-                db_approve.SysApproves.Add(sys);
-                db_approve.SaveChanges();
                 return Content("success");
 
             }
@@ -377,7 +411,9 @@ namespace AttenceProject.Controllers
         public ActionResult GetApproveCopyJson()
         {
             HttpCookie cook = Request.Cookies["userinfo"];
+
             #region 取出最近的加班的审批进度
+
             //这段linq是用来将所有最新的审批进度取出来
             var list = db_approve.SysApproves.Where(a => a.ApplyType == "加班");//取出所有进度
             var query = from d in list

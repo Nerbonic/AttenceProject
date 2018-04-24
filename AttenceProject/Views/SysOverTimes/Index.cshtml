@@ -155,21 +155,16 @@
                 validator: function (beginDate) {
                     var date = new Date();
                     var enddate = $("#EndTime").datebox("getValue");
-                    //alert(enddate);
-                    if (enddate != "") {
-                        enddate = 01 / 01 / 9999;
-                    }
-                    return beginDate >= date && beginDate <= enddate;
+                    
+                    return beginDate >= date;
                 }
             });
-            $("#EndTime").datebox({
-                onSelect: function (beginDate) {
-                    $('#EndTime').datebox().datebox('calendar').calendar({
-                        validator: function (endDate) {
-                            var date = new Date();
-                            return beginDate <= endDate && endDate > date;
-                        }
-                    });
+            $("#EndTime").datebox('calendar').calendar({
+                validator: function (beginDate) {
+                    var date = new Date();
+                    var enddate = $("#EndTime").datebox("getValue");
+
+                    return beginDate >= date;
                 }
             });
         });
@@ -232,7 +227,13 @@
 
     </script>
     <script type="text/javascript">
-
+        function formatterIsu(value, row, index) {
+            if (row.isu == 1) {
+                return "启用";
+            } else if (row.isu == 2) {
+                return "禁用";
+            }
+        }
     </script>
     <!-- Begin of easyui-dialog -->
     <div data-options="closed:false,iconCls:'icon-save'" style="width:600px; padding:10px;">
@@ -279,6 +280,7 @@
                            "></select>
                         </td>
                     </tr>
+
                     <tr>
                         <td width="100" align="right">加班开始时间:</td>
                         <td>

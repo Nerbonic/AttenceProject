@@ -147,20 +147,20 @@
         $(function () {
 
             //日期控制扩展选择日期小于等于当前日期，开始日期小于等于结束日期
-            $("#StartTime").datebox('calendar').calendar({ 
+            $("#StartTime").datebox('calendar').calendar({
                 validator: function (beginDate) {
                     var date = new Date();
+                    var enddate = $("#EndTime").datebox("getValue");
+
                     return beginDate >= date;
                 }
             });
-            $("#EndTime").datebox({
-                onSelect: function (beginDate) {
-                    $('#EndTime').datebox().datebox('calendar').calendar({
-                        validator: function (endDate) {
-                            var date = new Date();
-                            return beginDate <= endDate && endDate > date;
-                        }
-                    });
+            $("#EndTime").datebox('calendar').calendar({
+                validator: function (beginDate) {
+                    var date = new Date();
+                    var enddate = $("#EndTime").datebox("getValue");
+
+                    return beginDate >= date;
                 }
             });
         });

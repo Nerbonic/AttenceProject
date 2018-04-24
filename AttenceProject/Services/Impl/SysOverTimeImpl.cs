@@ -220,14 +220,14 @@ namespace AttenceProject.Services.Impl
                 db_approve.SaveChanges();
 
                 //结束一个审批流程：
-                //结束审批流程要做的事情：修改申请信息为通过：
+                //结束审批流程要做的事情：修改申请信息为通过或驳回：
                 SysOverTime sys_overtime_base = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
-                sys_overtime_base.ApplyStatus = 1;
+                sys_overtime_base.ApplyStatus = int.Parse(applystatus);
                 db.Entry<SysOverTime>(sys_overtime_base).State = EntityState.Modified;
                 db.SaveChanges();
 
                 //如果是请假则不需要增加可用加班时间，如果是加班需要在个人账户上增加可用加班时间：
-                SysUsersRole sys_user = db_user.sur.Find(cook.Values["UserID"]);
+                //SysUsersRole sys_user = db_user.sur.Find(cook.Values["UserID"]);
                 //sys_user.OverTime=list_overtime[0].Time
 
                 return 1;
@@ -235,23 +235,57 @@ namespace AttenceProject.Services.Impl
             else if (NowCheckerIndex == sendfors.Length - 2)
             {
                 //如果是倒数第二个人审批的此条申请
+                if (applystatus.Equals("-1"))//驳回
+                {
+                    sys.NextChecker = 0;
+                    sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                    sys.NowChecker = 0;
+                    db_approve.SysApproves.Add(sys);
+                    db_approve.SaveChanges();
+                    //结束一个审批流程：
+                    //结束审批流程要做的事情：修改申请信息为通过或驳回：
+                    SysOverTime sys_overtime_base = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
+                    sys_overtime_base.ApplyStatus = int.Parse(applystatus);
+                    db.Entry<SysOverTime>(sys_overtime_base).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else//通过
+                {
+                    sys.NextChecker = 0;
+                    sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                    sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
+                    db_approve.SysApproves.Add(sys);
+                    db_approve.SaveChanges();
+                }
                 //增加一条审批信息，修改nowchecker,并nextchecker设置为0
-                sys.NextChecker = 0;
-                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
-                sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
-                db_approve.SysApproves.Add(sys);
-                db_approve.SaveChanges();
                 return 1;
             }
             else
             {
+                if (applystatus.Equals("-1"))//驳回
+                {
+                    sys.NextChecker = 0;
+                    sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                    sys.NowChecker = 0;
+                    db_approve.SysApproves.Add(sys);
+                    db_approve.SaveChanges();
+                    //结束一个审批流程：
+                    //结束审批流程要做的事情：修改申请信息为通过或驳回：
+                    SysOverTime sys_overtime_base = db.SysOverTimes.Where(s => s.ID.ToString() == applyid).ToList()[0];
+                    sys_overtime_base.ApplyStatus = int.Parse(applystatus);
+                    db.Entry<SysOverTime>(sys_overtime_base).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
+                    sys.NextChecker = int.Parse(sendfors[NowCheckerIndex + 2]);
+                    sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
+                    db_approve.SysApproves.Add(sys);
+                    db_approve.SaveChanges();
+                }
                 //如果是其他情况，即还有至少两个人在审批流程上
                 //增加一条审批信息，修改nowchecker和nextchecker
-                sys.LastChecker = int.Parse(sendfors[NowCheckerIndex]);
-                sys.NextChecker = int.Parse(sendfors[NowCheckerIndex + 2]);
-                sys.NowChecker = int.Parse(sendfors[NowCheckerIndex + 1]);
-                db_approve.SysApproves.Add(sys);
-                db_approve.SaveChanges();
                 return 1;
 
             }

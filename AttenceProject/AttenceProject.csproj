@@ -5613,6 +5613,7 @@
     <Content Include="zTree_v3\js\jquery.ztree.exhide.js" />
     <Content Include="zTree_v3\js\jquery.ztree.exhide.min.js" />
     <Content Include="zTree_v3\log v3.x.txt" />
+    <None Include="Properties\PublishProfiles\123.pubxml" />
     <None Include="scripts\jquery-1.10.2-vsdoc.js" />
     <Content Include="scripts\bootstrap.js" />
     <Content Include="scripts\bootstrap.min.js" />
@@ -5678,12 +5679,14 @@
     <Compile Include="Models\ViewModel\View_GeneralTree.cs" />
     <Compile Include="Models\ViewModel\View_SysUserInDept.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Face\ISysWorkOff.cs" />
     <Compile Include="Services\Face\ISysVacation.cs" />
     <Compile Include="Services\Face\ISysOverTime.cs" />
     <Compile Include="Services\Face\ISysDept.cs" />
     <Compile Include="Services\Face\ILogin.cs" />
     <Compile Include="Services\Face\ISysApplySet.cs" />
     <Compile Include="Services\Face\ISysAlternative.cs" />
+    <Compile Include="Services\Impl\SysWorkOffImpl.cs" />
     <Compile Include="Services\Impl\SysVacationImpl.cs" />
     <Compile Include="Services\Impl\SysOverTimeImpl.cs" />
     <Compile Include="Services\Impl\SysDeptImpl.cs" />

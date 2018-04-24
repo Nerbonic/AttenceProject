@@ -216,6 +216,13 @@
 
 	    });
 	})
+	function formatterIsu(value, row, index) {
+	    if (row.isu == 1) {
+	        return "审核通过";
+	    } else if (row.isu == 2) {
+	        return "审核被驳回";
+	    }
+	}
     </script>
 </head>
 <body>
@@ -263,8 +270,8 @@
                         <th data-options="field:'WorkOffType',width:120">调休类型</th>
                         <th data-options="field:'VacationReason',width:120">调休原因</th>
                         <th data-options="field:'Emergency',width:120">紧急联系方式</th>
-                        <th data-options="field:'CopyFor',width:120">抄送人</th>
-                        <th data-options="field:'ApplyStatus',width:60,align:'center'">申请状态</th>
+                        @*<th data-options="field:'CopyFor',width:120">抄送人</th>*@
+                        <th data-options="field:'ApplyStatus',width:60,align:'center'" formatter="formatterIsu">申请状态</th>
                     </tr>
                 </thead>
             </table>
